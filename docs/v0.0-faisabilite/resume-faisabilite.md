@@ -129,8 +129,29 @@ Le choix sera tranché dans l'ADR 0001, dans cet ordre :
 
 Dans les deux cas, le coût en euros est indicatif. Les seuils de réussite du modèle restent exprimés en erreur (MAPE, couverture des intervalles), jamais en euros.
 
+## Pas de règlement des écarts et règle de passage (14/11/2026)
+
+Source officielle : CRE, consultation publique n° 2025-01 du 13 mars 2025, relative à l'adaptation des contrats de complément de rémunération au pas de temps 15 minutes (sha256 du PDF : `91787af4…3d5a2dd1`). Elle indique : « le pas de temps de règlement des déséquilibres ou "écarts" (ISP, Imbalance Settlement Period) est passé de 30 à 15 minutes le 1er janvier 2025 ». Le pas du marché du lendemain est passé à 15 minutes pour la livraison du 01/10/2025 (vérifié plus tôt sur le site du comité des bourses européennes).
+
+Conséquence : la validation (03/2024 → 08/2025) chevauche le changement de pas. Avant le 01/01/2025, il y a un prix des écarts par demi-heure ; à partir de cette date, deux par demi-heure.
+
+Règle de passage entre nos demi-heures et ce pas :
+
+- La consommation cible (consolidée ou définitive) et notre prévision sont des puissances moyennes sur la demi-heure.
+- Chaque demi-heure se partage en deux quarts d'heure qui reçoivent la même puissance moyenne. L'énergie d'un quart d'heure vaut cette puissance multipliée par 0,25 h.
+- L'écart d'un quart d'heure est la différence entre la consommation et la prévision. Les deux quarts d'heure d'une même demi-heure ont donc le même écart en énergie, mais chacun reçoit son propre prix des écarts.
+- Avant le 01/01/2025, une demi-heure a un seul écart (puissance × 0,5 h) et un seul prix.
+- Limite : les variations à l'intérieur d'une demi-heure ne sont pas vues, ce qui sous-estime un peu les écarts réels.
+
+## Prix de référence du lendemain : hypothèse fixe (14/11/2026)
+
+Aucune série de prix du lendemain sous licence claire n'a été trouvée dans la séance consacrée à la question :
+
+- les prix du lendemain de la plateforme ENTSO-E (12.1.d) appartiennent aux bourses et sont exclus de la liste des données réutilisables ;
+- la rubrique Open Data de la CRE (observatoires des marchés de gros) ne propose que des données jusqu'au 4e trimestre 2020, mises à jour le 10/02/2022, sans licence indiquée.
+
+L'option 2 est donc retenue : un prix de référence fixe, présenté comme une hypothèse. Valeur proposée : 60 €/MWh, entre les prix moyens journaliers de 2024 (58 €/MWh) et de 2025 (61 €/MWh) publiés par la CRE (communiqué du 25 juin 2026 sur le rapport de surveillance des marchés de gros 2025). Une analyse de sensibilité accompagne le coût. Le coût en euros reste indicatif.
+
 ## Points encore ouverts
 
-- Pas de règlement des écarts en France : non établi à partir d'une source officielle.
-- Prix moyen du lendemain sous licence ouverte (CRE ou autre) : non vérifié.
-- Prévision J-1 de la plateforme ENTSO-E : comparaison avec éCO2mix et heure de publication.
+- Prévision J-1 de la plateforme ENTSO-E (6.1.b) : comparaison avec éCO2mix et heure de publication (compte ENTSO-E reporté).
