@@ -14,6 +14,50 @@ La pondération des régions par leur consommation est retenue. Sur la validatio
 
 La consommation gagne sur les six plis, mais l'écart est faible : 0,5 % face à la population et 1,3 % face à la pondération hiver moins été. Le choix de la pondération compte donc peu pour la suite. Détail : `data/indice-temperature-poids.json`.
 
+## Points et météo (14/11/2026)
+
+### Les 12 points
+
+Chaque point est le centroïde (geo.api.gouv.fr) de la commune-centre de l'aire d'attraction des villes la plus peuplée de la région (INSEE, zonage 2020, géographie au 01/01/2026). La commune la plus peuplée n'a pas été retenue : en Normandie, ce serait Le Havre, sur la côte, alors que l'aire de Rouen est plus grande (715 000 contre 336 000 habitants) et à l'intérieur des terres.
+
+Points : Paris, Lyon, Marseille, Lille, Toulouse, Bordeaux, Nantes, Strasbourg, Rennes, Rouen, Tours, Dijon. Le seul classement serré est Tours devant Orléans (529 000 contre 463 000 habitants). Limite : geo.api.gouv.fr n'indique pas le millésime de la population. Détail : `data/meteo-points-choix.json`.
+
+### Requêtes
+
+Les trois sources reçoivent les mêmes coordonnées exactes, la même altitude (fixée une fois par l'API d'altitude d'Open-Meteo), les mêmes variables, `timezone=GMT` et `cell_selection=land`. La conversion en heure de Paris se fait une seule fois, dans notre code, avec la règle des changements d'heure.
+
+- Variables : température à 2 m, rayonnement solaire global, nébulosité totale, vent à 10 m, humidité relative à 2 m. Les cinq existent dans ERA5 et dans les calculs ECMWF archivés.
+- Entraînement : ERA5, avec `models=era5` explicite. Par défaut, l'API historique combine IFS, ERA5 et ERA5-Land sans le signaler.
+- Entrée réelle du modèle : calcul ECMWF IFS de 00 UTC de la veille.
+- IFS 9 km de l'API historique : disponible depuis 2017, assemblé par Open-Meteo à partir des calculs de 0, 6, 12 et 18 UTC. Il est mesuré face à ERA5 sur la validation, sans assemblage des deux. On ne change de source qu'au vu de cette mesure.
+
+### Essai et contrôle
+
+Essai sur Paris (3 appels), puis contrôle sur les 12 points (37 appels) :
+
+- Décompte : chaque réponse porte l'en-tête `X-RateLimit-Cost`. Il vaut 1,0 pour 14 jours × 5 variables en ERA5, comme pour un calcul ECMWF de 3 jours. L'appel d'altitude sur 12 points a coûté 12,0 : une requête sur plusieurs points compte un appel par point. Le service ne donne qu'un compteur par fenêtre de 60 secondes, aucun compteur journalier : le plafond journalier est tenu par un journal local.
+- Convention du rayonnement : dans les 36 cas (12 points × 3 sources), la série suit le mieux la courbe théorique hors atmosphère calculée en moyenne de l'heure précédente, ce qui correspond à la documentation. Il n'y a pas de décalage d'une heure entre les sources.
+- Mailles : les 36 centres de maille tombent sur une commune française. Pour IFS (9 km), ils sont à 1,3 à 5,5 km du point demandé ; pour ERA5 (25 km), à 4,7 à 14,2 km, sauf à Marseille. Limite : le centre de maille ne dit pas quelle part de mer contient la maille.
+- Marseille, ERA5 : la maille retenue est centrée sur Rognac, à 26,6 km au nord du point, au bord de l'étang de Berre. La sélection terrestre d'Open-Meteo a écarté les mailles côtières. Rognac appartient à l'aire de Marseille - Aix-en-Provence. Le point est gardé tel quel ; l'écart entre ERA5 et ECMWF y sera surveillé en priorité.
+
+Détail : `data/meteo-controle.json`.
+
+### Appels et garde-fous
+
+Estimation (5 variables, tranches de 14 jours, 1 appel par point et par tranche ou par calcul) :
+
+| Source | Période | Appels |
+|---|---|---|
+| ERA5 | 2012-01-01 → 2026-10-31 | 4 644 |
+| IFS historique | 2024-03-15 → 2025-08-31 | 468 |
+| ECMWF 00 UTC | calculs du 2024-03-14 au 2026-11-13 | 11 700 |
+| Altitude des 12 points | une requête | 12 |
+| Total | | 16 824 |
+
+Les 36 requêtes du contrôle sont les premières de chaque source : elles sont mises en cache et comptées dans les lignes ci-dessus. L'estimation donnée avant l'essai (≈ 16 860) comptait le contrôle à part.
+
+Plafond local de 8 000 appels par jour UTC, une requête par seconde au plus, arrêt définitif au premier refus de quota (un fichier d'arrêt bloque tout appel tant qu'une personne ne l'a pas retiré), cache sur disque. Aucun appel en CI.
+
 ## Licences des données de prix (14/11/2026)
 
 ### Conditions de la plateforme ENTSO-E
