@@ -17,58 +17,70 @@
   "regles": {
     "decision": "midi la veille, heure de Paris",
     "consolide_publie": "mois M disponible le 1er du mois M+3",
+    "consolide_publie_justification": "règle prudente fondée sur une observation datée : la documentation annonce la mi-M+1, mais le 14 novembre 2026 le consolidé publié s'arrêtait au 31 août 2026",
+    "prevision_rte_j1": "publiée après la décision : vers 14 h 30 selon le portail de RTE, à interroger vers 19 h 30 selon le guide de son API ; toute référence qui la lit est avantagée, même corrigée avec du consolidé publié",
     "mesure": "MAPE sur les demi-heures, échantillon commun à toutes les références"
   },
   "references": [
     {
       "nom": "naif_j7",
       "categorie": "optimiste",
-      "description": "même demi-heure sept jours avant"
+      "description": "même demi-heure sept jours avant",
+      "ne_lit_que_du_consolide_publie": false
     },
     {
       "nom": "naif_j2",
       "categorie": "optimiste",
-      "description": "même demi-heure deux jours avant"
+      "description": "même demi-heure deux jours avant",
+      "ne_lit_que_du_consolide_publie": false
     },
     {
       "nom": "naif_j1_matin_j2_apres_midi",
       "categorie": "optimiste",
-      "description": "veille pour les heures déjà écoulées à midi, deux jours avant sinon"
+      "description": "veille pour les heures déjà écoulées à midi, deux jours avant sinon",
+      "ne_lit_que_du_consolide_publie": false
     },
     {
       "nom": "moyenne_4_semaines",
       "categorie": "optimiste",
-      "description": "moyenne des quatre mêmes jours précédents"
+      "description": "moyenne des quatre mêmes jours précédents",
+      "ne_lit_que_du_consolide_publie": false
     },
     {
       "nom": "naif_hebdo_realiste",
       "categorie": "réaliste",
-      "description": "même jour de la semaine le plus récent publié en consolidé"
+      "description": "même jour de la semaine le plus récent publié en consolidé",
+      "ne_lit_que_du_consolide_publie": true
     },
     {
       "nom": "naif_annee_precedente",
       "categorie": "réaliste",
-      "description": "même jour de la semaine 52 semaines avant"
+      "description": "même jour de la semaine 52 semaines avant",
+      "ne_lit_que_du_consolide_publie": true
     },
     {
       "nom": "rte_j1_brut",
       "categorie": "avantagée",
-      "description": "prévision J-1 de RTE, moyenne f(t-15), f(t)"
+      "description": "prévision J-1 de RTE, moyenne f(t-15), f(t)",
+      "ne_lit_que_du_consolide_publie": true
     },
     {
       "nom": "rte_corrige_retard_reel",
-      "categorie": "réaliste",
-      "description": "RTE J-1 + biais par demi-heure des 28 derniers jours de consolidé publiés à midi"
+      "categorie": "avantagée",
+      "description": "RTE J-1 + biais par demi-heure des 28 derniers jours de consolidé publiés à midi",
+      "ne_lit_que_du_consolide_publie": true
     },
     {
       "nom": "rte_corrige_meme_mois_an_dernier",
-      "categorie": "réaliste",
-      "description": "RTE J-1 + biais par demi-heure du même mois l'année précédente"
+      "categorie": "avantagée",
+      "description": "RTE J-1 + biais par demi-heure du même mois l'année précédente",
+      "ne_lit_que_du_consolide_publie": true
     },
     {
       "nom": "rte_corrige_4_semaines_ideal",
       "categorie": "borne",
-      "description": "RTE J-1 + biais par demi-heure des 28 jours précédant le jour livré"
+      "description": "RTE J-1 + biais par demi-heure des 28 jours précédant le jour livré",
+      "ne_lit_que_du_consolide_publie": false
     }
   ],
   "alignement_principal": "moyenne f(t-15), f(t)",
@@ -286,10 +298,27 @@
       },
       "critere": {
         "naif": "naif_j7",
-        "meilleur_rte_realiste": "rte_corrige_meme_mois_an_dernier",
+        "meilleur_rte_corrige": "rte_corrige_meme_mois_an_dernier",
+        "categorie_du_meilleur_rte_corrige": "avantagée : publiée après la décision",
         "rapport_mape": 3.66,
         "seuil": 2.0,
         "rempli": true
+      },
+      "demi_heures_manquantes_par_cause": {
+        "demi_heures_reelles": 43198,
+        "heure_ambigue_octobre": 8,
+        "cible_absente": 1,
+        "reference_indisponible:naif_j7": 11,
+        "reference_indisponible:naif_j2": 11,
+        "reference_indisponible:naif_j1_matin_j2_apres_midi": 11,
+        "reference_indisponible:moyenne_4_semaines": 33,
+        "reference_indisponible:naif_hebdo_realiste": 44,
+        "reference_indisponible:naif_annee_precedente": 2,
+        "reference_indisponible:rte_j1_brut": 5,
+        "reference_indisponible:rte_corrige_retard_reel": 0,
+        "reference_indisponible:rte_corrige_meme_mois_an_dernier": 0,
+        "reference_indisponible:rte_corrige_4_semaines_ideal": 0,
+        "echantillon_commun": 43072
       }
     },
     "f(t)": {
@@ -505,10 +534,27 @@
       },
       "critere": {
         "naif": "naif_j7",
-        "meilleur_rte_realiste": "rte_corrige_meme_mois_an_dernier",
+        "meilleur_rte_corrige": "rte_corrige_meme_mois_an_dernier",
+        "categorie_du_meilleur_rte_corrige": "avantagée : publiée après la décision",
         "rapport_mape": 3.58,
         "seuil": 2.0,
         "rempli": true
+      },
+      "demi_heures_manquantes_par_cause": {
+        "demi_heures_reelles": 43198,
+        "heure_ambigue_octobre": 8,
+        "cible_absente": 1,
+        "reference_indisponible:naif_j7": 11,
+        "reference_indisponible:naif_j2": 11,
+        "reference_indisponible:naif_j1_matin_j2_apres_midi": 11,
+        "reference_indisponible:moyenne_4_semaines": 33,
+        "reference_indisponible:naif_hebdo_realiste": 44,
+        "reference_indisponible:naif_annee_precedente": 2,
+        "reference_indisponible:rte_j1_brut": 0,
+        "reference_indisponible:rte_corrige_retard_reel": 0,
+        "reference_indisponible:rte_corrige_meme_mois_an_dernier": 0,
+        "reference_indisponible:rte_corrige_4_semaines_ideal": 0,
+        "echantillon_commun": 43077
       }
     },
     "f(t-15)": {
@@ -724,10 +770,27 @@
       },
       "critere": {
         "naif": "naif_j7",
-        "meilleur_rte_realiste": "rte_corrige_meme_mois_an_dernier",
+        "meilleur_rte_corrige": "rte_corrige_meme_mois_an_dernier",
+        "categorie_du_meilleur_rte_corrige": "avantagée : publiée après la décision",
         "rapport_mape": 3.68,
         "seuil": 2.0,
         "rempli": true
+      },
+      "demi_heures_manquantes_par_cause": {
+        "demi_heures_reelles": 43198,
+        "heure_ambigue_octobre": 8,
+        "cible_absente": 1,
+        "reference_indisponible:naif_j7": 11,
+        "reference_indisponible:naif_j2": 11,
+        "reference_indisponible:naif_j1_matin_j2_apres_midi": 11,
+        "reference_indisponible:moyenne_4_semaines": 33,
+        "reference_indisponible:naif_hebdo_realiste": 44,
+        "reference_indisponible:naif_annee_precedente": 2,
+        "reference_indisponible:rte_j1_brut": 5,
+        "reference_indisponible:rte_corrige_retard_reel": 0,
+        "reference_indisponible:rte_corrige_meme_mois_an_dernier": 0,
+        "reference_indisponible:rte_corrige_4_semaines_ideal": 0,
+        "echantillon_commun": 43072
       }
     }
   },

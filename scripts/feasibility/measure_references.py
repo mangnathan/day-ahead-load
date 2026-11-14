@@ -2,8 +2,11 @@
 
 Critère fixé avant toute mesure (règles de go/no-go, 14 novembre 2026) : la MAPE du naïf
 saisonnier sur les demi-heures doit valoir au moins deux fois celle de la meilleure version
-réaliste de RTE corrigé. Le naïf retenu est J-7 : plus fort que les naïfs réalistes, il rend
-le critère plus difficile à remplir.
+de RTE corrigé dont la correction n'utilise que du consolidé publié. Ces versions restent
+avantagées : la prévision J-1 elle-même est publiée après midi la veille. Le critère compare
+donc le naïf à la meilleure prévision connue, disponible à l'heure de la décision ou non. Le
+naïf retenu est J-7 : plus fort que les naïfs réalistes, il rend le critère plus difficile à
+remplir.
 
 Comparaison principale de RTE : moyenne f(t-15), f(t) (figée le 14 novembre 2026) ; f(t) et
 f(t-15) en analyse de sensibilité.
@@ -30,7 +33,7 @@ SUMMARY = Path("docs/v0.0-faisabilite/data/references-mesures.json")
 FIRST_DAY = "2024-03-15"
 LAST_DAY = "2026-08-31"
 NAIVE = "naif_j7"
-REALISTIC_RTE = ("rte_corrige_retard_reel", "rte_corrige_meme_mois_an_dernier")
+CORRECTED_RTE = ("rte_corrige_retard_reel", "rte_corrige_meme_mois_an_dernier")
 THRESHOLD = 2.0
 ALIGNMENTS = {"moyenne f(t-15), f(t)": (-1, 0), "f(t)": (0,), "f(t-15)": (-1,)}
 
@@ -43,11 +46,12 @@ def judged_targets(conso: pd.Series) -> pd.DatetimeIndex:
 
 
 def criterion(errors: dict[str, dict[str, float | int]]) -> dict[str, Any]:
-    best = min(REALISTIC_RTE, key=lambda name: errors[name]["mape_pct"])
+    best = min(CORRECTED_RTE, key=lambda name: errors[name]["mape_pct"])
     ratio = float(errors[NAIVE]["mape_pct"]) / float(errors[best]["mape_pct"])
     return {
         "naif": NAIVE,
-        "meilleur_rte_realiste": best,
+        "meilleur_rte_corrige": best,
+        "categorie_du_meilleur_rte_corrige": "avantagée : publiée après la décision",
         "rapport_mape": round(ratio, 2),
         "seuil": THRESHOLD,
         "rempli": ratio >= THRESHOLD,
@@ -77,6 +81,9 @@ def main() -> None:
             "periode": overall,
             "par_annee": by_year,
             "critere": criterion(overall),
+            "demi_heures_manquantes_par_cause": refs.missing_by_cause(
+                conso, values, FIRST_DAY, LAST_DAY
+            ),
         }
 
     main_label = next(iter(ALIGNMENTS))
@@ -90,10 +97,21 @@ def main() -> None:
             "consolide_publie": (
                 f"mois M disponible le 1er du mois M+{refs.CONSOLIDATED_LAG_MONTHS}"
             ),
+            "consolide_publie_justification": refs.CONSOLIDATED_LAG_JUSTIFICATION,
+            "prevision_rte_j1": (
+                "publiée après la décision : vers 14 h 30 selon le portail de RTE, à interroger "
+                "vers 19 h 30 selon le guide de son API ; toute référence qui la lit est "
+                "avantagée, même corrigée avec du consolidé publié"
+            ),
             "mesure": "MAPE sur les demi-heures, échantillon commun à toutes les références",
         },
         "references": [
-            {"nom": r.name, "categorie": r.category, "description": r.description}
+            {
+                "nom": r.name,
+                "categorie": r.category,
+                "description": r.description,
+                "ne_lit_que_du_consolide_publie": r.published_consolidated_only,
+            }
             for r in refs.REFERENCES
         ],
         "alignement_principal": main_label,

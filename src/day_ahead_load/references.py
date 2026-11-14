@@ -7,8 +7,13 @@ mois n'est publiée que plus tard. Chaque référence est rangée dans une caté
 - réaliste : n'utilise que du consolidé publié à midi la veille ;
 - optimiste : respecte midi, mais lit du consolidé que le fournisseur n'aurait pas encore
   (à midi, il n'a que le temps réel, dont il n'existe pas d'historique) ;
-- avantagée : la prévision J-1 de RTE, publiée après midi ;
+- avantagée : repose sur la prévision J-1 de RTE, publiée après la décision (vers 14 h 30
+  selon le portail de RTE, à interroger vers 19 h 30 selon le guide de son API). Corriger
+  son biais avec du consolidé publié ne rend pas la prévision elle-même disponible à midi ;
 - borne : enfreint volontairement les règles, pour mesurer ce qu'elles coûtent.
+
+À part la catégorie, `published_consolidated_only` indique si la référence ne lit que du
+consolidé publié à midi : c'est vrai des références réalistes et des corrections de RTE.
 
 Tous les instants sont en heure murale de Paris (sans fuseau). Les heures inexistantes de
 mars et ambiguës d'octobre ont été écartées en amont (diagnostics.with_local_instants).
@@ -21,6 +26,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
+PARIS_TZ = "Europe/Paris"
 HALF_HOUR = pd.Timedelta("30min")
 QUARTER = pd.Timedelta("15min")
 DAY = pd.Timedelta(days=1)
@@ -28,8 +34,14 @@ WEEK = pd.Timedelta(days=7)
 DECISION_HOUR = pd.Timedelta(hours=12)
 TARGET_NATURES = ("Données définitives", "Données consolidées")
 # Le consolidé du mois M est tenu pour disponible le 1er du mois M + CONSOLIDATED_LAG_MONTHS.
-# La documentation annonce la mi-M+1 ; le 14 novembre 2026, seul août était publié.
+# Règle prudente fondée sur une observation datée : la documentation annonce une livraison à
+# la mi-M+1, mais le 14 novembre 2026 le jeu consolidé s'arrêtait au 31 août 2026 (septembre
+# non publié deux mois après sa fin).
 CONSOLIDATED_LAG_MONTHS = 3
+CONSOLIDATED_LAG_JUSTIFICATION = (
+    "règle prudente fondée sur une observation datée : la documentation annonce la mi-M+1, "
+    "mais le 14 novembre 2026 le consolidé publié s'arrêtait au 31 août 2026"
+)
 BIAS_WINDOW_DAYS = 28
 
 
@@ -38,38 +50,48 @@ class Reference:
     name: str
     category: str
     description: str
+    published_consolidated_only: bool
 
 
 REFERENCES = (
-    Reference("naif_j7", "optimiste", "même demi-heure sept jours avant"),
-    Reference("naif_j2", "optimiste", "même demi-heure deux jours avant"),
+    Reference("naif_j7", "optimiste", "même demi-heure sept jours avant", False),
+    Reference("naif_j2", "optimiste", "même demi-heure deux jours avant", False),
     Reference(
         "naif_j1_matin_j2_apres_midi",
         "optimiste",
         "veille pour les heures déjà écoulées à midi, deux jours avant sinon",
+        False,
     ),
-    Reference("moyenne_4_semaines", "optimiste", "moyenne des quatre mêmes jours précédents"),
+    Reference(
+        "moyenne_4_semaines", "optimiste", "moyenne des quatre mêmes jours précédents", False
+    ),
     Reference(
         "naif_hebdo_realiste",
         "réaliste",
         "même jour de la semaine le plus récent publié en consolidé",
+        True,
     ),
-    Reference("naif_annee_precedente", "réaliste", "même jour de la semaine 52 semaines avant"),
-    Reference("rte_j1_brut", "avantagée", "prévision J-1 de RTE, moyenne f(t-15), f(t)"),
+    Reference(
+        "naif_annee_precedente", "réaliste", "même jour de la semaine 52 semaines avant", True
+    ),
+    Reference("rte_j1_brut", "avantagée", "prévision J-1 de RTE, moyenne f(t-15), f(t)", True),
     Reference(
         "rte_corrige_retard_reel",
-        "réaliste",
+        "avantagée",
         "RTE J-1 + biais par demi-heure des 28 derniers jours de consolidé publiés à midi",
+        True,
     ),
     Reference(
         "rte_corrige_meme_mois_an_dernier",
-        "réaliste",
+        "avantagée",
         "RTE J-1 + biais par demi-heure du même mois l'année précédente",
+        True,
     ),
     Reference(
         "rte_corrige_4_semaines_ideal",
         "borne",
         "RTE J-1 + biais par demi-heure des 28 jours précédant le jour livré",
+        False,
     ),
 )
 
@@ -210,3 +232,34 @@ def errors(
             "mae_mw": round(float(error.abs().mean()), 1),
         }
     return out
+
+
+def missing_by_cause(
+    conso: pd.Series, values: pd.DataFrame, first_day: str, last_day: str
+) -> dict[str, int]:
+    """Demi-heures réelles de la période absentes de l'échantillon commun, par cause.
+
+    La grille de référence suit l'heure légale réelle : 46 demi-heures le jour du passage à
+    l'heure d'été, 50 le jour du retour à l'heure d'hiver. Chaque demi-heure manquante reçoit
+    la première cause qui s'applique : heure ambiguë d'octobre, cible absente, puis la
+    première référence indisponible dans l'ordre de REFERENCES."""
+    start = pd.Timestamp(first_day).tz_localize(PARIS_TZ)
+    end = (pd.Timestamp(last_day) + DAY).tz_localize(PARIS_TZ)
+    real = pd.date_range(start, end, freq="30min", inclusive="left")
+    wall = pd.DatetimeIndex(real.tz_localize(None))
+    ambiguous = wall.duplicated(keep=False)
+    causes: dict[str, int] = {
+        "demi_heures_reelles": len(real),
+        "heure_ambigue_octobre": int(ambiguous.sum()),
+    }
+    unique_wall = pd.DatetimeIndex(wall[~ambiguous])
+    present = unique_wall.isin(conso.index)
+    causes["cible_absente"] = int((~present).sum())
+    kept = values.reindex(unique_wall[present])
+    complete = kept.notna().all(axis=1)
+    for r in REFERENCES:
+        missing = ~complete & kept[r.name].isna()
+        causes[f"reference_indisponible:{r.name}"] = int(missing.sum())
+        complete = complete | missing
+    causes["echantillon_commun"] = int(kept.notna().all(axis=1).sum())
+    return causes

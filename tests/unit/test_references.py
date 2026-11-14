@@ -39,6 +39,14 @@ def test_consolidated_lag_matches_observed_publication() -> None:
     assert end[0] == pd.Timestamp("2026-09-01")
 
 
+def test_rte_based_references_are_never_realistic() -> None:
+    # La prévision J-1 de RTE est publiée après midi la veille : corrigée ou non, une
+    # référence qui la lit ne peut pas être disponible à l'heure de la décision.
+    for r in refs.REFERENCES:
+        if r.name.startswith("rte_"):
+            assert r.category in {"avantagée", "borne"}
+
+
 def test_every_reference_is_computed(series: tuple[pd.Series, pd.Series]) -> None:
     conso, forecast = series
     out = refs.compute(conso, forecast, targets())
@@ -65,7 +73,9 @@ def test_realistic_references_read_only_published_consolidated(
     before = refs.compute(conso, forecast, targets())
     poisoned = conso.where(conso.index + refs.HALF_HOUR <= available, POISON)
     after = refs.compute(poisoned, forecast, targets())
-    for name in by_category("réaliste"):
+    published_only = [r.name for r in refs.REFERENCES if r.published_consolidated_only]
+    assert "rte_corrige_meme_mois_an_dernier" in published_only
+    for name in published_only:
         pd.testing.assert_series_equal(before[name], after[name], check_names=False)
     # Contrôle du test lui-même : une référence optimiste, elle, est touchée.
     assert (after["naif_j7"] == POISON).all()
