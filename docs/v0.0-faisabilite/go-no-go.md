@@ -40,10 +40,10 @@ On suppose que le projet a échoué, et on cherche pourquoi.
 | Règle | Mesure | Verdict |
 |---|---|---|
 | Une décision réaliste s'écrit avec les données disponibles à l'heure limite | Décision à midi la veille ; consolidé jusqu'au mois M-3 ; météo du calcul ECMWF de 00 UTC de la veille, disponible vers 6 h 40 UTC d'après une mesure. | Respectée |
-| Au moins 3 années complètes en commun entre consommation, prévision J-1 de RTE et météo, avec moins de 1 % de trous | Consommation et prévision J-1 : 2012-01-01 → 2026-08-31 en consolidé ou définitif ; 60 horodatages absents sur 521 568, tous dus aux changements d'heure et traités. Échantillon commun des références : 126 demi-heures manquantes sur 43 198 (0,29 %). Météo observée (ERA5, 2012 → 2026) : complétude à mesurer à la fin du téléchargement, prévue le 16/11/2026. | Respectée pour la consommation et RTE ; à confirmer pour la météo |
+| Au moins 3 années complètes en commun entre consommation, prévision J-1 de RTE et météo, avec moins de 1 % de trous | Consommation et prévision J-1 : 2012-01-01 → 2026-08-31 en consolidé ou définitif ; 60 horodatages absents sur 521 568, tous dus aux changements d'heure et traités. Échantillon commun des références : 126 demi-heures manquantes sur 43 198 (0,29 %). Météo observée (ERA5, 2012-01-01 → 2026-10-31) : 0 heure manquante sur 130 032 par point, pour chacune des 5 variables aux 12 points (mesure du 14/11/2026, `data/meteo-completude.json`). | Respectée |
 | Le naïf saisonnier fait au moins deux fois l'erreur de RTE | 6,19 / 1,69 = 3,66 (3,58 à 3,68 selon l'alignement). | Respectée |
 | Archive de prévisions météo | Elle existe, mais rejouée avant le 12/05/2026. | Go dégradé : étiquette « météo prévue rejouée » |
 | Prix des écarts publics | Prix des écarts ENTSO-E (17.1.g) sous CC BY 4.0. Pas de prix du lendemain sous licence claire. | Go dégradé : prix de référence fixe, hypothèse, sensibilité |
 | AWS sans carte | Pas encore testé. | Go dégradé si une carte est demandée : LocalStack |
 
-**Décision : go dégradé**, sous une condition : moins de 1 % de trous dans la météo observée aux 12 points, mesuré à la fin du téléchargement. Si la condition n'est pas remplie, la décision est revue avant le tag v0.0.
+**Décision : go dégradé.** La condition laissée ouverte (moins de 1 % de trous dans la météo observée aux 12 points) a été mesurée le 14/11/2026, une fois ERA5 téléchargé : aucune heure ne manque. La série IFS historique de la validation est complète elle aussi (0 heure manquante sur 12 840 par point).
