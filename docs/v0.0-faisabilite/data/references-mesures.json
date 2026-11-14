@@ -1,0 +1,739 @@
+{
+  "source": "RTE, éCO2mix national, via ODRÉ (Licence Ouverte 2.0)",
+  "fichiers": [
+    {
+      "jeu": "eco2mix-national-cons-def",
+      "sha256": "864f8942b0224e414c9cd244a793e1f0150dfc8f363f723da92577b03563f647"
+    },
+    {
+      "jeu": "eco2mix-national-tr",
+      "sha256": "2dc99a8ea354aac8d4063af8f5abb82923b968245f7e65b280b6b87c7baa639b"
+    }
+  ],
+  "jours_juges": {
+    "premier": "2024-03-15",
+    "dernier": "2026-08-31"
+  },
+  "regles": {
+    "decision": "midi la veille, heure de Paris",
+    "consolide_publie": "mois M disponible le 1er du mois M+3",
+    "mesure": "MAPE sur les demi-heures, échantillon commun à toutes les références"
+  },
+  "references": [
+    {
+      "nom": "naif_j7",
+      "categorie": "optimiste",
+      "description": "même demi-heure sept jours avant"
+    },
+    {
+      "nom": "naif_j2",
+      "categorie": "optimiste",
+      "description": "même demi-heure deux jours avant"
+    },
+    {
+      "nom": "naif_j1_matin_j2_apres_midi",
+      "categorie": "optimiste",
+      "description": "veille pour les heures déjà écoulées à midi, deux jours avant sinon"
+    },
+    {
+      "nom": "moyenne_4_semaines",
+      "categorie": "optimiste",
+      "description": "moyenne des quatre mêmes jours précédents"
+    },
+    {
+      "nom": "naif_hebdo_realiste",
+      "categorie": "réaliste",
+      "description": "même jour de la semaine le plus récent publié en consolidé"
+    },
+    {
+      "nom": "naif_annee_precedente",
+      "categorie": "réaliste",
+      "description": "même jour de la semaine 52 semaines avant"
+    },
+    {
+      "nom": "rte_j1_brut",
+      "categorie": "avantagée",
+      "description": "prévision J-1 de RTE, moyenne f(t-15), f(t)"
+    },
+    {
+      "nom": "rte_corrige_retard_reel",
+      "categorie": "réaliste",
+      "description": "RTE J-1 + biais par demi-heure des 28 derniers jours de consolidé publiés à midi"
+    },
+    {
+      "nom": "rte_corrige_meme_mois_an_dernier",
+      "categorie": "réaliste",
+      "description": "RTE J-1 + biais par demi-heure du même mois l'année précédente"
+    },
+    {
+      "nom": "rte_corrige_4_semaines_ideal",
+      "categorie": "borne",
+      "description": "RTE J-1 + biais par demi-heure des 28 jours précédant le jour livré"
+    }
+  ],
+  "alignement_principal": "moyenne f(t-15), f(t)",
+  "resultats": {
+    "moyenne f(t-15), f(t)": {
+      "periode": {
+        "naif_j7": {
+          "demi_heures": 43072,
+          "mape_pct": 6.19,
+          "mae_mw": 3226.7
+        },
+        "naif_j2": {
+          "demi_heures": 43072,
+          "mape_pct": 8.178,
+          "mae_mw": 3970.9
+        },
+        "naif_j1_matin_j2_apres_midi": {
+          "demi_heures": 43072,
+          "mape_pct": 6.553,
+          "mae_mw": 3225.1
+        },
+        "moyenne_4_semaines": {
+          "demi_heures": 43072,
+          "mape_pct": 6.726,
+          "mae_mw": 3465.1
+        },
+        "naif_hebdo_realiste": {
+          "demi_heures": 43072,
+          "mape_pct": 18.764,
+          "mae_mw": 9384.4
+        },
+        "naif_annee_precedente": {
+          "demi_heures": 43072,
+          "mape_pct": 6.318,
+          "mae_mw": 3326.5
+        },
+        "rte_j1_brut": {
+          "demi_heures": 43072,
+          "mape_pct": 2.595,
+          "mae_mw": 1274.0
+        },
+        "rte_corrige_retard_reel": {
+          "demi_heures": 43072,
+          "mape_pct": 1.899,
+          "mae_mw": 934.9
+        },
+        "rte_corrige_meme_mois_an_dernier": {
+          "demi_heures": 43072,
+          "mape_pct": 1.693,
+          "mae_mw": 845.8
+        },
+        "rte_corrige_4_semaines_ideal": {
+          "demi_heures": 43072,
+          "mape_pct": 1.559,
+          "mae_mw": 777.5
+        }
+      },
+      "par_annee": {
+        "2024": {
+          "naif_j7": {
+            "demi_heures": 13974,
+            "mape_pct": 5.396,
+            "mae_mw": 2674.0
+          },
+          "naif_j2": {
+            "demi_heures": 13974,
+            "mape_pct": 8.617,
+            "mae_mw": 4030.7
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 13974,
+            "mape_pct": 6.881,
+            "mae_mw": 3263.2
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 13974,
+            "mape_pct": 6.071,
+            "mae_mw": 2984.5
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 13974,
+            "mape_pct": 17.657,
+            "mae_mw": 8450.5
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 13974,
+            "mape_pct": 6.096,
+            "mae_mw": 3019.7
+          },
+          "rte_j1_brut": {
+            "demi_heures": 13974,
+            "mape_pct": 2.598,
+            "mae_mw": 1233.7
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 13974,
+            "mape_pct": 1.755,
+            "mae_mw": 833.5
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 13974,
+            "mape_pct": 1.729,
+            "mae_mw": 823.3
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 13974,
+            "mape_pct": 1.535,
+            "mae_mw": 736.9
+          }
+        },
+        "2025": {
+          "naif_j7": {
+            "demi_heures": 17474,
+            "mape_pct": 6.408,
+            "mae_mw": 3449.8
+          },
+          "naif_j2": {
+            "demi_heures": 17474,
+            "mape_pct": 8.047,
+            "mae_mw": 3997.0
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 17474,
+            "mape_pct": 6.45,
+            "mae_mw": 3243.7
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 17474,
+            "mape_pct": 6.851,
+            "mae_mw": 3629.7
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 17474,
+            "mape_pct": 18.712,
+            "mae_mw": 9674.0
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 17474,
+            "mape_pct": 6.355,
+            "mae_mw": 3436.2
+          },
+          "rte_j1_brut": {
+            "demi_heures": 17474,
+            "mape_pct": 2.503,
+            "mae_mw": 1241.7
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 17474,
+            "mape_pct": 2.035,
+            "mae_mw": 1014.7
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 17474,
+            "mape_pct": 1.683,
+            "mae_mw": 863.7
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 17474,
+            "mape_pct": 1.623,
+            "mae_mw": 823.8
+          }
+        },
+        "2026": {
+          "naif_j7": {
+            "demi_heures": 11624,
+            "mape_pct": 6.816,
+            "mae_mw": 3555.7
+          },
+          "naif_j2": {
+            "demi_heures": 11624,
+            "mape_pct": 7.847,
+            "mae_mw": 3859.9
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 11624,
+            "mape_pct": 6.314,
+            "mae_mw": 3151.4
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 11624,
+            "mape_pct": 7.327,
+            "mae_mw": 3795.4
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 11624,
+            "mape_pct": 20.172,
+            "mae_mw": 10071.8
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 11624,
+            "mape_pct": 6.53,
+            "mae_mw": 3530.3
+          },
+          "rte_j1_brut": {
+            "demi_heures": 11624,
+            "mape_pct": 2.729,
+            "mae_mw": 1370.8
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 11624,
+            "mape_pct": 1.867,
+            "mae_mw": 936.8
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 11624,
+            "mape_pct": 1.666,
+            "mae_mw": 846.0
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 11624,
+            "mape_pct": 1.491,
+            "mae_mw": 756.9
+          }
+        }
+      },
+      "critere": {
+        "naif": "naif_j7",
+        "meilleur_rte_realiste": "rte_corrige_meme_mois_an_dernier",
+        "rapport_mape": 3.66,
+        "seuil": 2.0,
+        "rempli": true
+      }
+    },
+    "f(t)": {
+      "periode": {
+        "naif_j7": {
+          "demi_heures": 43077,
+          "mape_pct": 6.19,
+          "mae_mw": 3226.8
+        },
+        "naif_j2": {
+          "demi_heures": 43077,
+          "mape_pct": 8.178,
+          "mae_mw": 3970.7
+        },
+        "naif_j1_matin_j2_apres_midi": {
+          "demi_heures": 43077,
+          "mape_pct": 6.553,
+          "mae_mw": 3225.0
+        },
+        "moyenne_4_semaines": {
+          "demi_heures": 43077,
+          "mape_pct": 6.726,
+          "mae_mw": 3465.1
+        },
+        "naif_hebdo_realiste": {
+          "demi_heures": 43077,
+          "mape_pct": 18.763,
+          "mae_mw": 9383.9
+        },
+        "naif_annee_precedente": {
+          "demi_heures": 43077,
+          "mape_pct": 6.318,
+          "mae_mw": 3326.5
+        },
+        "rte_j1_brut": {
+          "demi_heures": 43077,
+          "mape_pct": 2.739,
+          "mae_mw": 1343.3
+        },
+        "rte_corrige_retard_reel": {
+          "demi_heures": 43077,
+          "mape_pct": 1.973,
+          "mae_mw": 969.8
+        },
+        "rte_corrige_meme_mois_an_dernier": {
+          "demi_heures": 43077,
+          "mape_pct": 1.731,
+          "mae_mw": 863.0
+        },
+        "rte_corrige_4_semaines_ideal": {
+          "demi_heures": 43077,
+          "mape_pct": 1.603,
+          "mae_mw": 797.1
+        }
+      },
+      "par_annee": {
+        "2024": {
+          "naif_j7": {
+            "demi_heures": 13976,
+            "mape_pct": 5.396,
+            "mae_mw": 2673.9
+          },
+          "naif_j2": {
+            "demi_heures": 13976,
+            "mape_pct": 8.617,
+            "mae_mw": 4030.6
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 13976,
+            "mape_pct": 6.881,
+            "mae_mw": 3263.0
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 13976,
+            "mape_pct": 6.071,
+            "mae_mw": 2984.3
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 13976,
+            "mape_pct": 17.654,
+            "mae_mw": 8449.4
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 13976,
+            "mape_pct": 6.096,
+            "mae_mw": 3019.6
+          },
+          "rte_j1_brut": {
+            "demi_heures": 13976,
+            "mape_pct": 2.748,
+            "mae_mw": 1301.8
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 13976,
+            "mape_pct": 1.841,
+            "mae_mw": 873.4
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 13976,
+            "mape_pct": 1.768,
+            "mae_mw": 841.2
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 13976,
+            "mape_pct": 1.584,
+            "mae_mw": 757.9
+          }
+        },
+        "2025": {
+          "naif_j7": {
+            "demi_heures": 17476,
+            "mape_pct": 6.408,
+            "mae_mw": 3449.8
+          },
+          "naif_j2": {
+            "demi_heures": 17476,
+            "mape_pct": 8.046,
+            "mae_mw": 3996.7
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 17476,
+            "mape_pct": 6.45,
+            "mae_mw": 3243.5
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 17476,
+            "mape_pct": 6.851,
+            "mae_mw": 3629.6
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 17476,
+            "mape_pct": 18.712,
+            "mae_mw": 9673.9
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 17476,
+            "mape_pct": 6.355,
+            "mae_mw": 3436.2
+          },
+          "rte_j1_brut": {
+            "demi_heures": 17476,
+            "mape_pct": 2.669,
+            "mae_mw": 1323.9
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 17476,
+            "mape_pct": 2.103,
+            "mae_mw": 1047.0
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 17476,
+            "mape_pct": 1.722,
+            "mae_mw": 881.3
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 17476,
+            "mape_pct": 1.666,
+            "mae_mw": 843.2
+          }
+        },
+        "2026": {
+          "naif_j7": {
+            "demi_heures": 11625,
+            "mape_pct": 6.817,
+            "mae_mw": 3556.3
+          },
+          "naif_j2": {
+            "demi_heures": 11625,
+            "mape_pct": 7.847,
+            "mae_mw": 3859.6
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 11625,
+            "mape_pct": 6.314,
+            "mae_mw": 3151.3
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 11625,
+            "mape_pct": 7.328,
+            "mae_mw": 3795.7
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 11625,
+            "mape_pct": 20.171,
+            "mae_mw": 10071.5
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 11625,
+            "mape_pct": 6.531,
+            "mae_mw": 3530.6
+          },
+          "rte_j1_brut": {
+            "demi_heures": 11625,
+            "mape_pct": 2.832,
+            "mae_mw": 1422.6
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 11625,
+            "mape_pct": 1.936,
+            "mae_mw": 969.8
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 11625,
+            "mape_pct": 1.701,
+            "mae_mw": 861.8
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 11625,
+            "mape_pct": 1.53,
+            "mae_mw": 775.0
+          }
+        }
+      },
+      "critere": {
+        "naif": "naif_j7",
+        "meilleur_rte_realiste": "rte_corrige_meme_mois_an_dernier",
+        "rapport_mape": 3.58,
+        "seuil": 2.0,
+        "rempli": true
+      }
+    },
+    "f(t-15)": {
+      "periode": {
+        "naif_j7": {
+          "demi_heures": 43072,
+          "mape_pct": 6.19,
+          "mae_mw": 3226.7
+        },
+        "naif_j2": {
+          "demi_heures": 43072,
+          "mape_pct": 8.178,
+          "mae_mw": 3970.9
+        },
+        "naif_j1_matin_j2_apres_midi": {
+          "demi_heures": 43072,
+          "mape_pct": 6.553,
+          "mae_mw": 3225.1
+        },
+        "moyenne_4_semaines": {
+          "demi_heures": 43072,
+          "mape_pct": 6.726,
+          "mae_mw": 3465.1
+        },
+        "naif_hebdo_realiste": {
+          "demi_heures": 43072,
+          "mape_pct": 18.764,
+          "mae_mw": 9384.4
+        },
+        "naif_annee_precedente": {
+          "demi_heures": 43072,
+          "mape_pct": 6.318,
+          "mae_mw": 3326.5
+        },
+        "rte_j1_brut": {
+          "demi_heures": 43072,
+          "mape_pct": 2.553,
+          "mae_mw": 1253.6
+        },
+        "rte_corrige_retard_reel": {
+          "demi_heures": 43072,
+          "mape_pct": 1.869,
+          "mae_mw": 920.7
+        },
+        "rte_corrige_meme_mois_an_dernier": {
+          "demi_heures": 43072,
+          "mape_pct": 1.682,
+          "mae_mw": 840.8
+        },
+        "rte_corrige_4_semaines_ideal": {
+          "demi_heures": 43072,
+          "mape_pct": 1.54,
+          "mae_mw": 769.6
+        }
+      },
+      "par_annee": {
+        "2024": {
+          "naif_j7": {
+            "demi_heures": 13974,
+            "mape_pct": 5.396,
+            "mae_mw": 2674.0
+          },
+          "naif_j2": {
+            "demi_heures": 13974,
+            "mape_pct": 8.617,
+            "mae_mw": 4030.7
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 13974,
+            "mape_pct": 6.881,
+            "mae_mw": 3263.2
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 13974,
+            "mape_pct": 6.071,
+            "mae_mw": 2984.5
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 13974,
+            "mape_pct": 17.657,
+            "mae_mw": 8450.5
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 13974,
+            "mape_pct": 6.096,
+            "mae_mw": 3019.7
+          },
+          "rte_j1_brut": {
+            "demi_heures": 13974,
+            "mape_pct": 2.551,
+            "mae_mw": 1212.6
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 13974,
+            "mape_pct": 1.724,
+            "mae_mw": 818.3
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 13974,
+            "mape_pct": 1.717,
+            "mae_mw": 817.9
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 13974,
+            "mape_pct": 1.514,
+            "mae_mw": 728.4
+          }
+        },
+        "2025": {
+          "naif_j7": {
+            "demi_heures": 17474,
+            "mape_pct": 6.408,
+            "mae_mw": 3449.8
+          },
+          "naif_j2": {
+            "demi_heures": 17474,
+            "mape_pct": 8.047,
+            "mae_mw": 3997.0
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 17474,
+            "mape_pct": 6.45,
+            "mae_mw": 3243.7
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 17474,
+            "mape_pct": 6.851,
+            "mae_mw": 3629.7
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 17474,
+            "mape_pct": 18.712,
+            "mae_mw": 9674.0
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 17474,
+            "mape_pct": 6.355,
+            "mae_mw": 3436.2
+          },
+          "rte_j1_brut": {
+            "demi_heures": 17474,
+            "mape_pct": 2.443,
+            "mae_mw": 1211.9
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 17474,
+            "mape_pct": 2.004,
+            "mae_mw": 1000.5
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 17474,
+            "mape_pct": 1.668,
+            "mae_mw": 857.6
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 17474,
+            "mape_pct": 1.604,
+            "mae_mw": 815.8
+          }
+        },
+        "2026": {
+          "naif_j7": {
+            "demi_heures": 11624,
+            "mape_pct": 6.816,
+            "mae_mw": 3555.7
+          },
+          "naif_j2": {
+            "demi_heures": 11624,
+            "mape_pct": 7.847,
+            "mae_mw": 3859.9
+          },
+          "naif_j1_matin_j2_apres_midi": {
+            "demi_heures": 11624,
+            "mape_pct": 6.314,
+            "mae_mw": 3151.4
+          },
+          "moyenne_4_semaines": {
+            "demi_heures": 11624,
+            "mape_pct": 7.327,
+            "mae_mw": 3795.4
+          },
+          "naif_hebdo_realiste": {
+            "demi_heures": 11624,
+            "mape_pct": 20.172,
+            "mae_mw": 10071.8
+          },
+          "naif_annee_precedente": {
+            "demi_heures": 11624,
+            "mape_pct": 6.53,
+            "mae_mw": 3530.3
+          },
+          "rte_j1_brut": {
+            "demi_heures": 11624,
+            "mape_pct": 2.721,
+            "mae_mw": 1365.8
+          },
+          "rte_corrige_retard_reel": {
+            "demi_heures": 11624,
+            "mape_pct": 1.84,
+            "mae_mw": 923.6
+          },
+          "rte_corrige_meme_mois_an_dernier": {
+            "demi_heures": 11624,
+            "mape_pct": 1.659,
+            "mae_mw": 843.1
+          },
+          "rte_corrige_4_semaines_ideal": {
+            "demi_heures": 11624,
+            "mape_pct": 1.475,
+            "mae_mw": 749.6
+          }
+        }
+      },
+      "critere": {
+        "naif": "naif_j7",
+        "meilleur_rte_realiste": "rte_corrige_meme_mois_an_dernier",
+        "rapport_mape": 3.68,
+        "seuil": 2.0,
+        "rempli": true
+      }
+    }
+  },
+  "sensibilite_alignement": {
+    "rapport_mape_min": 3.58,
+    "rapport_mape_max": 3.68,
+    "conclusion_identique": true
+  }
+}
