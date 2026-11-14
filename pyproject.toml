@@ -20,6 +20,8 @@ dev = [
     "pytest>=8.4",
     "pre-commit>=4.3",
     "pandas-stubs>=2.2",
+    # Lecture du fichier INSEE des aires d'attraction : openpyxl refuse sa feuille de styles.
+    "python-calamine>=0.3",
 ]
 
 [tool.uv]
