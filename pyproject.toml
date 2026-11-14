@@ -1,0 +1,62 @@
+[project]
+name = "day-ahead-load"
+version = "0.0.0"
+description = "Prévision probabiliste de la consommation électrique française du lendemain, traduite en décision d'achat pour un fournisseur."
+readme = "README.md"
+authors = [{ name = "Nathan Mang" }]
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.2",
+    "pyarrow>=21",
+    # Base des fuseaux horaires : Windows n'en fournit pas, et l'heure de Paris est partout.
+    "tzdata>=2025.2",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.13",
+    "mypy>=1.18",
+    "pytest>=8.4",
+    "pre-commit>=4.3",
+    "pandas-stubs>=2.2",
+]
+
+[tool.uv]
+# Seules des versions publiées depuis au moins deux semaines sont retenues : une version trop
+# récente n'a pas encore eu le temps d'être corrigée ou retirée.
+exclude-newer = "2026-10-31T00:00:00Z"
+
+[build-system]
+requires = ["uv_build>=0.13,<0.14"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E", "W",  # style PEP 8
+    "F",       # erreurs logiques (variables inutilisées, imports manquants)
+    "I",       # ordre des imports
+    "UP",      # syntaxe Python moderne
+    "B",       # pièges courants (arguments mutables par défaut, etc.)
+    "SIM",     # simplifications
+    "N",       # conventions de nommage
+    "S",       # sécurité (bandit) : SQL concaténé, secrets en dur, subprocess...
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Scripts : URL fixes choisies par nous.
+"scripts/**" = ["S310"]
+"tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "scripts"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
