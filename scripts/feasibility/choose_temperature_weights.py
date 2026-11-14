@@ -164,8 +164,9 @@ def main() -> None:
         "meilleure_ponderation": best,
         "repere_rte": (
             "environ 2 400 MW par degré sous 15 °C en hiver (RTE, Futurs énergétiques 2050, "
-            "février 2022, chapitre 8 ; thermosensibilité de 2020) : ordre de grandeur, autre "
-            "période et autre indice"
+            "février 2022, chapitre 8). La phrase n'est pas datée ; la figure voisine porte la "
+            "mention « thermosensibilité en 2020 ». Ordre de grandeur, autre période et autre "
+            "indice, pas une cible"
         ),
     }
     SUMMARY.parent.mkdir(parents=True, exist_ok=True)
