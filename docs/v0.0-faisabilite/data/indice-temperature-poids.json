@@ -1,0 +1,205 @@
+{
+  "sources": {
+    "temperature": "ODRÉ, température quotidienne régionale (Licence Ouverte 2.0)",
+    "consommation_regionale": "RTE, éCO2mix régional, via ODRÉ (Licence Ouverte 2.0)",
+    "consommation_nationale": "RTE, éCO2mix national, via ODRÉ (Licence Ouverte 2.0)",
+    "population": "INSEE, population des communes servie par geo.api.gouv.fr ; millésime non indiqué par l'API"
+  },
+  "fichiers": [
+    {
+      "fichier": "temperature-regionale.csv",
+      "sha256": "03dcbff3322a9bfb89e92275139baac36d798f2ca740c44bd235f42640c90366"
+    },
+    {
+      "fichier": "consommation-regionale-jour.csv",
+      "sha256": "ff0d2eafdc6cfe308a37cf5631504bff1dc2a0882873485ce0fbe3ab215b7a24"
+    },
+    {
+      "fichier": "population-communes.json",
+      "sha256": "351c47a60685afa00c81458aea2a48bd841c37cab63b175e797537c2af6a16a3"
+    }
+  ],
+  "periode": {
+    "premiere_annee": 2016,
+    "fin": "2024-03-14"
+  },
+  "modele": "consommation journalière = niveau annuel + jour de la semaine + degrés-jours sous 15 °C + degrés-jours au-dessus de 20 °C ; le niveau de l'année testée est celui de la dernière année d'entraînement",
+  "annees_de_test": [
+    2018,
+    2019,
+    2020,
+    2021,
+    2022,
+    2023
+  ],
+  "limite_hiver_moins_ete": "la consommation d'été contient la climatisation : la part de Provence-Alpes-Côte d'Azur et de l'Occitanie est sous-estimée",
+  "resultats": {
+    "population": {
+      "par_annee_de_test": {
+        "2018": {
+          "jours": 365,
+          "mae_mw": 2229.9,
+          "mape_pct": 4.066,
+          "sensibilite_chauffage_mw_par_degre": 2342.0
+        },
+        "2019": {
+          "jours": 365,
+          "mae_mw": 2420.9,
+          "mape_pct": 4.559,
+          "sensibilite_chauffage_mw_par_degre": 2328.0
+        },
+        "2020": {
+          "jours": 366,
+          "mae_mw": 3389.2,
+          "mape_pct": 6.981,
+          "sensibilite_chauffage_mw_par_degre": 2345.0
+        },
+        "2021": {
+          "jours": 364,
+          "mae_mw": 2440.0,
+          "mape_pct": 4.477,
+          "sensibilite_chauffage_mw_par_degre": 2344.0
+        },
+        "2022": {
+          "jours": 363,
+          "mae_mw": 2251.0,
+          "mape_pct": 4.285,
+          "sensibilite_chauffage_mw_par_degre": 2339.0
+        },
+        "2023": {
+          "jours": 361,
+          "mae_mw": 2187.4,
+          "mape_pct": 4.418,
+          "sensibilite_chauffage_mw_par_degre": 2334.0
+        }
+      },
+      "mae_moyenne_mw": 2486.4,
+      "poids_sur_2016_2023": {
+        "11": 0.1894,
+        "24": 0.0393,
+        "27": 0.0426,
+        "28": 0.0508,
+        "32": 0.0911,
+        "44": 0.0845,
+        "52": 0.0594,
+        "53": 0.0524,
+        "75": 0.0935,
+        "76": 0.0931,
+        "84": 0.1247,
+        "93": 0.0793
+      }
+    },
+    "consommation": {
+      "par_annee_de_test": {
+        "2018": {
+          "jours": 365,
+          "mae_mw": 2207.4,
+          "mape_pct": 4.027,
+          "sensibilite_chauffage_mw_par_degre": 2330.0
+        },
+        "2019": {
+          "jours": 365,
+          "mae_mw": 2414.1,
+          "mape_pct": 4.55,
+          "sensibilite_chauffage_mw_par_degre": 2319.0
+        },
+        "2020": {
+          "jours": 366,
+          "mae_mw": 3374.5,
+          "mape_pct": 6.951,
+          "sensibilite_chauffage_mw_par_degre": 2335.0
+        },
+        "2021": {
+          "jours": 364,
+          "mae_mw": 2434.8,
+          "mape_pct": 4.477,
+          "sensibilite_chauffage_mw_par_degre": 2334.0
+        },
+        "2022": {
+          "jours": 363,
+          "mae_mw": 2248.6,
+          "mape_pct": 4.284,
+          "sensibilite_chauffage_mw_par_degre": 2330.0
+        },
+        "2023": {
+          "jours": 361,
+          "mae_mw": 2169.3,
+          "mape_pct": 4.382,
+          "sensibilite_chauffage_mw_par_degre": 2325.0
+        }
+      },
+      "mae_moyenne_mw": 2474.8,
+      "poids_sur_2016_2023": {
+        "11": 0.148,
+        "24": 0.0396,
+        "27": 0.0451,
+        "28": 0.0589,
+        "32": 0.1062,
+        "44": 0.0963,
+        "52": 0.0578,
+        "53": 0.0478,
+        "75": 0.0925,
+        "76": 0.0809,
+        "84": 0.1399,
+        "93": 0.087
+      }
+    },
+    "hiver_moins_ete": {
+      "par_annee_de_test": {
+        "2018": {
+          "jours": 365,
+          "mae_mw": 2251.8,
+          "mape_pct": 4.105,
+          "sensibilite_chauffage_mw_par_degre": 2323.0
+        },
+        "2019": {
+          "jours": 365,
+          "mae_mw": 2436.1,
+          "mape_pct": 4.582,
+          "sensibilite_chauffage_mw_par_degre": 2313.0
+        },
+        "2020": {
+          "jours": 366,
+          "mae_mw": 3399.8,
+          "mape_pct": 7.0,
+          "sensibilite_chauffage_mw_par_degre": 2330.0
+        },
+        "2021": {
+          "jours": 364,
+          "mae_mw": 2484.9,
+          "mape_pct": 4.557,
+          "sensibilite_chauffage_mw_par_degre": 2328.0
+        },
+        "2022": {
+          "jours": 363,
+          "mae_mw": 2285.4,
+          "mape_pct": 4.351,
+          "sensibilite_chauffage_mw_par_degre": 2325.0
+        },
+        "2023": {
+          "jours": 361,
+          "mae_mw": 2189.9,
+          "mape_pct": 4.426,
+          "sensibilite_chauffage_mw_par_degre": 2317.0
+        }
+      },
+      "mae_moyenne_mw": 2508.0,
+      "poids_sur_2016_2023": {
+        "11": 0.1756,
+        "24": 0.0475,
+        "27": 0.0457,
+        "28": 0.0648,
+        "32": 0.0929,
+        "44": 0.0835,
+        "52": 0.0655,
+        "53": 0.0563,
+        "75": 0.0921,
+        "76": 0.0783,
+        "84": 0.1334,
+        "93": 0.0645
+      }
+    }
+  },
+  "meilleure_ponderation": "consommation",
+  "repere_rte": "environ 2 400 MW par degré sous 15 °C en hiver (RTE, Futurs énergétiques 2050, février 2022, chapitre 8 ; thermosensibilité de 2020) : ordre de grandeur, autre période et autre indice"
+}
