@@ -135,6 +135,8 @@ def run_download() -> None:
             print(f"{source} : complet")
     except w.DailyCapReachedError as stop:
         print(f"{stop} ({dl.calls} appels dans cette session) : relancer demain")
+    except w.NetworkInterruptedError as stop:
+        print(f"{stop} ({dl.calls} appels dans cette session) : séance arrêtée, relancer demain")
     except w.QuotaRefusedError as stop:
         print(f"ARRÊT : {stop}. Voir {STOP_FILE}.", file=sys.stderr)
         raise SystemExit(2) from stop

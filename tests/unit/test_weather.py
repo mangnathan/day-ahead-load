@@ -96,6 +96,19 @@ def test_quota_refusal_stops_for_good(tmp_path: Path) -> None:
     assert len(fetch.urls) == 1
 
 
+def test_connection_reset_ends_the_session_and_is_counted(tmp_path: Path) -> None:
+    def reset(url: str) -> w.Response:
+        raise ConnectionResetError("fermée par l'hôte distant")
+
+    dl, _ = make(tmp_path, FakeFetch())
+    dl.fetch = reset
+    with pytest.raises(w.NetworkInterruptedError):
+        dl.get(w.requests_for("era5", PARIS, 48.0)[0])
+    assert dl.budget.used_today() == 1.0
+    assert not (tmp_path / "ARRET.json").exists()
+    assert not list((tmp_path / "cache").rglob("*.json"))
+
+
 def test_cache_avoids_a_second_call(tmp_path: Path) -> None:
     fetch = FakeFetch()
     dl, _ = make(tmp_path, fetch)

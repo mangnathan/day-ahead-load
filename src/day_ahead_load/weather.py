@@ -178,6 +178,14 @@ class DailyCapReachedError(RuntimeError):
     """Le plafond local du jour est atteint : reprise le lendemain, depuis le cache."""
 
 
+class NetworkInterruptedError(RuntimeError):
+    """Connexion coupée ou impossible : fin de la séance, sans nouvelle tentative.
+
+    Une coupure peut être une limitation de débit qui ne dit pas son nom : on ne réessaie pas
+    dans la même séance. L'appel est compté dans le journal par prudence.
+    """
+
+
 class Budget:
     """Journal local des appels par jour UTC, plafond journalier et arrêt définitif au 429.
 
@@ -283,7 +291,12 @@ class Downloader:
             if wait > 0:
                 self.sleep(wait)
         self._last_call = self.clock()
-        response = self.fetch(url)
+        try:
+            response = self.fetch(url)
+        except OSError as error:  # URLError, coupure de connexion, délai dépassé
+            self.budget.record(1.0)
+            self.calls += 1
+            raise NetworkInterruptedError(f"connexion interrompue : {error}") from error
         headers = {k.lower(): v for k, v in response.headers.items()}
         cost = float(headers.get("x-ratelimit-cost", "1"))
         self.budget.record(cost)
