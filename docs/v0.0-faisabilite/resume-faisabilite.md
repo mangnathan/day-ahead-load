@@ -42,6 +42,13 @@ Essai sur Paris (3 appels), puis contrôle sur les 12 points (37 appels) :
 
 Détail : `data/meteo-controle.json`.
 
+### Calculs ECMWF archivés : rejoués avant le 12/05/2026 (constat du 14/11/2026, décision en attente)
+
+- La documentation Single Runs d'Open-Meteo indique : « ECMWF IFS HRES at native 9 km resolution is available from March 14, 2024 (IFS Cycle 49R1 hindcasts). From May 12, 2026 06 UTC, runs use the updated IFS Cycle 50R1. »
+- ECMWF a mis le cycle 49r1 en service opérationnel le 12/11/2024 et le cycle 50r1 le 12/05/2026 à partir du calcul de 06 UTC.
+- Les calculs du 14/03/2024 au 11/11/2024 ne sont donc pas les prévisions émises à l'époque : ils ont été produits plus tard avec un cycle plus récent. Pour la période du 12/11/2024 au 12/05/2026, la documentation parle aussi de « hindcasts » sans dire si ce sont les sorties en temps réel. L'annonce d'Open-Meteo (15/05/2026) ne tranche pas non plus.
+- Conséquences : sur la validation et le test, l'entrée météo est une prévision rejouée, qui peut être un peu meilleure que celle qu'aurait eue le fournisseur ; aucune heure de disponibilité réelle n'existe pour ces calculs ; un changement de cycle tombe dans la période de test (12/05/2026). À partir du 13/05/2026 à 00 UTC, les calculs utilisent le cycle opérationnel du moment. La documentation ne dit pas explicitement qu'il s'agit des sorties en temps réel, mais rien n'indique le contraire. Le test prospectif (à partir de septembre 2026) se trouve dans cette période.
+
 ### Appels et garde-fous
 
 Estimation (5 variables, tranches de 14 jours, 1 appel par point et par tranche ou par calcul) :
