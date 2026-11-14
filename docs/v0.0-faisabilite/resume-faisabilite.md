@@ -42,12 +42,30 @@ Essai sur Paris (3 appels), puis contrôle sur les 12 points (37 appels) :
 
 Détail : `data/meteo-controle.json`.
 
-### Calculs ECMWF archivés : rejoués avant le 12/05/2026 (constat du 14/11/2026, décision en attente)
+### Calculs ECMWF archivés : rejoués avant le 12/05/2026 (constat et décision du 14/11/2026)
 
 - La documentation Single Runs d'Open-Meteo indique : « ECMWF IFS HRES at native 9 km resolution is available from March 14, 2024 (IFS Cycle 49R1 hindcasts). From May 12, 2026 06 UTC, runs use the updated IFS Cycle 50R1. »
 - ECMWF a mis le cycle 49r1 en service opérationnel le 12/11/2024 et le cycle 50r1 le 12/05/2026 à partir du calcul de 06 UTC.
 - Les calculs du 14/03/2024 au 11/11/2024 ne sont donc pas les prévisions émises à l'époque : ils ont été produits plus tard avec un cycle plus récent. Pour la période du 12/11/2024 au 12/05/2026, la documentation parle aussi de « hindcasts » sans dire si ce sont les sorties en temps réel. L'annonce d'Open-Meteo (15/05/2026) ne tranche pas non plus.
 - Conséquences : sur la validation et le test, l'entrée météo est une prévision rejouée, qui peut être un peu meilleure que celle qu'aurait eue le fournisseur ; aucune heure de disponibilité réelle n'existe pour ces calculs ; un changement de cycle tombe dans la période de test (12/05/2026). À partir du 13/05/2026 à 00 UTC, les calculs utilisent le cycle opérationnel du moment. La documentation ne dit pas explicitement qu'il s'agit des sorties en temps réel, mais rien n'indique le contraire. Le test prospectif (à partir de septembre 2026) se trouve dans cette période.
+
+Ordre de grandeur de l'avantage, d'après ECMWF (Newsletter 181, automne 2024, « IFS upgrade improves near-surface wind and temperature forecasts », doi 10.21957/crx2bn4is8) : face au cycle 48r1, le cycle 49r1 améliore le CRPS de la température à 2 m de 11 % à 1 jour d'échéance et de 2 % à 10 jours, et celui du vent à 10 m de 12 % à 1 jour et de 6 % à 10 jours. Ces chiffres portent sur la prévision d'ensemble, en hiver (75 prévisions du 01/12/2022 au 13/02/2023), en moyenne sur l'hémisphère nord, face aux observations. Ils ne s'appliquent pas tels quels à notre prévision déterministe aux 12 points. Le cycle 49r1 étant opérationnel du 12/11/2024 au 12/05/2026, cet écart de cycle ne concerne que les calculs rejoués du 14/03/2024 au 11/11/2024, c'est-à-dire le début de la validation. Pour la suite, le seul avantage possible tiendrait à la façon dont les calculs ont été rejoués, ce qui n'est pas établi.
+
+Décisions (à reprendre dans l'ADR 0001) :
+
+- Le test rétrospectif (09/2025 → 08/2026) reste la mesure principale de la v1.0. Il porte l'étiquette « météo prévue rejouée (cycle 49R1) sur environ 8 mois sur 12, avantage possible ». Ses résultats sont publiés aussi séparément avant et après le 13/05/2026.
+- La comparaison avant/après le 13/05/2026 n'est pas présentée comme la mesure de l'avantage : elle mélange le changement de cycle et la saison. L'ordre de grandeur vient des scores d'ECMWF ci-dessus.
+- Le test prospectif (à partir de septembre 2026) est la mesure réaliste, publiée ensuite mois par mois au fil des données consolidées. Il ne bloque pas la v1.0. La couverture des intervalles y sert de contrôle.
+- La validation porte la même étiquette.
+- Novembre 2024 → mai 2026 : « temps réel ou rejoué : non établi », tant qu'Open-Meteo n'a pas répondu.
+
+Risque à inscrire au prémortem : calibrés sur une validation dont l'entrée météo est rejouée, les intervalles peuvent être trop étroits face à la prévision réellement disponible. Contrôle : leur couverture sur le test prospectif.
+
+### Heure de disponibilité du calcul ECMWF : mesure quotidienne
+
+- Point de métadonnées revérifié le 14/11/2026 : `https://api.open-meteo.com/data/ecmwf_ifs/static/meta.json` (documenté dans le dépôt open-data d'Open-Meteo sous la forme `data/<model>/static/meta.json`). Il ne décrit que le dernier calcul publié. À 17 h 51 UTC, c'était encore celui de 06 UTC, disponible à 12 h 40 min 55 s UTC (6,7 h après l'initialisation), avec une fin de données à J+6 et une mise à jour toutes les 6 h : c'est bien la prévision en temps réel. La réponse ne porte aucun en-tête de quota.
+- Limite : l'heure mesurée est celle de l'API de prévision. La documentation Single Runs dit seulement que les calculs y sont disponibles « peu après » le dernier pas de temps publié.
+- Workflow GitHub Actions planifié, séparé de la CI (`.github/workflows/disponibilite-ecmwf.yml`) : un appel par jour vers 10 h UTC, au plus un par jour, arrêt définitif au premier 429, ligne ajoutée à un CSV sur la branche `donnees/disponibilite-ecmwf`. La CI et les tests restent sans aucun appel réseau.
 
 ### Appels et garde-fous
 
