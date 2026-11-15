@@ -150,7 +150,7 @@ Aucune série de prix du lendemain sous licence claire n'a été trouvée dans l
 - les prix du lendemain de la plateforme ENTSO-E (12.1.d) appartiennent aux bourses et sont exclus de la liste des données réutilisables ;
 - la rubrique Open Data de la CRE (observatoires des marchés de gros) ne propose que des données jusqu'au 4e trimestre 2020, mises à jour le 10/02/2022, sans licence indiquée.
 
-L'option 2 est donc retenue : un prix de référence fixe, présenté comme une hypothèse. Valeur proposée : 60 €/MWh, entre les prix moyens journaliers de 2024 (58 €/MWh) et de 2025 (61 €/MWh) publiés par la CRE (communiqué du 25 juin 2026 sur le rapport de surveillance des marchés de gros 2025). Une analyse de sensibilité accompagne le coût. Le coût en euros reste indicatif.
+L'option 2 est donc retenue : un prix de référence fixe, présenté comme une hypothèse. Il doit venir d'une moyenne annuelle publiée dans un rapport public. Valeur retenue le 15/11/2026 : 61,1 €/MWh, prix day-ahead moyen en France en 2025 (CRE, « La surveillance et le fonctionnement des marchés de gros de l'électricité et du gaz naturel en 2025 », rapport n° 2026-07 du 17 juin 2026, tableau 13, qui donne aussi 57,8 €/MWh pour 2024). La valeur de 60 €/MWh proposée la veille n'était publiée nulle part et a été abandonnée. Sensibilité à 40 et 100 €/MWh. Le coût en euros reste indicatif.
 
 ## Points encore ouverts
 
