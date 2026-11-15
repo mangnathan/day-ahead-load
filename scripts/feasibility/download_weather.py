@@ -14,7 +14,9 @@ Trois étapes, dans cet ordre :
   le lendemain reprend depuis le cache. Refuse de partir si un point n'a pas passé le contrôle.
 
 Au premier refus de quota (429), un fichier d'arrêt est écrit et plus aucun appel n'est fait
-tant qu'il existe.
+tant qu'il existe. Une coupure réseau ou une réponse 5xx donne lieu à une seule nouvelle
+tentative, après 5 minutes de pause et comptée dans le plafond ; un deuxième échec arrête la
+séance.
 """
 
 from __future__ import annotations

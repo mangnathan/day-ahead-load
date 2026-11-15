@@ -49,6 +49,7 @@ MAX_VARIABLES_PER_CALL = 10
 CHUNK_DAYS = 14
 DAILY_CAP = 8_000
 MIN_INTERVAL_S = 1.0
+RETRY_WAIT_S = 300.0
 RUN_FORECAST_DAYS = 3
 TIMEOUT_S = 60
 USER_AGENT = "day-ahead-load/0.0 (etude de faisabilite)"
@@ -178,11 +179,15 @@ class DailyCapReachedError(RuntimeError):
     """Le plafond local du jour est atteint : reprise le lendemain, depuis le cache."""
 
 
-class NetworkInterruptedError(RuntimeError):
-    """Connexion coupée ou impossible : fin de la séance, sans nouvelle tentative.
+class TransientFailureError(RuntimeError):
+    """Coupure réseau ou réponse 5xx : une seule nouvelle tentative, après une pause."""
 
-    Une coupure peut être une limitation de débit qui ne dit pas son nom : on ne réessaie pas
-    dans la même séance. L'appel est compté dans le journal par prudence.
+
+class NetworkInterruptedError(RuntimeError):
+    """Deux échecs passagers de suite : fin de la séance, reprise plus tard depuis le cache.
+
+    Une coupure peut être une limitation de débit qui ne dit pas son nom : après la pause et
+    la nouvelle tentative, on n'insiste pas. Chaque tentative est comptée dans le journal.
     """
 
 
@@ -283,8 +288,8 @@ class Downloader:
         self._last_call: float | None = None
         self.calls = 0
 
-    def call(self, url: str) -> tuple[dict[str, Any], dict[str, str]]:
-        """Un appel compté. Renvoie la réponse JSON et les en-têtes de quota."""
+    def _attempt(self, url: str) -> Response:
+        """Une tentative comptée. Lève TransientFailureError sur coupure réseau ou réponse 5xx."""
         self.budget.check()
         if self._last_call is not None:
             wait = MIN_INTERVAL_S - (self.clock() - self._last_call)
@@ -296,11 +301,32 @@ class Downloader:
         except OSError as error:  # URLError, coupure de connexion, délai dépassé
             self.budget.record(1.0)
             self.calls += 1
-            raise NetworkInterruptedError(f"connexion interrompue : {error}") from error
+            raise TransientFailureError(f"connexion interrompue : {error}") from error
         headers = {k.lower(): v for k, v in response.headers.items()}
-        cost = float(headers.get("x-ratelimit-cost", "1"))
-        self.budget.record(cost)
+        self.budget.record(float(headers.get("x-ratelimit-cost", "1")))
         self.calls += 1
+        if 500 <= response.status < 600:
+            raise TransientFailureError(f"réponse {response.status} du serveur")
+        return response
+
+    def call(self, url: str) -> tuple[dict[str, Any], dict[str, str]]:
+        """Un appel compté, avec au plus une nouvelle tentative après une pause.
+
+        La nouvelle tentative n'a lieu qu'après une coupure réseau ou une réponse 5xx ; elle
+        compte dans le plafond. Un deuxième échec arrête la séance. Un 429 arrête tout,
+        définitivement, à la première ou à la deuxième tentative.
+        """
+        try:
+            response = self._attempt(url)
+        except TransientFailureError as first:
+            self.sleep(RETRY_WAIT_S)
+            try:
+                response = self._attempt(url)
+            except TransientFailureError as second:
+                raise NetworkInterruptedError(
+                    f"deux échecs de suite ({first} ; {second})"
+                ) from second
+        headers = {k.lower(): v for k, v in response.headers.items()}
         if response.status == 429:
             self.budget.stop(
                 {

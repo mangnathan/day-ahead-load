@@ -96,17 +96,78 @@ def test_quota_refusal_stops_for_good(tmp_path: Path) -> None:
     assert len(fetch.urls) == 1
 
 
-def test_connection_reset_ends_the_session_and_is_counted(tmp_path: Path) -> None:
-    def reset(url: str) -> w.Response:
-        raise ConnectionResetError("fermée par l'hôte distant")
+class Scripted:
+    """Joue une suite de réponses : un statut HTTP, ou une exception à lever."""
 
-    dl, _ = make(tmp_path, FakeFetch())
-    dl.fetch = reset
+    def __init__(self, *steps: int | Exception) -> None:
+        self.steps = list(steps)
+        self.calls = 0
+
+    def __call__(self, url: str) -> w.Response:
+        self.calls += 1
+        step = self.steps.pop(0)
+        if isinstance(step, Exception):
+            raise step
+        body = {"latitude": 48.75, "longitude": 2.25, "elevation": 48.0}
+        return w.Response(step, {"X-RateLimit-Cost": "1.0"}, json.dumps(body).encode())
+
+
+def scripted(tmp_path: Path, *steps: int | Exception) -> tuple[w.Downloader, Scripted, list[float]]:
+    fetch = Scripted(*steps)
+    dl, sleeps = make(tmp_path, FakeFetch())
+    dl.fetch = fetch
+    return dl, fetch, sleeps
+
+
+RESET = ConnectionResetError("fermée par l'hôte distant")
+
+
+def test_one_retry_after_a_pause_then_success(tmp_path: Path) -> None:
+    dl, fetch, sleeps = scripted(tmp_path, RESET, 200)
+    dl.get(w.requests_for("era5", PARIS, 48.0)[0])
+    assert fetch.calls == 2
+    assert w.RETRY_WAIT_S in sleeps
+    assert dl.budget.used_today() == 2.0
+    assert len(list((tmp_path / "cache").rglob("*.json"))) == 1
+
+
+def test_server_error_is_retried_once(tmp_path: Path) -> None:
+    dl, fetch, _ = scripted(tmp_path, 503, 200)
+    dl.get(w.requests_for("era5", PARIS, 48.0)[0])
+    assert fetch.calls == 2
+
+
+def test_second_failure_ends_the_session_without_a_third_try(tmp_path: Path) -> None:
+    dl, fetch, _ = scripted(tmp_path, RESET, 502)
     with pytest.raises(w.NetworkInterruptedError):
         dl.get(w.requests_for("era5", PARIS, 48.0)[0])
-    assert dl.budget.used_today() == 1.0
+    assert fetch.calls == 2
+    assert dl.budget.used_today() == 2.0
     assert not (tmp_path / "ARRET.json").exists()
     assert not list((tmp_path / "cache").rglob("*.json"))
+
+
+def test_quota_refusal_on_the_retry_still_stops_for_good(tmp_path: Path) -> None:
+    dl, fetch, _ = scripted(tmp_path, RESET, 429)
+    with pytest.raises(w.QuotaRefusedError):
+        dl.get(w.requests_for("era5", PARIS, 48.0)[0])
+    assert (tmp_path / "ARRET.json").exists()
+
+
+def test_quota_refusal_is_never_retried(tmp_path: Path) -> None:
+    dl, fetch, sleeps = scripted(tmp_path, 429, 200)
+    with pytest.raises(w.QuotaRefusedError):
+        dl.get(w.requests_for("era5", PARIS, 48.0)[0])
+    assert fetch.calls == 1
+    assert w.RETRY_WAIT_S not in sleeps
+
+
+def test_retry_respects_the_daily_cap(tmp_path: Path) -> None:
+    dl, fetch, _ = scripted(tmp_path, RESET, 200)
+    dl.budget.cap = 1
+    with pytest.raises(w.DailyCapReachedError):
+        dl.get(w.requests_for("era5", PARIS, 48.0)[0])
+    assert fetch.calls == 1
 
 
 def test_cache_avoids_a_second_call(tmp_path: Path) -> None:
