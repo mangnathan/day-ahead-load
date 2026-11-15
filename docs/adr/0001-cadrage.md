@@ -114,8 +114,10 @@ Paramètres :
 
 - Prix des écarts : ENTSO-E Transparency Platform, Imbalance Prices [17.1.G], zone France, réutilisés sous licence CC BY 4.0, avec la mention de source fixée dans le résumé de faisabilité. La liste des données réutilisables est relue avant chaque téléchargement.
 - Prix de référence P_ref : **61,1 €/MWh**, prix day-ahead moyen en France en 2025 (CRE, « La surveillance et le fonctionnement des marchés de gros de l'électricité et du gaz naturel en 2025 », rapport n° 2026-07 du 17 juin 2026, tableau 13 ; sources EPEX SPOT et Nord Pool, analyse CRE). C'est une hypothèse fixe ; sensibilité à 40 et 100 €/MWh.
-- Quantile d'achat : choisi sur la validation à partir des pénalités moyennes, q = pénalité courte / (pénalité courte + pénalité longue), puis figé avant le test.
-- Part de marché s : les erreurs en pourcentage n'en dépendent pas ; les euros sont publiés pour s = 1 % et proportionnels à s.
+- Quantile d'achat (règle du vendeur de journaux) : q = pénalité courte / (pénalité courte + pénalité longue), où la pénalité courte est la moyenne de (prix des écarts du sens « court » − P_ref) et la pénalité longue la moyenne de (P_ref − prix des écarts du sens « long »). q est estimé uniquement sur la partie de la validation postérieure au passage au régime d'écart unique (05/10/2024, date à confirmer sur une source officielle de RTE ou de la CRE), puis figé avant le test.
+- Si q est proche de 0,5, l'apport de l'incertitude à la décision d'achat est faible : acheter au quantile reviendrait presque à acheter la prévision ponctuelle, et la valeur des intervalles tiendrait surtout à l'information sur le risque. La valeur de q n'est pas encore connue : son calcul demande les prix des écarts, donc un compte ENTSO-E (point ouvert de la v0.1).
+- Part de marché s : les erreurs en pourcentage n'en dépendent pas. Les montants sont publiés pour s = 1 %, proportionnels à s, et aussi en euros par MWh consommé, qui ne dépend pas de s.
+- La référence de quantiles produit les mêmes cinq quantiles que le modèle (0,025, 0,1, 0,5, 0,9 et 0,975).
 
 ## Transparence
 
@@ -134,6 +136,8 @@ Paramètres :
 | Prévision J-2 de RTE : première version ou version révisée dans l'historique | Compte RTE (champ `updated_date`) |
 | Rupture du biais de RTE en septembre 2026 | Consolidé de septembre et d'octobre 2026, vers le 15/12/2026 |
 | Plan gratuit AWS sans carte | Essai au début de la phase AWS ; LocalStack si une carte est demandée |
+| Prix des écarts ENTSO-E et valeur de q (v0.1) | Compte ENTSO-E et jeton d'API (demande par courriel, environ 3 jours ouvrés) |
+| Date de passage au régime d'écart unique (05/10/2024) | Source officielle de RTE ou de la CRE |
 
 ## Alternatives écartées
 
