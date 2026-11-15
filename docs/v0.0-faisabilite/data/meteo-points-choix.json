@@ -1,0 +1,235 @@
+{
+  "regle": "Centroïde de la commune-centre de l'aire d'attraction des villes la plus peuplée de chaque région ; aire rattachée à la région de sa commune-centre.",
+  "sources": {
+    "aires": "INSEE, base des aires d'attraction des villes 2020, géographie au 01/01/2026, mise en ligne le 19/03/2026 (Licence Ouverte 2.0)",
+    "population": "INSEE, population des communes servie par geo.api.gouv.fr ; millésime non indiqué par l'API",
+    "centroides": "geo.api.gouv.fr, champ centre"
+  },
+  "fichiers": {
+    "AAV2020_au_01-01-2026.zip": {
+      "sha256": "d97eef10acc2f5d174999cf98673ac1a3c4d5237ca39930774085f0bd2b13493",
+      "telecharge_le": "2026-11-14"
+    }
+  },
+  "limite": "Le millésime de la population n'est pas indiqué. Le seul classement serré est Centre-Val de Loire (Tours devant Orléans) ; il suit aussi l'ordre des codes INSEE.",
+  "points": [
+    {
+      "region": "11",
+      "aire": "001",
+      "libelle_aire": "Paris",
+      "population_aire": 13320752,
+      "commune": "75056",
+      "nom": "Paris",
+      "deuxieme_aire": NaN,
+      "population_deuxieme_aire": NaN
+    },
+    {
+      "region": "24",
+      "aire": "019",
+      "libelle_aire": "Tours",
+      "population_aire": 529468,
+      "commune": "37261",
+      "nom": "Tours",
+      "deuxieme_aire": "Orléans",
+      "population_deuxieme_aire": 463435.0
+    },
+    {
+      "region": "27",
+      "aire": "028",
+      "libelle_aire": "Dijon",
+      "population_aire": 419527,
+      "commune": "21231",
+      "nom": "Dijon",
+      "deuxieme_aire": "Besançon",
+      "population_deuxieme_aire": 283269.0
+    },
+    {
+      "region": "28",
+      "aire": "015",
+      "libelle_aire": "Rouen",
+      "population_aire": 715234,
+      "commune": "76540",
+      "nom": "Rouen",
+      "deuxieme_aire": "Caen",
+      "population_deuxieme_aire": 486716.0
+    },
+    {
+      "region": "32",
+      "aire": "004",
+      "libelle_aire": "Lille (partie française)",
+      "population_aire": 1530624,
+      "commune": "59350",
+      "nom": "Lille",
+      "deuxieme_aire": "Amiens",
+      "population_deuxieme_aire": 354121.0
+    },
+    {
+      "region": "44",
+      "aire": "010",
+      "libelle_aire": "Strasbourg (partie française)",
+      "population_aire": 875163,
+      "commune": "67482",
+      "nom": "Strasbourg",
+      "deuxieme_aire": "Nancy",
+      "population_deuxieme_aire": 507812.0
+    },
+    {
+      "region": "52",
+      "aire": "008",
+      "libelle_aire": "Nantes",
+      "population_aire": 1050815,
+      "commune": "44109",
+      "nom": "Nantes",
+      "deuxieme_aire": "Angers",
+      "population_deuxieme_aire": 448162.0
+    },
+    {
+      "region": "53",
+      "aire": "013",
+      "libelle_aire": "Rennes",
+      "population_aire": 789516,
+      "commune": "35238",
+      "nom": "Rennes",
+      "deuxieme_aire": "Brest",
+      "population_deuxieme_aire": 381115.0
+    },
+    {
+      "region": "75",
+      "aire": "006",
+      "libelle_aire": "Bordeaux",
+      "population_aire": 1426278,
+      "commune": "33063",
+      "nom": "Bordeaux",
+      "deuxieme_aire": "Limoges",
+      "population_deuxieme_aire": 324230.0
+    },
+    {
+      "region": "76",
+      "aire": "005",
+      "libelle_aire": "Toulouse",
+      "population_aire": 1529112,
+      "commune": "31555",
+      "nom": "Toulouse",
+      "deuxieme_aire": "Montpellier",
+      "population_deuxieme_aire": 842923.0
+    },
+    {
+      "region": "84",
+      "aire": "002",
+      "libelle_aire": "Lyon",
+      "population_aire": 2339329,
+      "commune": "69123",
+      "nom": "Lyon",
+      "deuxieme_aire": "Grenoble",
+      "population_deuxieme_aire": 727380.0
+    },
+    {
+      "region": "93",
+      "aire": "003",
+      "libelle_aire": "Marseille - Aix-en-Provence",
+      "population_aire": 1917728,
+      "commune": "13055",
+      "nom": "Marseille",
+      "deuxieme_aire": "Nice",
+      "population_deuxieme_aire": 641721.0
+    }
+  ],
+  "coordonnees": [
+    {
+      "region": "11",
+      "aire": "001",
+      "commune": "75056",
+      "nom": "Paris",
+      "latitude": 48.8589,
+      "longitude": 2.347
+    },
+    {
+      "region": "24",
+      "aire": "019",
+      "commune": "37261",
+      "nom": "Tours",
+      "latitude": 47.3943,
+      "longitude": 0.6949
+    },
+    {
+      "region": "27",
+      "aire": "028",
+      "commune": "21231",
+      "nom": "Dijon",
+      "latitude": 47.3319,
+      "longitude": 5.0322
+    },
+    {
+      "region": "28",
+      "aire": "015",
+      "commune": "76540",
+      "nom": "Rouen",
+      "latitude": 49.4412,
+      "longitude": 1.0912
+    },
+    {
+      "region": "32",
+      "aire": "004",
+      "commune": "59350",
+      "nom": "Lille",
+      "latitude": 50.6311,
+      "longitude": 3.0468
+    },
+    {
+      "region": "44",
+      "aire": "010",
+      "commune": "67482",
+      "nom": "Strasbourg",
+      "latitude": 48.5691,
+      "longitude": 7.7621
+    },
+    {
+      "region": "52",
+      "aire": "008",
+      "commune": "44109",
+      "nom": "Nantes",
+      "latitude": 47.2382,
+      "longitude": -1.5603
+    },
+    {
+      "region": "53",
+      "aire": "013",
+      "commune": "35238",
+      "nom": "Rennes",
+      "latitude": 48.1159,
+      "longitude": -1.6884
+    },
+    {
+      "region": "75",
+      "aire": "006",
+      "commune": "33063",
+      "nom": "Bordeaux",
+      "latitude": 44.8624,
+      "longitude": -0.5848
+    },
+    {
+      "region": "76",
+      "aire": "005",
+      "commune": "31555",
+      "nom": "Toulouse",
+      "latitude": 43.6007,
+      "longitude": 1.4328
+    },
+    {
+      "region": "84",
+      "aire": "002",
+      "commune": "69123",
+      "nom": "Lyon",
+      "latitude": 45.758,
+      "longitude": 4.8351
+    },
+    {
+      "region": "93",
+      "aire": "003",
+      "commune": "13055",
+      "nom": "Marseille",
+      "latitude": 43.2803,
+      "longitude": 5.3806
+    }
+  ]
+}

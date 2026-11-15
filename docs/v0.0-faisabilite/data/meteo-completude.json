@@ -1,0 +1,555 @@
+{
+  "regle": "Moins de 1 % d'heures manquantes par point et par variable (partie C).",
+  "sources": {
+    "era5": {
+      "periode_utc": {
+        "debut": "2012-01-01 00:00:00+00:00",
+        "fin": "2026-10-31 23:00:00+00:00"
+      },
+      "heures_attendues_par_point": 130032,
+      "pire_pct": 0.0,
+      "condition_moins_de_1_pct": true,
+      "par_point": {
+        "Paris": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Tours": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Dijon": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Rouen": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Lille": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Strasbourg": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Nantes": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Rennes": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Bordeaux": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Toulouse": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Lyon": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Marseille": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        }
+      }
+    },
+    "ifs_historique": {
+      "periode_utc": {
+        "debut": "2024-03-15 00:00:00+00:00",
+        "fin": "2025-08-31 23:00:00+00:00"
+      },
+      "heures_attendues_par_point": 12840,
+      "pire_pct": 0.0,
+      "condition_moins_de_1_pct": true,
+      "par_point": {
+        "Paris": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Tours": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Dijon": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Rouen": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Lille": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Strasbourg": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Nantes": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Rennes": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Bordeaux": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Toulouse": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Lyon": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        },
+        "Marseille": {
+          "temperature_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "shortwave_radiation": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "cloud_cover": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "wind_speed_10m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          },
+          "relative_humidity_2m": {
+            "heures_manquantes": 0,
+            "pct": 0.0
+          }
+        }
+      }
+    }
+  }
+}

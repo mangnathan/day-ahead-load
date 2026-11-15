@@ -1,0 +1,684 @@
+{
+  "date": "2026-11-14",
+  "parametres_communs": {
+    "variables": [
+      "temperature_2m",
+      "shortwave_radiation",
+      "cloud_cover",
+      "wind_speed_10m",
+      "relative_humidity_2m"
+    ],
+    "timezone": "GMT",
+    "cell_selection": "land",
+    "altitude": "fixée par l'API d'altitude d'Open-Meteo, passée dans tous les appels"
+  },
+  "appel_altitude_12_points": {
+    "en_tetes_quota": {
+      "x-ratelimit-cost": "12.0",
+      "x-ratelimit-limit": "600.0",
+      "x-ratelimit-remaining": "588.0"
+    }
+  },
+  "points": [
+    {
+      "region": "11",
+      "aire": "001",
+      "commune": "75056",
+      "nom": "Paris",
+      "latitude": 48.8589,
+      "longitude": 2.347,
+      "altitude_m": 48.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 48.89279,
+          "longitude_maille": 2.2920206,
+          "altitude_utilisee_m": 48.0,
+          "distance_km": 5.5,
+          "commune_au_centre_de_maille": "Levallois-Perret (92044)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 48.75,
+          "longitude_maille": 2.25,
+          "altitude_utilisee_m": 48.0,
+          "distance_km": 14.0,
+          "commune_au_centre_de_maille": "Verrières-le-Buisson (91645)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 48.89279,
+          "longitude_maille": 2.2920206,
+          "altitude_utilisee_m": 48.0,
+          "distance_km": 5.5,
+          "commune_au_centre_de_maille": "Levallois-Perret (92044)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.9128,
+          "moyenne_heure_precedente": 0.9226,
+          "moyenne_heure_suivante": 0.8804
+        },
+        "era5": {
+          "instant": 0.8255,
+          "moyenne_heure_precedente": 0.8519,
+          "moyenne_heure_suivante": 0.7666
+        },
+        "ecmwf_00utc": {
+          "instant": 0.8975,
+          "moyenne_heure_precedente": 0.9226,
+          "moyenne_heure_suivante": 0.8487
+        }
+      }
+    },
+    {
+      "region": "24",
+      "aire": "019",
+      "commune": "37261",
+      "nom": "Tours",
+      "latitude": 47.3943,
+      "longitude": 0.6949,
+      "altitude_m": 55.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 47.41652,
+          "longitude_maille": 0.73770493,
+          "altitude_utilisee_m": 55.0,
+          "distance_km": 4.1,
+          "commune_au_centre_de_maille": "Rochecorbon (37203)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 47.5,
+          "longitude_maille": 0.75,
+          "altitude_utilisee_m": 55.0,
+          "distance_km": 12.5,
+          "commune_au_centre_de_maille": "Monnaie (37153)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 47.41652,
+          "longitude_maille": 0.73770493,
+          "altitude_utilisee_m": 55.0,
+          "distance_km": 4.1,
+          "commune_au_centre_de_maille": "Rochecorbon (37203)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.8793,
+          "moyenne_heure_precedente": 0.8908,
+          "moyenne_heure_suivante": 0.8466
+        },
+        "era5": {
+          "instant": 0.8121,
+          "moyenne_heure_precedente": 0.8349,
+          "moyenne_heure_suivante": 0.7555
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9244,
+          "moyenne_heure_precedente": 0.939,
+          "moyenne_heure_suivante": 0.8866
+        }
+      }
+    },
+    {
+      "region": "27",
+      "aire": "028",
+      "commune": "21231",
+      "nom": "Dijon",
+      "latitude": 47.3319,
+      "longitude": 5.0322,
+      "altitude_m": 273.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 47.34622,
+          "longitude_maille": 5.0081835,
+          "altitude_utilisee_m": 273.0,
+          "distance_km": 2.4,
+          "commune_au_centre_de_maille": "Daix (21223)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 47.25,
+          "longitude_maille": 5.0,
+          "altitude_utilisee_m": 273.0,
+          "distance_km": 9.4,
+          "commune_au_centre_de_maille": "Couchey (21200)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 47.34622,
+          "longitude_maille": 5.0081835,
+          "altitude_utilisee_m": 273.0,
+          "distance_km": 2.4,
+          "commune_au_centre_de_maille": "Daix (21223)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.9148,
+          "moyenne_heure_precedente": 0.9265,
+          "moyenne_heure_suivante": 0.8795
+        },
+        "era5": {
+          "instant": 0.7761,
+          "moyenne_heure_precedente": 0.8046,
+          "moyenne_heure_suivante": 0.7195
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9448,
+          "moyenne_heure_precedente": 0.9704,
+          "moyenne_heure_suivante": 0.8934
+        }
+      }
+    },
+    {
+      "region": "28",
+      "aire": "015",
+      "commune": "76540",
+      "nom": "Rouen",
+      "latitude": 49.4412,
+      "longitude": 1.0912,
+      "altitude_m": 24.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 49.45518,
+          "longitude_maille": 1.0843374,
+          "altitude_utilisee_m": 24.0,
+          "distance_km": 1.6,
+          "commune_au_centre_de_maille": "Mont-Saint-Aignan (76451)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 49.5,
+          "longitude_maille": 1.0,
+          "altitude_utilisee_m": 24.0,
+          "distance_km": 9.3,
+          "commune_au_centre_de_maille": "Saint-Jean-du-Cardonnay (76594)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 49.45518,
+          "longitude_maille": 1.0843374,
+          "altitude_utilisee_m": 24.0,
+          "distance_km": 1.6,
+          "commune_au_centre_de_maille": "Mont-Saint-Aignan (76451)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.8933,
+          "moyenne_heure_precedente": 0.9008,
+          "moyenne_heure_suivante": 0.864
+        },
+        "era5": {
+          "instant": 0.8801,
+          "moyenne_heure_precedente": 0.9019,
+          "moyenne_heure_suivante": 0.8225
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9327,
+          "moyenne_heure_precedente": 0.9404,
+          "moyenne_heure_suivante": 0.9009
+        }
+      }
+    },
+    {
+      "region": "32",
+      "aire": "004",
+      "commune": "59350",
+      "nom": "Lille",
+      "latitude": 50.6311,
+      "longitude": 3.0468,
+      "altitude_m": 31.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 50.65026,
+          "longitude_maille": 3.0319147,
+          "altitude_utilisee_m": 31.0,
+          "distance_km": 2.4,
+          "commune_au_centre_de_maille": "Lambersart (59328)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 50.75,
+          "longitude_maille": 3.0,
+          "altitude_utilisee_m": 31.0,
+          "distance_km": 13.6,
+          "commune_au_centre_de_maille": "Comines (59152)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 50.65026,
+          "longitude_maille": 3.0319147,
+          "altitude_utilisee_m": 31.0,
+          "distance_km": 2.4,
+          "commune_au_centre_de_maille": "Lambersart (59328)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.8873,
+          "moyenne_heure_precedente": 0.8958,
+          "moyenne_heure_suivante": 0.857
+        },
+        "era5": {
+          "instant": 0.8653,
+          "moyenne_heure_precedente": 0.8838,
+          "moyenne_heure_suivante": 0.8096
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9339,
+          "moyenne_heure_precedente": 0.938,
+          "moyenne_heure_suivante": 0.9051
+        }
+      }
+    },
+    {
+      "region": "44",
+      "aire": "010",
+      "commune": "67482",
+      "nom": "Strasbourg",
+      "latitude": 48.5691,
+      "longitude": 7.7621,
+      "altitude_m": 143.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 48.541298,
+          "longitude_maille": 7.727273,
+          "altitude_utilisee_m": 143.0,
+          "distance_km": 4.0,
+          "commune_au_centre_de_maille": "Illkirch-Graffenstaden (67218)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 48.5,
+          "longitude_maille": 7.75,
+          "altitude_utilisee_m": 143.0,
+          "distance_km": 7.7,
+          "commune_au_centre_de_maille": "Illkirch-Graffenstaden (67218)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 48.541298,
+          "longitude_maille": 7.727273,
+          "altitude_utilisee_m": 143.0,
+          "distance_km": 4.0,
+          "commune_au_centre_de_maille": "Illkirch-Graffenstaden (67218)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.902,
+          "moyenne_heure_precedente": 0.9235,
+          "moyenne_heure_suivante": 0.8571
+        },
+        "era5": {
+          "instant": 0.7875,
+          "moyenne_heure_precedente": 0.8102,
+          "moyenne_heure_suivante": 0.7326
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9346,
+          "moyenne_heure_precedente": 0.9545,
+          "moyenne_heure_suivante": 0.8889
+        }
+      }
+    },
+    {
+      "region": "52",
+      "aire": "008",
+      "commune": "44109",
+      "nom": "Nantes",
+      "latitude": 47.2382,
+      "longitude": -1.5603,
+      "altitude_m": 27.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 47.205624,
+          "longitude_maille": -1.6150208,
+          "altitude_utilisee_m": 27.0,
+          "distance_km": 5.5,
+          "commune_au_centre_de_maille": "Saint-Herblain (44162)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 47.25,
+          "longitude_maille": -1.5,
+          "altitude_utilisee_m": 27.0,
+          "distance_km": 4.7,
+          "commune_au_centre_de_maille": "Nantes (44109)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 47.205624,
+          "longitude_maille": -1.6150208,
+          "altitude_utilisee_m": 27.0,
+          "distance_km": 5.5,
+          "commune_au_centre_de_maille": "Saint-Herblain (44162)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.8865,
+          "moyenne_heure_precedente": 0.9038,
+          "moyenne_heure_suivante": 0.8473
+        },
+        "era5": {
+          "instant": 0.8402,
+          "moyenne_heure_precedente": 0.856,
+          "moyenne_heure_suivante": 0.7896
+        },
+        "ecmwf_00utc": {
+          "instant": 0.8684,
+          "moyenne_heure_precedente": 0.8959,
+          "moyenne_heure_suivante": 0.8185
+        }
+      }
+    },
+    {
+      "region": "53",
+      "aire": "013",
+      "commune": "35238",
+      "nom": "Rennes",
+      "latitude": 48.1159,
+      "longitude": -1.6884,
+      "altitude_m": 32.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 48.119507,
+          "longitude_maille": -1.6499939,
+          "altitude_utilisee_m": 32.0,
+          "distance_km": 2.9,
+          "commune_au_centre_de_maille": "Rennes (35238)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 48.0,
+          "longitude_maille": -1.75,
+          "altitude_utilisee_m": 32.0,
+          "distance_km": 13.7,
+          "commune_au_centre_de_maille": "Bruz (35047)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 48.119507,
+          "longitude_maille": -1.6499939,
+          "altitude_utilisee_m": 32.0,
+          "distance_km": 2.9,
+          "commune_au_centre_de_maille": "Rennes (35238)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.9044,
+          "moyenne_heure_precedente": 0.9214,
+          "moyenne_heure_suivante": 0.865
+        },
+        "era5": {
+          "instant": 0.8361,
+          "moyenne_heure_precedente": 0.8564,
+          "moyenne_heure_suivante": 0.7817
+        },
+        "ecmwf_00utc": {
+          "instant": 0.8561,
+          "moyenne_heure_precedente": 0.8886,
+          "moyenne_heure_suivante": 0.8015
+        }
+      }
+    },
+    {
+      "region": "75",
+      "aire": "006",
+      "commune": "33063",
+      "nom": "Bordeaux",
+      "latitude": 44.8624,
+      "longitude": -0.5848,
+      "altitude_m": 4.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 44.88576,
+          "longitude_maille": -0.5572815,
+          "altitude_utilisee_m": 4.0,
+          "distance_km": 3.4,
+          "commune_au_centre_de_maille": "Bordeaux (33063)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 44.75,
+          "longitude_maille": -0.5,
+          "altitude_utilisee_m": 4.0,
+          "distance_km": 14.2,
+          "commune_au_centre_de_maille": "Quinsac (33349)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 44.88576,
+          "longitude_maille": -0.5572815,
+          "altitude_utilisee_m": 4.0,
+          "distance_km": 3.4,
+          "commune_au_centre_de_maille": "Bordeaux (33063)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.9009,
+          "moyenne_heure_precedente": 0.919,
+          "moyenne_heure_suivante": 0.8603
+        },
+        "era5": {
+          "instant": 0.8872,
+          "moyenne_heure_precedente": 0.9119,
+          "moyenne_heure_suivante": 0.8267
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9539,
+          "moyenne_heure_precedente": 0.975,
+          "moyenne_heure_suivante": 0.9082
+        }
+      }
+    },
+    {
+      "region": "76",
+      "aire": "005",
+      "commune": "31555",
+      "nom": "Toulouse",
+      "latitude": 43.6007,
+      "longitude": 1.4328,
+      "altitude_m": 142.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 43.620384,
+          "longitude_maille": 1.4909638,
+          "altitude_utilisee_m": 142.0,
+          "distance_km": 5.2,
+          "commune_au_centre_de_maille": "Balma (31044)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 43.5,
+          "longitude_maille": 1.5,
+          "altitude_utilisee_m": 142.0,
+          "distance_km": 12.4,
+          "commune_au_centre_de_maille": "Péchabou (31409)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 43.620384,
+          "longitude_maille": 1.4909638,
+          "altitude_utilisee_m": 142.0,
+          "distance_km": 5.2,
+          "commune_au_centre_de_maille": "Balma (31044)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.9161,
+          "moyenne_heure_precedente": 0.9298,
+          "moyenne_heure_suivante": 0.8797
+        },
+        "era5": {
+          "instant": 0.8655,
+          "moyenne_heure_precedente": 0.8936,
+          "moyenne_heure_suivante": 0.8039
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9478,
+          "moyenne_heure_precedente": 0.9701,
+          "moyenne_heure_suivante": 0.9009
+        }
+      }
+    },
+    {
+      "region": "84",
+      "aire": "002",
+      "commune": "69123",
+      "nom": "Lyon",
+      "latitude": 45.758,
+      "longitude": 4.8351,
+      "altitude_m": 179.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 45.729347,
+          "longitude_maille": 4.8264985,
+          "altitude_utilisee_m": 179.0,
+          "distance_km": 3.3,
+          "commune_au_centre_de_maille": "Lyon (69123)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 45.75,
+          "longitude_maille": 4.75,
+          "altitude_utilisee_m": 179.0,
+          "distance_km": 6.7,
+          "commune_au_centre_de_maille": "Craponne (69069)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 45.729347,
+          "longitude_maille": 4.8264985,
+          "altitude_utilisee_m": 179.0,
+          "distance_km": 3.3,
+          "commune_au_centre_de_maille": "Lyon (69123)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.9182,
+          "moyenne_heure_precedente": 0.9314,
+          "moyenne_heure_suivante": 0.8815
+        },
+        "era5": {
+          "instant": 0.7944,
+          "moyenne_heure_precedente": 0.8178,
+          "moyenne_heure_suivante": 0.7421
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9523,
+          "moyenne_heure_precedente": 0.9648,
+          "moyenne_heure_suivante": 0.9142
+        }
+      }
+    },
+    {
+      "region": "93",
+      "aire": "003",
+      "commune": "13055",
+      "nom": "Marseille",
+      "latitude": 43.2803,
+      "longitude": 5.3806,
+      "altitude_m": 58.0,
+      "mailles": [
+        {
+          "source": "ifs_historique",
+          "latitude_maille": 43.26889,
+          "longitude_maille": 5.3811655,
+          "altitude_utilisee_m": 58.0,
+          "distance_km": 1.3,
+          "commune_au_centre_de_maille": "Marseille (13055)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "era5",
+          "latitude_maille": 43.5,
+          "longitude_maille": 5.25,
+          "altitude_utilisee_m": 58.0,
+          "distance_km": 26.6,
+          "commune_au_centre_de_maille": "Rognac (13081)",
+          "centre_sur_commune_francaise": true
+        },
+        {
+          "source": "ecmwf_00utc",
+          "latitude_maille": 43.26889,
+          "longitude_maille": 5.3811655,
+          "altitude_utilisee_m": 58.0,
+          "distance_km": 1.3,
+          "commune_au_centre_de_maille": "Marseille (13055)",
+          "centre_sur_commune_francaise": true
+        }
+      ],
+      "convention_rayonnement": {
+        "ifs_historique": {
+          "instant": 0.9508,
+          "moyenne_heure_precedente": 0.9666,
+          "moyenne_heure_suivante": 0.9103
+        },
+        "era5": {
+          "instant": 0.945,
+          "moyenne_heure_precedente": 0.9654,
+          "moyenne_heure_suivante": 0.8911
+        },
+        "ecmwf_00utc": {
+          "instant": 0.9817,
+          "moyenne_heure_precedente": 0.9899,
+          "moyenne_heure_suivante": 0.9469
+        }
+      }
+    }
+  ]
+}

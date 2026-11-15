@@ -1,0 +1,61 @@
+# Mesure une fois par jour l'heure de disponibilité du calcul ECMWF IFS 9 km chez Open-Meteo et
+# l'écrit sur la branche de données. Séparé de la CI : la CI et les tests ne font aucun appel
+# réseau ; ce workflow fait au plus un appel par jour et s'arrête définitivement au premier 429.
+name: Disponibilité ECMWF
+
+on:
+  schedule:
+    # 10 h UTC : en principe après la publication du calcul de 00 UTC (vers 6 h 40 UTC) et
+    # avant celle du calcul de 06 UTC (vers 12 h 40 UTC). GitHub peut retarder le départ :
+    # l'heure réelle de l'appel est écrite dans chaque ligne.
+    - cron: "0 10 * * *"
+  workflow_dispatch:
+
+# Écriture nécessaire pour pousser sur la branche de données. La règle de protection de main
+# reste en place : ce workflow ne pousse jamais sur main.
+permissions:
+  contents: write
+
+concurrency:
+  group: disponibilite-ecmwf
+  cancel-in-progress: false
+
+jobs:
+  mesure:
+    name: Heure de disponibilité du calcul ECMWF
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: donnees/disponibilite-ecmwf
+          path: donnees
+
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.13.1"
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Installer le paquet sans les outils de développement
+        run: uv sync --locked --no-dev
+
+      - name: Mesurer (un appel au plus)
+        run: uv run --no-sync python scripts/monitoring/record_ecmwf_availability.py --dossier donnees
+
+      - name: Enregistrer sur la branche de données
+        working-directory: donnees
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Rien de nouveau."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Mesurer la disponibilité du calcul ECMWF du $(date -u +%F)"
+          git push origin HEAD:donnees/disponibilite-ecmwf
