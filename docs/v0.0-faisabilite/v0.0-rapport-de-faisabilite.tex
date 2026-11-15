@@ -1,0 +1,287 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\rapporttitre}{Rapport de faisabilité}
+\newcommand{\rapportversion}{v0.0}
+\input{../latex/preambule}
+\usepackage{needspace}
+\usepackage{amsmath}
+\usepackage{etoolbox}
+% Laisse un peu plus d'espace entre les mots plutôt que de déborder.
+\setlength{\emergencystretch}{3em}
+% Un titre de section ne reste jamais seul en bas de page.
+\pretocmd{\section}{\needspace{10\baselineskip}}{}{}
+
+\begin{document}
+
+\pagedegarde{Prévoir la consommation électrique française du lendemain, avec son incertitude}{15 novembre 2026}{Version 0.0, avant toute modélisation}
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+
+\section*{Synthèse}
+\addcontentsline{toc}{section}{Synthèse}
+
+Un fournisseur d'électricité achète la veille, avant midi, l'énergie que ses clients consommeront le lendemain. Chaque mégawattheure d'erreur est ensuite réglé au prix des écarts. Le projet day-ahead-load prévoit la consommation française du lendemain par demi-heure, avec une bande d'incertitude, en n'utilisant que les données publiées avant midi la veille. Il traduit ensuite l'erreur en volume à acheter et en coût indicatif.
+
+Ce rapport fixe le cadre avant toute modélisation : l'utilisateur, les données, les références à battre, le découpage dans le temps et les critères de réussite. Il s'appuie sur des mesures reproductibles, faites avec les scripts de \nolinkurl{scripts/feasibility}, dont les sorties sont dans \nolinkurl{docs/v0.0-faisabilite/data}.
+
+\begin{itemize}
+  \item L'historique de consommation couvre 2012 à 2026, sans trou hors changements d'heure ; la météo observée aux 12 points ne manque d'aucune heure.
+  \item La référence naïve J-7 fait 6,19~\% d'erreur, la prévision J-1 de RTE corrigée de son biais 1,69~\%. Le rapport de 3,66 dépasse le seuil de 2 fixé avant la mesure.
+  \item Trois points sont dégradés et étiquetés : les prévisions météo archivées avant mai 2026 sont des calculs rejoués, aucun prix du lendemain n'est publié sous licence claire, et le plan gratuit AWS reste à essayer.
+  \item Décision : go dégradé.
+\end{itemize}
+
+\section{Le besoin}
+
+\subsection{L'utilisateur et sa décision}
+
+L'utilisateur est un fournisseur représentatif. Son portefeuille est le profil de consommation national multiplié par une part de marché $s$. C'est une hypothèse de modélisation : le portefeuille d'un vrai fournisseur n'est pas public. Les erreurs en pourcentage ne dépendent pas de $s$ et les euros lui sont proportionnels. Un vrai portefeuille, plus petit, est plus bruité que le total national.
+
+La décision est prise à midi, heure de Paris, la veille du jour livré : combien acheter pour chaque période du lendemain. Seules les données publiées avant cette heure peuvent entrer dans une prévision.
+
+\subsection{Pourquoi ce n'est pas déjà résolu}
+
+RTE publie chaque jour une prévision J-1 de la consommation nationale. Elle est très bonne, mais publiée après midi, sans bande d'incertitude, et son biais grandit depuis 2022 : environ −1\,100~MW en 2023 et 2024, surtout entre 13~h et 16~h. Le projet n'a pas pour but de battre RTE. Il mesure l'écart à cette prévision et ajoute ce qu'elle ne donne pas : une prévision disponible à l'heure de la décision, une incertitude calibrée et sa traduction en volume et en coût.
+
+\section{Les données}
+
+\subsection{Sources et licences}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{lYl}
+\toprule
+\textbf{Source} & \textbf{Usage} & \textbf{Licence} \\
+\midrule
+éCO2mix national (RTE, via ODRÉ) & Consommation et prévision J-1 de RTE & Licence Ouverte 2.0 \\
+Open-Meteo (ERA5, ECMWF IFS) & Météo observée et prévue aux 12 points & CC BY 4.0 \\
+INSEE, aires d'attraction des villes 2020 & Choix des 12 points & Licence Ouverte 2.0 \\
+ENTSO-E, prix des écarts (17.1.g) & Coût indicatif & CC BY 4.0 \\
+CRE, rapport n° 2026-07 & Prix de référence (une valeur publiée) & Citation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Les conditions d'utilisation d'ENTSO-E applicables sont celles du 29/03/2023, en vigueur depuis le 01/11/2023, et la liste des données librement réutilisables date du 18/10/2023. Les prix des écarts y figurent ; les prix du marché du lendemain (12.1.d) n'y figurent pas, car ils appartiennent aux bourses, et le projet ne s'en sert pas. Les données de RTE ne sont jamais republiées : le futur tableau de bord ne montrera que des erreurs agrégées.
+
+\subsection{La consommation}
+
+Les données éCO2mix nationales ont été téléchargées le 14/11/2026 (empreintes sha256 dans \nolinkurl{eco2mix-mesures.json}).
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{lYr}
+\toprule
+\textbf{Nature} & \textbf{Période (heure de Paris)} & \textbf{Lignes au pas de 15 min} \\
+\midrule
+Définitives & 01/01/2012 → 31/12/2025 & 490\,944 \\
+Consolidées & 01/01/2026 → 31/08/2026 & 23\,328 \\
+Temps réel & depuis le 01/09/2026 & 7\,296 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{itemize}
+  \item La consommation n'est renseignée qu'au pas de 30 minutes jusqu'en 2025 ; la prévision J-1 l'est au pas de 15 minutes. La cible est donc la puissance moyenne par demi-heure.
+  \item L'horodatage UTC d'ODRÉ est faux les jours de changement d'heure : quatre lignes fantômes en mars, l'heure répétée absente en octobre (60 horodatages absents sur 521\,568). Les instants sont reconstruits à partir de la date et de l'heure locales, et les deux heures de 2~h d'octobre sont exclues comme ambiguës.
+  \item Le temps réel n'est jamais une cible. RTE le décrit comme une puissance instantanée, et le biais de sa prévision change de signe en septembre 2026, exactement au passage au temps réel : −938 et −1\,005~MW en septembre et octobre 2025, +201 et +155~MW aux mêmes mois de 2026. La rupture n'est donc pas saisonnière. Le consolidé de ces deux mois, attendu vers le 15/12/2026, permettra de la confirmer.
+  \item Le consolidé d'un mois M est considéré comme disponible le 1\textsuperscript{er} du mois M+3 : le 14/11/2026, il s'arrêtait au 31/08/2026, alors que la documentation annonce la mi-M+1.
+\end{itemize}
+
+\subsection{La météo}
+
+Le modèle utilise un indice national de température et quatre autres variables, à 12 points. Chaque point est le centroïde de la commune-centre de l'aire d'attraction des villes la plus peuplée de sa région (INSEE). La commune la plus peuplée n'a pas été retenue : en Normandie, ce serait Le Havre, sur la côte, alors que l'aire de Rouen est deux fois plus peuplée et à l'intérieur des terres.
+
+\begin{itemize}
+  \item Points : Paris, Lyon, Marseille, Lille, Toulouse, Bordeaux, Nantes, Strasbourg, Rennes, Rouen, Tours, Dijon.
+  \item Variables : température à 2~m, rayonnement solaire global, nébulosité, vent à 10~m, humidité relative.
+  \item Sources : ERA5 pour l'entraînement ; calcul ECMWF IFS 9~km de 00~UTC de la veille comme entrée réelle ; série IFS historique mesurée à part sur la validation. Toutes reçoivent les mêmes coordonnées, la même altitude, les mêmes variables, l'heure GMT et la sélection d'une maille terrestre.
+  \item Contrôles : les 36 centres de maille (12 points, 3 sources) tombent sur une commune française ; la maille ERA5 de Marseille est décalée de 26,6~km vers l'étang de Berre et sera surveillée. Dans les 36 cas, le rayonnement suit la convention de la moyenne de l'heure précédente : il n'y a pas de décalage d'une heure entre sources.
+  \item Complétude : aucune heure ne manque dans ERA5 (130\,032 heures par point, 2012 à octobre 2026) ni dans la série IFS historique de la validation.
+\end{itemize}
+
+\aretenir{Les calculs ECMWF archivés avant le 13/05/2026 sont décrits par Open-Meteo comme des \emph{hindcasts} du cycle 49R1. Ceux du 14/03/2024 au 11/11/2024 ont donc été rejoués avec un modèle devenu opérationnel plus tard. Ils portent l'étiquette «~météo prévue rejouée, avantage possible~». D'après ECMWF, ce changement de cycle améliore d'environ 11~\% le score de la température à 2~m à un jour d'échéance, pour la prévision d'ensemble, en hiver, sur l'hémisphère nord.}
+
+L'heure de disponibilité du calcul de 00~UTC est mesurée chaque jour par un workflow séparé de la CI. Une première mesure donne environ 6~h~40 UTC, bien avant midi.
+
+\subsection{L'indice de température}
+
+RTE calcule sa température «~France~» sur un panier de 32 stations dont la liste n'est pas publiée. Le projet pondère ses 12 points par la part de chaque région dans la consommation, choisie par validation croisée temporelle sur 2018 à 2023 :
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yr}
+\toprule
+\textbf{Pondération} & \textbf{Erreur absolue moyenne journalière (MW)} \\
+\midrule
+Consommation & 2\,475 \\
+Population & 2\,486 \\
+Hiver moins été & 2\,508 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La consommation gagne sur les six plis, mais l'écart est faible (0,5~\% face à la population) : le choix compte peu. Le modèle retrouve une sensibilité de 2\,313 à 2\,345~MW par degré sous 15~°C, du même ordre que les 2\,400~MW cités par RTE.
+
+\section{Les références}
+
+Chaque référence porte une étiquette selon les données qu'elle utilise.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{lY}
+\toprule
+\textbf{Étiquette} & \textbf{Sens} \\
+\midrule
+Réaliste & seulement des données disponibles à midi la veille \\
+Optimiste & respecte midi, mais lit un consolidé pas encore publié \\
+Avantagée & utilise la prévision J-1 de RTE, publiée après midi \\
+Borne & enfreint volontairement les règles \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Erreurs mesurées sur les demi-heures du 15/03/2024 au 31/08/2026 (43\,072 demi-heures communes à toutes les références sur 43\,198, soit 0,29~\% écartées) :
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Ylr}
+\toprule
+\textbf{Référence} & \textbf{Étiquette} & \textbf{MAPE} \\
+\midrule
+Même demi-heure 7 jours avant (J-7) & optimiste & 6,19~\% \\
+Même demi-heure 2 jours avant (J-2) & optimiste & 8,18~\% \\
+Veille le matin, J-2 l'après-midi & optimiste & 6,55~\% \\
+Moyenne des 4 mêmes jours précédents & optimiste & 6,73~\% \\
+Même jour, 52 semaines avant & réaliste & 6,32~\% \\
+Dernier même jour publié en consolidé & réaliste & 18,76~\% \\
+RTE J-1 brute & avantagée & 2,60~\% \\
+RTE J-1 corrigée (biais des 28 derniers jours publiés) & avantagée & 1,90~\% \\
+RTE J-1 corrigée (biais du même mois l'année précédente) & avantagée & 1,69~\% \\
+RTE J-1 corrigée (biais idéal des 4 dernières semaines) & borne & 1,56~\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La prévision de RTE est au pas de 15 minutes. Elle est ramenée à la demi-heure par la moyenne de $f(t-15)$ et $f(t)$ : la meilleure version change selon les années, et celle-ci n'est jamais pire que la deuxième. Ce choix est figé dans l'ADR 0001.
+
+\aretenir{Critère de go fixé avant la mesure : le naïf doit faire au moins deux fois l'erreur de la meilleure prévision de RTE. 6,19 / 1,69 = 3,66 ; selon l'alignement, de 3,58 à 3,68. La marge pour montrer une progression existe.}
+
+\section{Coût et décision}
+
+\subsection{Le pas de règlement des écarts}
+
+Le pas de règlement des écarts est passé de 30 à 15 minutes le 1\textsuperscript{er} janvier 2025 (CRE, consultation publique n° 2025-01 du 13/03/2025), et le pas du marché du lendemain le 1\textsuperscript{er} octobre 2025. Chaque demi-heure de consommation se coupe en deux quarts d'heure de même puissance moyenne : les deux quarts d'heure ont le même écart en énergie, chacun avec son prix. Les variations à l'intérieur d'une demi-heure ne sont pas vues, ce qui sous-estime un peu les écarts.
+
+\subsection{La fonction de coût}
+
+Pour chaque période $k$, l'écart vaut $\Delta_k = s \times (\text{consommation} - \text{achat})$ en MWh. Face à un achat parfait, il coûte $\Delta_k \times (P^{\text{court}}_k - P_{\text{ref}})$ si le fournisseur est court, et $|\Delta_k| \times (P_{\text{ref}} - P^{\text{long}}_k)$ s'il est long, où $P^{\text{court}}_k$ et $P^{\text{long}}_k$ sont les prix des écarts d'ENTSO-E.
+
+Aucun prix du lendemain n'est publié sous licence claire. Le prix de référence est donc une hypothèse fixe : $P_{\text{ref}} = 61{,}1$~€/MWh, prix day-ahead moyen en France en 2025 publié par la CRE (rapport n° 2026-07 du 17/06/2026, tableau 13), avec une sensibilité à 40 et 100~€/MWh. Les montants sont publiés pour $s = 1$~\% et en euros par MWh consommé ; ils restent indicatifs et ne servent jamais de seuil.
+
+\subsection{Le volume à acheter}
+
+Le fournisseur peut acheter la prévision ponctuelle ou un quantile de la prévision. Le quantile suit la règle du vendeur de journaux : $q$ = pénalité courte / (pénalité courte + pénalité longue), estimé sur la seule validation postérieure au passage au régime d'écart unique, puis figé. Son calcul demande les prix des écarts, donc un compte ENTSO-E : c'est un point ouvert de la v0.1. Si $q$ est proche de 0,5, l'incertitude changera peu le volume acheté, et la valeur des intervalles tiendra surtout à l'information sur le risque.
+
+\section{Découpage et critères de succès}
+
+\subsection{Découpage dans le temps}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{llY}
+\toprule
+\textbf{Période} & \textbf{Dates} & \textbf{Météo en entrée} \\
+\midrule
+Entraînement & 01/01/2012 → 14/03/2024 & Observée (ERA5) \\
+Validation & 15/03/2024 → 31/08/2025 & Prévue, rejouée \\
+Test rétrospectif & 01/09/2025 → 31/08/2026 & Prévue, rejouée sur environ 8 mois sur 12 \\
+Test prospectif & depuis le 01/09/2026 & Prévue, cycle opérationnel \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Sur le test, le modèle est réentraîné au début de chaque mois avec les seules données disponibles à cette date, selon une procédure figée avant l'ouverture. Les intervalles sont calibrés sur les résidus des 12 derniers mois, calculés avec la météo prévue. Les données du test sont figées (empreinte et date) et le test n'est ouvert qu'une fois, sur accord explicite. Le test prospectif évalue ensuite un modèle figé à un commit noté, mois par mois, au fil de la publication du consolidé.
+
+\subsection{Critères}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{lYY}
+\toprule
+\textbf{Critère} & \textbf{Réussite} & \textbf{Échec} \\
+\midrule
+MAPE ponctuelle & au plus 0,5 × celle de J-7 sur le même test & plus de 0,75 × celle de J-7 \\
+Couverture & 80~\% : entre 75 et 85~\% ; 95~\% : entre 92 et 98~\% & une des deux hors de sa plage \\
+Score quantile & meilleur que la référence de quantiles & égal ou moins bon \\
+Décision & achat au quantile moins cher que l'achat de la prévision ponctuelle & égal ou plus cher \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Entre 0,5 et 0,75 fois l'erreur de J-7, le résultat est publié comme insuffisant. Le naïf J-7 étant optimiste, le seuil est plus dur qu'avec une référence réaliste. La référence de quantiles ajoute à J-7 les quantiles empiriques de ses erreurs passées, calculés sur les 12 derniers mois de consolidé disponibles à midi. Le score quantile porte sur les niveaux 0,025, 0,1, 0,5, 0,9 et 0,975. L'écart à RTE est mesuré et publié, jamais visé. Le test rétrospectif est la mesure principale de la v1.0 ; ses résultats sont aussi publiés avant et après le 13/05/2026, et le test prospectif en donne ensuite la mesure réaliste.
+
+\section{Risques}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{lY}
+\toprule
+\textbf{Risque} & \textbf{Parade} \\
+\midrule
+Pas de valeurs récentes à midi & Modèle sans valeurs récentes ; références J-2 et J-7 étiquetées optimistes \\
+Météo rejouée & Étiquette, résultats avant et après le 13/05/2026, test prospectif \\
+Intervalles trop étroits & Calibration sur la météo prévue ; couverture contrôlée sur le test prospectif \\
+Consolidé contre temps réel & Cible consolidée seulement ; vérification vers le 15/12/2026 \\
+Modèle moins bon que RTE corrigé & Écart mesuré, jamais visé ; seuils portant sur J-7 et sur les intervalles \\
+Coût lu comme un gain réel & Prix de référence présenté comme une hypothèse ; sensibilité \\
+Quantile d'achat proche de 0,5 & Le dire ; la valeur des intervalles tient alors à l'information sur le risque \\
+Fin du plan gratuit AWS & Compte ouvert au début de la phase AWS ; LocalStack si une carte est demandée \\
+Quota Open-Meteo & Plafond de 8\,000 appels par jour, une requête par seconde, arrêt définitif au premier refus \\
+Fuite de données du futur & Règle de midi codée et testée ; test ouvert une fois \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Décision}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yl}
+\toprule
+\textbf{Règle fixée avant les mesures} & \textbf{Verdict} \\
+\midrule
+Une décision réaliste s'écrit avec les données disponibles à midi & respectée \\
+Au moins 3 années communes, moins de 1~\% de trous & respectée \\
+Le naïf fait au moins deux fois l'erreur de RTE & respectée (3,66) \\
+Archive de prévisions météo & go dégradé : rejouée, étiquetée \\
+Prix des écarts publics & go dégradé : prix de référence fixe \\
+AWS sans carte & go dégradé si une carte est demandée : LocalStack \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\aretenir{\textbf{Décision : go dégradé.} Les trois conditions bloquantes sont respectées. Trois points sont dégradés, étiquetés et sans effet sur les critères de réussite, qui restent exprimés en erreur.}
+
+\section{Points ouverts}
+
+Ces points ne bloquent pas la v0.0 et sont suivis dans l'ADR 0001 :
+
+\begin{itemize}
+  \item prix des écarts ENTSO-E et valeur du quantile d'achat (compte ENTSO-E, v0.1) ; date de passage au régime d'écart unique à confirmer sur une source officielle ;
+  \item source d'entraînement, ERA5 ou IFS historique, tranchée par la mesure sur la validation ;
+  \item caractère temps réel ou rejoué des calculs ECMWF de novembre 2024 à mai 2026 ;
+  \item prévision J-1 de la plateforme ENTSO-E face à éCO2mix, et prévision J-2 de RTE ;
+  \item panier de 32 stations, seulement si les résidus régionaux le justifient ;
+  \item rupture du biais de RTE, vérifiée vers le 15/12/2026 ;
+  \item plan gratuit AWS sans carte.
+\end{itemize}
+
+\section*{Reproduire les mesures}
+\addcontentsline{toc}{section}{Reproduire les mesures}
+
+Chaque chiffre de ce rapport vient d'un script de \nolinkurl{scripts/feasibility}, dont la sortie JSON est versionnée dans \nolinkurl{docs/v0.0-faisabilite/data}. Les données brutes ne sont pas versionnées : elles se retéléchargent, et leurs empreintes sont notées. Aucun test ni aucune exécution de la CI ne fait d'appel réseau.
+
+\end{document}

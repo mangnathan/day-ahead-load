@@ -11,4 +11,5 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 - Points météo : 12 points fixés sur les aires d'attraction des villes de l'INSEE, contrôle terrestre des mailles et de la convention du rayonnement.
 - Téléchargement de la météo Open-Meteo (ERA5, IFS historique, calculs ECMWF de 00 UTC) sous plafond local de 8 000 appels par jour, avec arrêt définitif au premier refus de quota.
 - Workflow planifié, séparé de la CI, qui mesure chaque jour l'heure de disponibilité du calcul ECMWF (un appel par jour au plus, arrêt définitif au premier refus de quota) et l'écrit sur la branche `donnees/disponibilite-ecmwf`.
+- Clôture de l'étude de faisabilité : questions de Cagan, prémortem, décision de go dégradé, ADR 0001 (cible, règles de disponibilité, étiquettes, découpage, critères de réussite et d'échec, fonction de coût) et rapport de faisabilité en LaTeX.
 - Résumé de travail de l'étude de faisabilité : choix de la pondération de l'indice de température, licences des données ENTSO-E (conditions de 2023, liste du 18/10/2023), options de la fonction de coût.
