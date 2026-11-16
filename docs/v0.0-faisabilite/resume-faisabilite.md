@@ -152,6 +152,25 @@ Aucune série de prix du lendemain sous licence claire n'a été trouvée dans l
 
 L'option 2 est donc retenue : un prix de référence fixe, présenté comme une hypothèse. Il doit venir d'une moyenne annuelle publiée dans un rapport public. Valeur retenue le 15/11/2026 : 61,1 €/MWh, prix day-ahead moyen en France en 2025 (CRE, « La surveillance et le fonctionnement des marchés de gros de l'électricité et du gaz naturel en 2025 », rapport n° 2026-07 du 17 juin 2026, tableau 13, qui donne aussi 57,8 €/MWh pour 2024). La valeur de 60 €/MWh proposée la veille n'était publiée nulle part et a été abandonnée. Sensibilité à 40 et 100 €/MWh. Le coût en euros reste indicatif.
 
+## Écart entre sources météo sur la validation (16/11/2026)
+
+Téléchargement terminé le 16/11/2026 : 16 827 appels comptés en trois séances (7 269, 8 000 et 1 558), pour une estimation de 16 824 ; l'écart vient des tentatives coupées, comptées par prudence. Aucun refus de quota.
+
+Mesure sur la validation (15/03/2024 → 31/08/2025, 535 jours) : pour chaque jour J à Paris, prévision = calcul ECMWF de 00 UTC de J-1, échéances 22 à 47 h. Les calculs de cette période sont rejoués (cycle 49R1). Détail : `data/meteo-ecart-sources.json`.
+
+Indice national de température (pondération par la consommation), en °C, sur 12 839 heures :
+
+| Comparaison | Erreur absolue moyenne | Biais | Écart-type |
+|---|---|---|---|
+| Prévision face à ERA5 | 0,67 | -0,14 | 0,85 |
+| Prévision face à IFS historique | 0,39 | +0,17 | 0,50 |
+| ERA5 face à IFS historique | 0,61 | +0,31 | 0,72 |
+
+Par point, température à 2 m : la prévision est plus proche d'IFS historique que d'ERA5 aux 12 points (0,63 à 0,80 °C contre 0,88 à 1,68 °C). L'écart avec ERA5 est le plus grand à Marseille (1,68 °C), où la maille ERA5 est décalée de 26,6 km, puis à Lyon (1,31 °C) et à Strasbourg (1,20 °C). Les autres variables vont dans le même sens, avec des écarts plus faibles pour le rayonnement et la nébulosité.
+
+Lecture : IFS historique est assemblé à partir du même modèle que la prévision. Il est plus cohérent avec l'entrée du modèle, ce qui ne prouve pas qu'il donnerait une meilleure prévision de consommation. L'écart entre ERA5 et IFS historique (0,61 °C) montre que les deux « météos observées » diffèrent déjà nettement, surtout par la résolution (25 km contre 9 km). La source d'entraînement n'est pas changée à ce stade : la question est tranchée en v0.1, par la mesure décrite dans les points ouverts.
+
 ## Points encore ouverts
 
+- Source d'entraînement (ERA5 ou IFS historique) : en v0.1, entraîner le même modèle sur les mêmes années (2017-01-01 → 2024-03-14, seule période commune) avec l'une puis l'autre source, et comparer la MAPE sur la validation avec la météo prévue en entrée. ERA5 garde l'avantage de couvrir 2012 à 2016 ; ce gain d'historique est mesuré à part.
 - Prévision J-1 de la plateforme ENTSO-E (6.1.b) : comparaison avec éCO2mix et heure de publication (compte ENTSO-E reporté).
