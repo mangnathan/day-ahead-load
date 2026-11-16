@@ -1,0 +1,2 @@
+date_appel_utc,heure_appel_utc,statut,initialisation_utc,disponibilite_utc,modification_utc,delai_disponibilite_h,detail
+2026-11-16,2026-11-16T13:49:59+00:00,echec,,,,,connexion interrompue : <urlopen error _ssl.c:983: The handshake operation timed out>
