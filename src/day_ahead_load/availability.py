@@ -199,6 +199,8 @@ def record(
     """Lit l'API puis le dépôt AWS du calcul de 00 UTC du jour, et ajoute une ligne."""
     called_at = now or datetime.now(UTC)
     day = called_at.astimezone(UTC).date()
+    # Créé avant tout appel : sinon les deux lectures seraient faites puis la ligne perdue.
+    directory.mkdir(parents=True, exist_ok=True)
     stop = directory / STOP_NAME
     if stop.exists():
         return "arrêt : refus de quota antérieur, aucun appel"

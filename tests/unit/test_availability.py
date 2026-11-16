@@ -96,6 +96,12 @@ def test_run_not_yet_deposited_on_aws(tmp_path: Path) -> None:
     assert rows(tmp_path)[0]["statut_aws"] == "absent"
 
 
+def test_missing_directory_is_created(tmp_path: Path) -> None:
+    directory = tmp_path / "data" / "raw" / "disponibilite-europe"
+    run(directory, Scripted(api=[200], aws=[200]))
+    assert len(rows(directory)) == 1
+
+
 def test_at_most_one_row_per_day(tmp_path: Path) -> None:
     fetch = Scripted(api=[200, 200], aws=[200, 200])
     run(tmp_path, fetch)
