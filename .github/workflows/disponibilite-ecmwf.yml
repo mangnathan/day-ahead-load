@@ -1,6 +1,8 @@
 # Mesure une fois par jour l'heure de disponibilité du calcul ECMWF IFS 9 km chez Open-Meteo et
 # l'écrit sur la branche de données. Séparé de la CI : la CI et les tests ne font aucun appel
-# réseau ; ce workflow fait au plus un appel par jour et s'arrête définitivement au premier 429.
+# réseau. Ce workflow écrit une ligne par jour au plus : une tentative, plus une seule nouvelle
+# tentative après 2 minutes en cas de coupure réseau ou de 5xx (ligne « échec » si elle échoue
+# aussi) ; il s'arrête définitivement au premier 429.
 name: Disponibilité ECMWF
 
 on:
@@ -44,7 +46,7 @@ jobs:
       - name: Installer le paquet sans les outils de développement
         run: uv sync --locked --no-dev
 
-      - name: Mesurer (un appel au plus)
+      - name: Mesurer (deux tentatives au plus)
         run: uv run --no-sync python scripts/monitoring/record_ecmwf_availability.py --dossier donnees
 
       - name: Enregistrer sur la branche de données
