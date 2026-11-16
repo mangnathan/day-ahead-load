@@ -183,7 +183,7 @@ def rows_on(path: Path, day: str) -> int:
 def _append(table: Path, row: dict[str, str]) -> None:
     new_file = not table.exists()
     with table.open("a", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=COLUMNS)
+        writer = csv.DictWriter(f, fieldnames=COLUMNS, lineterminator="\n")
         if new_file:
             writer.writeheader()
         writer.writerow(row)
@@ -216,6 +216,7 @@ def record(
                 ensure_ascii=False,
             ),
             encoding="utf-8",
+            newline="\n",
         )
         return "refus de quota (429) : fichier d'arrêt écrit"
     row = build_row(called_at, api, server, aws, day)

@@ -261,7 +261,7 @@ def urllib_fetch(url: str) -> Response:
 def write_atomic(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, suffix=".part")
-    with os.fdopen(fd, "w", encoding="utf-8") as out:
+    with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as out:
         out.write(text)
     os.replace(tmp, path)
 

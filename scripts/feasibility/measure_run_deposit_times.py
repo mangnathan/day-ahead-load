@@ -86,7 +86,9 @@ def created_at(day: date) -> datetime | None:
         RAW.mkdir(parents=True, exist_ok=True)
         meta = json.loads(body)
         path.write_text(
-            json.dumps({k: meta[k] for k in ("created_at", "reference_time")}), encoding="utf-8"
+            json.dumps({k: meta[k] for k in ("created_at", "reference_time")}),
+            encoding="utf-8",
+            newline="\n",
         )
     stored: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     if not stored["reference_time"].startswith(f"{day}T00:00"):
@@ -141,7 +143,9 @@ def main() -> None:
         "calculs_hors_marge": [r["calcul"] for r in rows if r["marge_avant_midi_h"] < 0],
         "par_calcul": rows,
     }
-    SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    SUMMARY.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
     print(
         json.dumps(
             {k: v for k, v in summary.items() if k != "par_calcul"}, indent=2, ensure_ascii=False
