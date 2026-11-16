@@ -1,16 +1,18 @@
-# Mesure une fois par jour l'heure de disponibilité du calcul ECMWF IFS 9 km chez Open-Meteo, lue
-# sur l'API (référence) et sur la copie publique d'Open-Meteo sur AWS, et l'écrit sur la branche de
-# données. Séparé de la CI : la CI et les tests ne font aucun appel réseau. Une ligne par jour au
-# plus ; pour chaque source, une seule nouvelle tentative après 2 minutes en cas de coupure réseau
-# ou de 5xx (statut « echec » si elle échoue aussi) ; arrêt définitif au premier 429.
+# Mesure une fois par jour l'heure de disponibilité du calcul ECMWF IFS 9 km de 00 UTC chez
+# Open-Meteo, lue sur l'API (serveur atteint depuis GitHub, en Amérique du Nord d'après sa plage
+# d'adresses) et sur la copie publique d'Open-Meteo sur AWS (heure de dépôt du calcul), et l'écrit
+# sur la branche de données. Séparé de la CI : la CI et les tests ne font aucun appel réseau. Une
+# ligne par jour au plus ; pour chaque source, une seule nouvelle tentative après 2 minutes en cas
+# de coupure réseau ou de 5xx (statut « echec » si elle échoue aussi) ; arrêt définitif au 429.
 name: Disponibilité ECMWF
 
 on:
   schedule:
-    # 10 h UTC : en principe après la publication du calcul de 00 UTC (vers 6 h 40 UTC) et
-    # avant celle du calcul de 06 UTC (vers 12 h 40 UTC). GitHub peut retarder le départ :
-    # l'heure réelle de l'appel est écrite dans chaque ligne.
-    - cron: "0 10 * * *"
+    # 9 h UTC : le fichier de l'API ne décrit que le dernier calcul reçu. Sur 95 calculs (août à
+    # novembre 2026), celui de 00 UTC est déposé entre 5,9 et 7,2 h après son lancement, celui de
+    # 06 UTC vers 12 h UTC : la lecture doit tomber entre les deux. GitHub peut retarder le
+    # départ d'une heure ou plus ; chaque ligne garde l'heure réelle de l'appel et le calcul lu.
+    - cron: "0 9 * * *"
   workflow_dispatch:
 
 # Écriture nécessaire pour pousser sur la branche de données. La règle de protection de main
