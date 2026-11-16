@@ -1,0 +1,17 @@
+{
+  "maille_era5": {
+    "latitude": 43.5,
+    "longitude": 5.25,
+    "pas_deg": 0.25
+  },
+  "methode": "Altitude Copernicus GLO-90 servie par l'API d'altitude d'Open-Meteo, sur une grille de 20 x 20 points ; un point est compté comme eau si son altitude est au plus 0.5 m.",
+  "temoins_altitude_m": {
+    "etang_de_berre": -2.0,
+    "rade_de_marseille": 0.0
+  },
+  "points": 400,
+  "part_eau_pct": 10.5,
+  "altitude_mediane_m": 128.0,
+  "limite": "Une terre très basse (marais, salins) peut être comptée comme eau ; la part d'eau est donc une borne haute.",
+  "appels": 5
+}

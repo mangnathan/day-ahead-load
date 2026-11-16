@@ -1,0 +1,1487 @@
+{
+  "periode": {
+    "debut": "2024-03-15",
+    "fin": "2025-08-31",
+    "heure": "Paris"
+  },
+  "etiquette": "Prévision ECMWF de 00 UTC de la veille : calculs rejoués (cycle 49R1) sur toute la validation ; avantage possible face à la prévision émise à l'époque, surtout avant le 12/11/2024 (cycle opérationnel 48r1).",
+  "lecture": "IFS historique est assemblé à partir de calculs du même modèle que la prévision : plus proche veut dire plus cohérent avec l'entrée du modèle, pas plus juste.",
+  "indice_national_temperature": {
+    "ecmwf_face_a_era5": {
+      "heures": 12839,
+      "mae": 0.665,
+      "biais": -0.143,
+      "ecart_type": 0.848
+    },
+    "ecmwf_face_a_ifs_historique": {
+      "heures": 12838,
+      "mae": 0.387,
+      "biais": 0.167,
+      "ecart_type": 0.502
+    },
+    "era5_face_a_ifs_historique": {
+      "heures": 12838,
+      "mae": 0.609,
+      "biais": 0.309,
+      "ecart_type": 0.715
+    },
+    "par_mois_ecmwf_face_a_era5": {
+      "2024-03": {
+        "heures": 407,
+        "mae": 0.726,
+        "biais": -0.664,
+        "ecart_type": 0.484
+      },
+      "2024-04": {
+        "heures": 720,
+        "mae": 0.67,
+        "biais": -0.571,
+        "ecart_type": 0.647
+      },
+      "2024-05": {
+        "heures": 744,
+        "mae": 0.636,
+        "biais": -0.532,
+        "ecart_type": 0.67
+      },
+      "2024-06": {
+        "heures": 720,
+        "mae": 0.651,
+        "biais": -0.371,
+        "ecart_type": 0.805
+      },
+      "2024-07": {
+        "heures": 744,
+        "mae": 0.64,
+        "biais": -0.02,
+        "ecart_type": 0.795
+      },
+      "2024-08": {
+        "heures": 744,
+        "mae": 0.754,
+        "biais": 0.359,
+        "ecart_type": 0.864
+      },
+      "2024-09": {
+        "heures": 720,
+        "mae": 0.503,
+        "biais": -0.085,
+        "ecart_type": 0.622
+      },
+      "2024-10": {
+        "heures": 745,
+        "mae": 0.495,
+        "biais": -0.269,
+        "ecart_type": 0.533
+      },
+      "2024-11": {
+        "heures": 720,
+        "mae": 0.442,
+        "biais": -0.062,
+        "ecart_type": 0.556
+      },
+      "2024-12": {
+        "heures": 744,
+        "mae": 0.506,
+        "biais": -0.156,
+        "ecart_type": 0.591
+      },
+      "2025-01": {
+        "heures": 744,
+        "mae": 0.549,
+        "biais": -0.362,
+        "ecart_type": 0.563
+      },
+      "2025-02": {
+        "heures": 672,
+        "mae": 0.525,
+        "biais": -0.295,
+        "ecart_type": 0.55
+      },
+      "2025-03": {
+        "heures": 743,
+        "mae": 0.694,
+        "biais": -0.576,
+        "ecart_type": 0.683
+      },
+      "2025-04": {
+        "heures": 720,
+        "mae": 0.811,
+        "biais": -0.371,
+        "ecart_type": 0.967
+      },
+      "2025-05": {
+        "heures": 744,
+        "mae": 0.666,
+        "biais": 0.148,
+        "ecart_type": 0.819
+      },
+      "2025-06": {
+        "heures": 720,
+        "mae": 0.901,
+        "biais": 0.371,
+        "ecart_type": 1.118
+      },
+      "2025-07": {
+        "heures": 744,
+        "mae": 0.818,
+        "biais": 0.199,
+        "ecart_type": 1.021
+      },
+      "2025-08": {
+        "heures": 744,
+        "mae": 0.99,
+        "biais": 0.427,
+        "ecart_type": 1.158
+      }
+    },
+    "par_mois_ecmwf_face_a_ifs_historique": {
+      "2024-03": {
+        "heures": 406,
+        "mae": 0.34,
+        "biais": 0.026,
+        "ecart_type": 0.45
+      },
+      "2024-04": {
+        "heures": 720,
+        "mae": 0.317,
+        "biais": 0.056,
+        "ecart_type": 0.401
+      },
+      "2024-05": {
+        "heures": 744,
+        "mae": 0.36,
+        "biais": 0.102,
+        "ecart_type": 0.441
+      },
+      "2024-06": {
+        "heures": 720,
+        "mae": 0.488,
+        "biais": 0.385,
+        "ecart_type": 0.487
+      },
+      "2024-07": {
+        "heures": 744,
+        "mae": 0.688,
+        "biais": 0.661,
+        "ecart_type": 0.521
+      },
+      "2024-08": {
+        "heures": 744,
+        "mae": 0.765,
+        "biais": 0.712,
+        "ecart_type": 0.603
+      },
+      "2024-09": {
+        "heures": 720,
+        "mae": 0.355,
+        "biais": 0.18,
+        "ecart_type": 0.413
+      },
+      "2024-10": {
+        "heures": 745,
+        "mae": 0.312,
+        "biais": 0.06,
+        "ecart_type": 0.409
+      },
+      "2024-11": {
+        "heures": 720,
+        "mae": 0.36,
+        "biais": 0.091,
+        "ecart_type": 0.494
+      },
+      "2024-12": {
+        "heures": 744,
+        "mae": 0.365,
+        "biais": 0.133,
+        "ecart_type": 0.496
+      },
+      "2025-01": {
+        "heures": 744,
+        "mae": 0.375,
+        "biais": 0.015,
+        "ecart_type": 0.514
+      },
+      "2025-02": {
+        "heures": 672,
+        "mae": 0.332,
+        "biais": 0.051,
+        "ecart_type": 0.478
+      },
+      "2025-03": {
+        "heures": 743,
+        "mae": 0.227,
+        "biais": -0.076,
+        "ecart_type": 0.286
+      },
+      "2025-04": {
+        "heures": 720,
+        "mae": 0.331,
+        "biais": -0.135,
+        "ecart_type": 0.423
+      },
+      "2025-05": {
+        "heures": 744,
+        "mae": 0.284,
+        "biais": 0.095,
+        "ecart_type": 0.373
+      },
+      "2025-06": {
+        "heures": 720,
+        "mae": 0.323,
+        "biais": 0.154,
+        "ecart_type": 0.398
+      },
+      "2025-07": {
+        "heures": 744,
+        "mae": 0.335,
+        "biais": 0.143,
+        "ecart_type": 0.414
+      },
+      "2025-08": {
+        "heures": 744,
+        "mae": 0.379,
+        "biais": 0.26,
+        "ecart_type": 0.432
+      }
+    }
+  },
+  "par_point": {
+    "Paris": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 0.988,
+          "biais": 0.017,
+          "ecart_type": 1.334
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.791,
+          "biais": 0.233,
+          "ecart_type": 1.092
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.79,
+          "biais": 0.216,
+          "ecart_type": 1.044
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 29.954,
+          "biais": 9.339,
+          "ecart_type": 65.913
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 29.24,
+          "biais": 4.667,
+          "ecart_type": 68.385
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 27.3,
+          "biais": -4.672,
+          "ecart_type": 62.261
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 18.866,
+          "biais": -4.017,
+          "ecart_type": 30.686
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.497,
+          "biais": -2.21,
+          "ecart_type": 31.227
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 15.413,
+          "biais": 1.804,
+          "ecart_type": 25.816
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.912,
+          "biais": -2.264,
+          "ecart_type": 2.862
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.151,
+          "biais": -1.022,
+          "ecart_type": 2.82
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.441,
+          "biais": 1.241,
+          "ecart_type": 2.843
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 6.014,
+          "biais": -3.598,
+          "ecart_type": 7.258
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.373,
+          "biais": -0.977,
+          "ecart_type": 6.253
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.752,
+          "biais": 2.621,
+          "ecart_type": 5.804
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Tours": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.026,
+          "biais": -0.003,
+          "ecart_type": 1.359
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.698,
+          "biais": 0.121,
+          "ecart_type": 0.96
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.813,
+          "biais": 0.124,
+          "ecart_type": 1.065
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 29.204,
+          "biais": 8.378,
+          "ecart_type": 65.636
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.538,
+          "biais": 3.426,
+          "ecart_type": 63.278
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 25.249,
+          "biais": -4.953,
+          "ecart_type": 56.754
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 19.148,
+          "biais": -3.758,
+          "ecart_type": 31.056
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.719,
+          "biais": -2.483,
+          "ecart_type": 31.689
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 15.616,
+          "biais": 1.274,
+          "ecart_type": 26.173
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.398,
+          "biais": -1.394,
+          "ecart_type": 2.784
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.958,
+          "biais": -0.563,
+          "ecart_type": 2.685
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.902,
+          "biais": 0.83,
+          "ecart_type": 2.347
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 5.45,
+          "biais": -1.778,
+          "ecart_type": 7.14
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.015,
+          "biais": -0.007,
+          "ecart_type": 5.639
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.479,
+          "biais": 1.771,
+          "ecart_type": 5.752
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Dijon": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.129,
+          "biais": -0.249,
+          "ecart_type": 1.441
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.738,
+          "biais": 0.139,
+          "ecart_type": 1.021
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.016,
+          "biais": 0.388,
+          "ecart_type": 1.244
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 28.238,
+          "biais": 4.37,
+          "ecart_type": 64.639
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.689,
+          "biais": 0.549,
+          "ecart_type": 64.806
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 27.188,
+          "biais": -3.822,
+          "ecart_type": 61.079
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 19.055,
+          "biais": -2.574,
+          "ecart_type": 30.126
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.941,
+          "biais": -2.614,
+          "ecart_type": 31.287
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 16.838,
+          "biais": -0.04,
+          "ecart_type": 27.205
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.5,
+          "biais": -0.671,
+          "ecart_type": 3.208
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.977,
+          "biais": -0.419,
+          "ecart_type": 2.757
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.153,
+          "biais": 0.251,
+          "ecart_type": 2.786
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 6.149,
+          "biais": -1.422,
+          "ecart_type": 8.198
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.508,
+          "biais": 0.119,
+          "ecart_type": 6.365
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 5.225,
+          "biais": 1.543,
+          "ecart_type": 6.746
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Rouen": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.003,
+          "biais": -0.345,
+          "ecart_type": 1.225
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.654,
+          "biais": 0.028,
+          "ecart_type": 0.918
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.836,
+          "biais": 0.374,
+          "ecart_type": 0.983
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 27.83,
+          "biais": 6.543,
+          "ecart_type": 60.252
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 27.704,
+          "biais": 3.773,
+          "ecart_type": 63.85
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 25.305,
+          "biais": -2.77,
+          "ecart_type": 56.362
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 18.67,
+          "biais": -4.226,
+          "ecart_type": 30.455
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.411,
+          "biais": -1.906,
+          "ecart_type": 31.172
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 15.095,
+          "biais": 2.321,
+          "ecart_type": 25.396
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.603,
+          "biais": -1.648,
+          "ecart_type": 2.911
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.886,
+          "biais": -0.51,
+          "ecart_type": 2.526
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.145,
+          "biais": 1.137,
+          "ecart_type": 2.534
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 5.077,
+          "biais": -2.09,
+          "ecart_type": 6.458
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 3.814,
+          "biais": 0.463,
+          "ecart_type": 5.375
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.586,
+          "biais": 2.554,
+          "ecart_type": 5.44
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Lille": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 0.879,
+          "biais": 0.15,
+          "ecart_type": 1.196
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.689,
+          "biais": 0.118,
+          "ecart_type": 0.955
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.663,
+          "biais": -0.032,
+          "ecart_type": 0.902
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 29.957,
+          "biais": 11.345,
+          "ecart_type": 65.564
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 29.683,
+          "biais": 6.268,
+          "ecart_type": 69.603
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.766,
+          "biais": -5.078,
+          "ecart_type": 59.457
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 19.509,
+          "biais": -3.457,
+          "ecart_type": 31.52
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.914,
+          "biais": -2.421,
+          "ecart_type": 31.866
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 15.495,
+          "biais": 1.039,
+          "ecart_type": 26.025
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.14,
+          "biais": -0.888,
+          "ecart_type": 2.651
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.045,
+          "biais": -0.826,
+          "ecart_type": 2.671
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.824,
+          "biais": 0.062,
+          "ecart_type": 2.414
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 5.352,
+          "biais": -1.551,
+          "ecart_type": 7.129
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.051,
+          "biais": 0.211,
+          "ecart_type": 5.729
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.468,
+          "biais": 1.762,
+          "ecart_type": 5.714
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Strasbourg": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.196,
+          "biais": -0.405,
+          "ecart_type": 1.485
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.745,
+          "biais": 0.102,
+          "ecart_type": 1.013
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.072,
+          "biais": 0.507,
+          "ecart_type": 1.301
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 28.041,
+          "biais": 4.077,
+          "ecart_type": 62.605
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 24.782,
+          "biais": 1.844,
+          "ecart_type": 58.557
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.34,
+          "biais": -2.234,
+          "ecart_type": 58.338
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 20.551,
+          "biais": 2.122,
+          "ecart_type": 31.977
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.276,
+          "biais": -1.381,
+          "ecart_type": 30.181
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 18.536,
+          "biais": -3.504,
+          "ecart_type": 29.323
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.409,
+          "biais": 0.364,
+          "ecart_type": 3.098
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.237,
+          "biais": -0.822,
+          "ecart_type": 2.927
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.502,
+          "biais": -1.186,
+          "ecart_type": 2.954
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 6.309,
+          "biais": 1.175,
+          "ecart_type": 8.278
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.481,
+          "biais": 0.422,
+          "ecart_type": 6.239
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 5.467,
+          "biais": -0.754,
+          "ecart_type": 7.253
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Nantes": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 0.991,
+          "biais": 0.146,
+          "ecart_type": 1.297
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.627,
+          "biais": 0.076,
+          "ecart_type": 0.894
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.832,
+          "biais": -0.07,
+          "ecart_type": 1.086
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 28.801,
+          "biais": 9.224,
+          "ecart_type": 62.713
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.016,
+          "biais": 4.072,
+          "ecart_type": 61.288
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 24.775,
+          "biais": -5.153,
+          "ecart_type": 54.1
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 18.674,
+          "biais": -3.471,
+          "ecart_type": 30.337
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.101,
+          "biais": -1.791,
+          "ecart_type": 30.828
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 15.63,
+          "biais": 1.681,
+          "ecart_type": 26.108
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.242,
+          "biais": -1.181,
+          "ecart_type": 2.666
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.901,
+          "biais": -0.599,
+          "ecart_type": 2.626
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.797,
+          "biais": 0.582,
+          "ecart_type": 2.306
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 4.96,
+          "biais": -2.293,
+          "ecart_type": 6.114
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 3.664,
+          "biais": 0.009,
+          "ecart_type": 5.246
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.307,
+          "biais": 2.302,
+          "ecart_type": 5.141
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Rennes": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 0.934,
+          "biais": -0.146,
+          "ecart_type": 1.218
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.649,
+          "biais": 0.026,
+          "ecart_type": 0.905
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.757,
+          "biais": 0.172,
+          "ecart_type": 0.97
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 29.274,
+          "biais": 6.761,
+          "ecart_type": 63.834
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 27.093,
+          "biais": 4.632,
+          "ecart_type": 61.656
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 25.181,
+          "biais": -2.129,
+          "ecart_type": 55.553
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 18.825,
+          "biais": -3.036,
+          "ecart_type": 30.455
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.109,
+          "biais": -2.024,
+          "ecart_type": 30.952
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 15.787,
+          "biais": 1.012,
+          "ecart_type": 26.305
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.122,
+          "biais": -0.964,
+          "ecart_type": 2.636
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.823,
+          "biais": -0.372,
+          "ecart_type": 2.536
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.713,
+          "biais": 0.591,
+          "ecart_type": 2.189
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 5.164,
+          "biais": -1.932,
+          "ecart_type": 6.654
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 3.772,
+          "biais": 0.205,
+          "ecart_type": 5.361
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.389,
+          "biais": 2.137,
+          "ecart_type": 5.426
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Bordeaux": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.121,
+          "biais": 0.269,
+          "ecart_type": 1.46
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.741,
+          "biais": 0.301,
+          "ecart_type": 0.983
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.928,
+          "biais": 0.032,
+          "ecart_type": 1.211
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 29.101,
+          "biais": 6.25,
+          "ecart_type": 65.368
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.337,
+          "biais": 5.619,
+          "ecart_type": 62.651
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.36,
+          "biais": -0.631,
+          "ecart_type": 59.056
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 19.48,
+          "biais": -2.952,
+          "ecart_type": 30.611
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.429,
+          "biais": -2.018,
+          "ecart_type": 30.728
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 16.136,
+          "biais": 0.942,
+          "ecart_type": 26.221
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.923,
+          "biais": -0.15,
+          "ecart_type": 2.571
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.852,
+          "biais": -0.166,
+          "ecart_type": 2.595
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.759,
+          "biais": -0.016,
+          "ecart_type": 2.353
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 6.045,
+          "biais": -2.172,
+          "ecart_type": 7.744
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.176,
+          "biais": -0.975,
+          "ecart_type": 5.869
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.876,
+          "biais": 1.196,
+          "ecart_type": 6.325
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Toulouse": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.134,
+          "biais": -0.037,
+          "ecart_type": 1.524
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.742,
+          "biais": 0.272,
+          "ecart_type": 1.018
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.014,
+          "biais": 0.309,
+          "ecart_type": 1.296
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 28.959,
+          "biais": 9.078,
+          "ecart_type": 63.9
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 22.342,
+          "biais": 1.713,
+          "ecart_type": 54.542
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.864,
+          "biais": -7.366,
+          "ecart_type": 60.162
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 19.198,
+          "biais": -1.74,
+          "ecart_type": 30.051
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.593,
+          "biais": -1.873,
+          "ecart_type": 30.544
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.023,
+          "biais": -0.13,
+          "ecart_type": 27.189
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 3.025,
+          "biais": -1.665,
+          "ecart_type": 3.514
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.291,
+          "biais": -0.849,
+          "ecart_type": 3.072
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.688,
+          "biais": 0.816,
+          "ecart_type": 3.421
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 6.321,
+          "biais": -1.754,
+          "ecart_type": 8.51
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.382,
+          "biais": -0.816,
+          "ecart_type": 6.237
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 5.345,
+          "biais": 0.938,
+          "ecart_type": 7.284
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Lyon": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.306,
+          "biais": -0.631,
+          "ecart_type": 1.525
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.801,
+          "biais": 0.227,
+          "ecart_type": 1.098
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.241,
+          "biais": 0.858,
+          "ecart_type": 1.266
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 28.464,
+          "biais": 6.716,
+          "ecart_type": 64.752
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 24.752,
+          "biais": 1.175,
+          "ecart_type": 60.965
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 26.653,
+          "biais": -5.542,
+          "ecart_type": 61.391
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 20.483,
+          "biais": -0.005,
+          "ecart_type": 31.745
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.982,
+          "biais": -1.534,
+          "ecart_type": 30.907
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 18.65,
+          "biais": -1.527,
+          "ecart_type": 29.328
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 2.392,
+          "biais": -0.834,
+          "ecart_type": 3.083
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.301,
+          "biais": -0.897,
+          "ecart_type": 3.15
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.307,
+          "biais": -0.063,
+          "ecart_type": 3.116
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 6.892,
+          "biais": -1.593,
+          "ecart_type": 8.974
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.834,
+          "biais": -0.31,
+          "ecart_type": 6.822
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 5.708,
+          "biais": 1.285,
+          "ecart_type": 7.43
+        }
+      },
+      "jours_avec_prevision": 535
+    },
+    "Marseille": {
+      "temperature_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 1.678,
+          "biais": -0.295,
+          "ecart_type": 2.132
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 0.637,
+          "biais": 0.111,
+          "ecart_type": 0.86
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 1.581,
+          "biais": 0.406,
+          "ecart_type": 2.039
+        }
+      },
+      "shortwave_radiation": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 18.28,
+          "biais": 3.398,
+          "ecart_type": 46.798
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 16.738,
+          "biais": 1.089,
+          "ecart_type": 49.171
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.631,
+          "biais": -2.31,
+          "ecart_type": 45.824
+        }
+      },
+      "cloud_cover": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 19.714,
+          "biais": -3.546,
+          "ecart_type": 31.715
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 17.083,
+          "biais": -1.641,
+          "ecart_type": 30.528
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 16.589,
+          "biais": 1.906,
+          "ecart_type": 27.573
+        }
+      },
+      "wind_speed_10m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 3.297,
+          "biais": 1.421,
+          "ecart_type": 3.972
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 2.644,
+          "biais": -0.977,
+          "ecart_type": 3.479
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 3.719,
+          "biais": -2.398,
+          "ecart_type": 4.12
+        }
+      },
+      "relative_humidity_2m": {
+        "ecmwf_face_a_era5": {
+          "heures": 12839,
+          "mae": 9.17,
+          "biais": -2.878,
+          "ecart_type": 11.785
+        },
+        "ecmwf_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 4.786,
+          "biais": -0.105,
+          "ecart_type": 6.671
+        },
+        "era5_face_a_ifs_historique": {
+          "heures": 12838,
+          "mae": 8.871,
+          "biais": 2.773,
+          "ecart_type": 11.55
+        }
+      },
+      "jours_avec_prevision": 535
+    }
+  }
+}

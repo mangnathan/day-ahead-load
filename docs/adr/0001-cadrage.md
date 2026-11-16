@@ -132,7 +132,7 @@ Paramètres :
 | Panier de 32 stations de RTE | Seulement si les résidus régionaux montrent un écart dû aux 12 points |
 | Prévision J-1 de la plateforme ENTSO-E (6.1.b) face à éCO2mix, et son heure de publication | Compte ENTSO-E |
 | Calculs ECMWF de novembre 2024 à mai 2026 : temps réel ou rejoués | Réponse d'Open-Meteo |
-| Source d'entraînement : ERA5 ou IFS historique | Mesure de l'écart sur la validation, montrée avant tout changement |
+| Source d'entraînement : ERA5 ou IFS historique | Tranchée en v0.1 par la comparaison A / B / C sur la validation : A, ERA5 brut ; B, IFS historique (2017 → 2024-03) ; C, ERA5 corrigé vers IFS par point, mois et heure, écart calculé sur 2017 → 2024-03-14 dans l'entraînement seulement. Même modèle, MAPE de la validation avec la météo prévue ; A et C aussi entraînés sur 2017 → 2024-03-14 pour comparer à durée égale ; gain des années 2012 à 2016 mesuré à part |
 | Prévision J-2 de RTE : première version ou version révisée dans l'historique | Compte RTE (champ `updated_date`) |
 | Rupture du biais de RTE en septembre 2026 | Consolidé de septembre et d'octobre 2026, vers le 15/12/2026 |
 | Plan gratuit AWS sans carte | Essai au début de la phase AWS ; LocalStack si une carte est demandée |
