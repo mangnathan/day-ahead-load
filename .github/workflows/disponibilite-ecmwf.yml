@@ -1,8 +1,8 @@
-# Mesure une fois par jour l'heure de disponibilité du calcul ECMWF IFS 9 km chez Open-Meteo et
-# l'écrit sur la branche de données. Séparé de la CI : la CI et les tests ne font aucun appel
-# réseau. Ce workflow écrit une ligne par jour au plus : une tentative, plus une seule nouvelle
-# tentative après 2 minutes en cas de coupure réseau ou de 5xx (ligne « échec » si elle échoue
-# aussi) ; il s'arrête définitivement au premier 429.
+# Mesure une fois par jour l'heure de disponibilité du calcul ECMWF IFS 9 km chez Open-Meteo, lue
+# sur l'API (référence) et sur la copie publique d'Open-Meteo sur AWS, et l'écrit sur la branche de
+# données. Séparé de la CI : la CI et les tests ne font aucun appel réseau. Une ligne par jour au
+# plus ; pour chaque source, une seule nouvelle tentative après 2 minutes en cas de coupure réseau
+# ou de 5xx (statut « echec » si elle échoue aussi) ; arrêt définitif au premier 429.
 name: Disponibilité ECMWF
 
 on:

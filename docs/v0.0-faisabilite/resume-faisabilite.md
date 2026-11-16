@@ -67,6 +67,21 @@ Risque à inscrire au prémortem : calibrés sur une validation dont l'entrée m
 - Limite : l'heure mesurée est celle de l'API de prévision. La documentation Single Runs dit seulement que les calculs y sont disponibles « peu après » le dernier pas de temps publié.
 - Workflow GitHub Actions planifié, séparé de la CI (`.github/workflows/disponibilite-ecmwf.yml`) : un appel par jour vers 10 h UTC, au plus un par jour, arrêt définitif au premier 429, ligne ajoutée à un CSV sur la branche `donnees/disponibilite-ecmwf`. La CI et les tests restent sans aucun appel réseau.
 
+Constat du 16/11/2026 : depuis la machine de GitHub, l'API n'a répondu à aucune des trois tentatives de la journée (11 h 05 et 13 h 49 UTC), toutes arrêtées par un délai dépassé pendant l'établissement de la connexion sécurisée. Le même appel passe en local. Diagnostic lancé une fois le 16/11/2026 vers 13 h 58 UTC, depuis la machine de GitHub (workflow ponctuel sur une branche jamais mergée) :
+
+- délai d'attente du script : 30 s, donc pas en cause ;
+- `api.open-meteo.com` n'a qu'une adresse IPv4 (167.114.211.86) et aucune adresse IPv6 ; le témoin AWS n'a pas d'IPv6 non plus ;
+- connexion forcée en IPv4 vers l'API : poignée de main TLS 1.3 complète et réponse 200 en 0,06 s ; vers le témoin AWS : réponse 200 en 0,2 s.
+
+Conclusion : il n'y a pas de filtrage des adresses de GitHub. Le problème est intermittent : l'API a échoué à 11 h 05 et deux fois à 13 h 49, puis répondu à 13 h 58 depuis le même environnement. Il rejoint les deux coupures observées en local pendant le téléchargement. La cause la plus probable est le côté serveur d'Open-Meteo, qui n'expose qu'une adresse, mais ce n'est pas établi. La parade est la nouvelle tentative et la lecture AWS en complément ; le taux d'échec de l'API est suivi dans le CSV, et la question n'entre dans les points ouverts de l'ADR que s'il reste élevé.
+
+Choix (16/11/2026) : deux sources lues chaque jour, dans la même ligne, avec le statut de chacune.
+
+- L'API (`api.open-meteo.com`) reste la référence : c'est là que notre chaîne lit la prévision, et son heure est donc celle qui compte pour la règle de midi.
+- La copie publique d'Open-Meteo sur AWS (`openmeteo.s3.amazonaws.com`) est lue en complément permanent. Son heure est celle du dépôt des fichiers, un peu plus tôt que la disponibilité sur l'API : 12 h 01 contre 12 h 40 UTC pour le calcul de 06 UTC du 14/11/2026 (environ 40 min), 12 h 01 contre 12 h 55 UTC pour celui du 16/11/2026 (53,7 min, mesure locale).
+- Les jours où les deux répondent sur le même calcul, l'écart est mesuré. Les jours sans API, l'heure retenue est l'heure AWS plus le plus grand écart observé, présentée comme une estimation.
+- Ce qui compte pour la règle de midi est la marge restante, de l'ordre de 3 h 30 à 4 h 30 pour le calcul de 00 UTC : un écart de 40 à 55 min entre les deux sources ne la menace pas.
+
 ### Appels et garde-fous
 
 Bilan au 16/11/2026 : 16 827 appels décomptés pour 16 824 estimés, en trois séances (7 269, 8 000 et 1 558), zéro refus de quota. Les 3 appels de plus sont des tentatives coupées, comptées par prudence. Le contrôle de la maille de Marseille a ensuite ajouté 402 appels, estimés avant le lancement.
