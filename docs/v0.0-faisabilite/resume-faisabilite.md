@@ -67,7 +67,13 @@ Risque à inscrire au prémortem : calibrés sur une validation dont l'entrée m
 - Limite : l'heure mesurée est celle de l'API de prévision. La documentation Single Runs dit seulement que les calculs y sont disponibles « peu après » le dernier pas de temps publié.
 - Workflow GitHub Actions planifié, séparé de la CI (`.github/workflows/disponibilite-ecmwf.yml`) : un appel par jour vers 10 h UTC, au plus un par jour, arrêt définitif au premier 429, ligne ajoutée à un CSV sur la branche `donnees/disponibilite-ecmwf`. La CI et les tests restent sans aucun appel réseau.
 
-Constat du 16/11/2026 : depuis la machine de GitHub, l'API n'a répondu à aucune des trois tentatives de la journée (11 h 05 et 13 h 49 UTC), toutes arrêtées par un délai dépassé pendant l'établissement de la connexion sécurisée. Le même appel passe en local. Un diagnostic (résolution DNS, connexion forcée en IPv4 puis en IPv6, témoin AWS) est lancé une fois pour en connaître la cause ; aucun filtrage n'est affirmé avant son résultat.
+Constat du 16/11/2026 : depuis la machine de GitHub, l'API n'a répondu à aucune des trois tentatives de la journée (11 h 05 et 13 h 49 UTC), toutes arrêtées par un délai dépassé pendant l'établissement de la connexion sécurisée. Le même appel passe en local. Diagnostic lancé une fois le 16/11/2026 vers 13 h 58 UTC, depuis la machine de GitHub (workflow ponctuel sur une branche jamais mergée) :
+
+- délai d'attente du script : 30 s, donc pas en cause ;
+- `api.open-meteo.com` n'a qu'une adresse IPv4 (167.114.211.86) et aucune adresse IPv6 ; le témoin AWS n'a pas d'IPv6 non plus ;
+- connexion forcée en IPv4 vers l'API : poignée de main TLS 1.3 complète et réponse 200 en 0,06 s ; vers le témoin AWS : réponse 200 en 0,2 s.
+
+Conclusion : il n'y a pas de filtrage des adresses de GitHub. Le problème est intermittent : l'API a échoué à 11 h 05 et deux fois à 13 h 49, puis répondu à 13 h 58 depuis le même environnement. Il rejoint les deux coupures observées en local pendant le téléchargement. La cause la plus probable est le côté serveur d'Open-Meteo, qui n'expose qu'une adresse, mais ce n'est pas établi. La parade est la nouvelle tentative et la lecture AWS en complément ; le taux d'échec de l'API est suivi dans le CSV, et la question n'entre dans les points ouverts de l'ADR que s'il reste élevé.
 
 Choix (16/11/2026) : deux sources lues chaque jour, dans la même ligne, avec le statut de chacune.
 
