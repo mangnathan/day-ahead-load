@@ -98,13 +98,33 @@ Le modèle utilise un indice national de température et quatre autres variables
   \item Points : Paris, Lyon, Marseille, Lille, Toulouse, Bordeaux, Nantes, Strasbourg, Rennes, Rouen, Tours, Dijon.
   \item Variables : température à 2~m, rayonnement solaire global, nébulosité, vent à 10~m, humidité relative.
   \item Sources : ERA5 pour l'entraînement ; calcul ECMWF IFS 9~km de 00~UTC de la veille comme entrée réelle ; série IFS historique mesurée à part sur la validation. Toutes reçoivent les mêmes coordonnées, la même altitude, les mêmes variables, l'heure GMT et la sélection d'une maille terrestre.
-  \item Contrôles : les 36 centres de maille (12 points, 3 sources) tombent sur une commune française ; la maille ERA5 de Marseille est décalée de 26,6~km vers l'étang de Berre et sera surveillée. Dans les 36 cas, le rayonnement suit la convention de la moyenne de l'heure précédente : il n'y a pas de décalage d'une heure entre sources.
+  \item Contrôles : les 36 centres de maille (12 points, 3 sources) tombent sur une commune française ; la maille ERA5 de Marseille est décalée de 26,6~km vers l'étang de Berre. Mesurée par l'altitude du modèle de terrain, elle compte au plus 10,5~\% d'eau, avec une altitude médiane de 128~m : elle n'est pas dominée par l'eau, mais représente surtout l'arrière-pays, plus haut et plus continental que Marseille. Dans les 36 cas, le rayonnement suit la convention de la moyenne de l'heure précédente : il n'y a pas de décalage d'une heure entre sources.
   \item Complétude : aucune heure ne manque dans ERA5 (130\,032 heures par point, 2012 à octobre 2026) ni dans la série IFS historique de la validation.
+  \item Collecte : 16\,827 appels décomptés pour 16\,824 estimés, en trois séances, sous un plafond local de 8\,000 appels par jour, sans aucun refus de quota.
 \end{itemize}
 
 \aretenir{Les calculs ECMWF archivés avant le 13/05/2026 sont décrits par Open-Meteo comme des \emph{hindcasts} du cycle 49R1. Ceux du 14/03/2024 au 11/11/2024 ont donc été rejoués avec un modèle devenu opérationnel plus tard. Ils portent l'étiquette «~météo prévue rejouée, avantage possible~». D'après ECMWF, ce changement de cycle améliore d'environ 11~\% le score de la température à 2~m à un jour d'échéance, pour la prévision d'ensemble, en hiver, sur l'hémisphère nord.}
 
 L'heure de disponibilité du calcul de 00~UTC est mesurée chaque jour par un workflow séparé de la CI. Une première mesure donne environ 6~h~40 UTC, bien avant midi.
+
+\subsection{Écart entre sources sur la validation}
+
+Le modèle apprend sur une météo observée et prédit avec une météo prévue. Sur la validation (535 jours, échéances 22 à 47~h du calcul de 00~UTC de la veille), l'écart sur l'indice national de température vaut :
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+\textbf{Comparaison} & \textbf{Écart absolu moyen} & \textbf{Biais} & \textbf{Écart-type} \\
+\midrule
+Prévision face à ERA5 & 0,67~°C & −0,14~°C & 0,85~°C \\
+Prévision face à IFS historique & 0,39~°C & +0,17~°C & 0,50~°C \\
+ERA5 face à IFS historique & 0,61~°C & +0,31~°C & 0,72~°C \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+La prévision est plus proche d'IFS historique aux 12 points, ce qui était attendu : c'est le même modèle. Cela mesure la cohérence de l'entrée, pas la qualité de la prévision de consommation. L'écart avec ERA5 est le plus grand à Marseille (1,68~°C), puis à Lyon et à Strasbourg. ERA5 est en moyenne 0,31~°C plus chaud qu'IFS historique ; avec une sensibilité d'environ 2\,330~MW par degré en hiver, cela représente environ 720~MW. La source d'entraînement reste ERA5 et sera tranchée en v0.1 par trois variantes du même modèle : ERA5 brut, IFS historique (depuis 2017) et ERA5 corrigé vers IFS par point, mois et heure.
 
 \subsection{L'indice de température}
 
@@ -239,6 +259,7 @@ Modèle moins bon que RTE corrigé & Écart mesuré, jamais visé ; seuils porta
 Coût lu comme un gain réel & Prix de référence présenté comme une hypothèse ; sensibilité \\
 Quantile d'achat proche de 0,5 & Le dire ; la valeur des intervalles tient alors à l'information sur le risque \\
 Fin du plan gratuit AWS & Compte ouvert au début de la phase AWS ; LocalStack si une carte est demandée \\
+Biais ERA5 face à la prévision (environ 720~MW en hiver) & Comparaison de trois variantes de la source d'entraînement en v0.1 ; biais suivi par saison \\
 Quota Open-Meteo & Plafond de 8\,000 appels par jour, une requête par seconde, arrêt définitif au premier refus \\
 Fuite de données du futur & Règle de midi codée et testée ; test ouvert une fois \\
 \bottomrule
@@ -271,7 +292,7 @@ Ces points ne bloquent pas la v0.0 et sont suivis dans l'ADR 0001 :
 
 \begin{itemize}
   \item prix des écarts ENTSO-E et valeur du quantile d'achat (compte ENTSO-E, v0.1) ; date de passage au régime d'écart unique à confirmer sur une source officielle ;
-  \item source d'entraînement, ERA5 ou IFS historique, tranchée par la mesure sur la validation ;
+  \item source d'entraînement, tranchée en v0.1 par la comparaison de trois variantes (ERA5 brut, IFS historique, ERA5 corrigé vers IFS) sur la validation ;
   \item caractère temps réel ou rejoué des calculs ECMWF de novembre 2024 à mai 2026 ;
   \item prévision J-1 de la plateforme ENTSO-E face à éCO2mix, et prévision J-2 de RTE ;
   \item panier de 32 stations, seulement si les résidus régionaux le justifient ;
