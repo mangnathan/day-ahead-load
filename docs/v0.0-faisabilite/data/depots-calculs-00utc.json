@@ -1,0 +1,690 @@
+{
+  "source": "Open-Meteo, dépôt open-data sur AWS, data_run/ecmwf_ifs/<calcul>/meta.json, champ created_at",
+  "regle": "Heure retenue = dépôt sur AWS + 2 h ; marge = midi, heure de Paris, la veille du jour livré, moins cette heure.",
+  "delai_depot_h": {
+    "calculs": 95,
+    "min": 5.86,
+    "mediane": 6.51,
+    "max": 7.15
+  },
+  "marge_heure_ete_h": {
+    "calculs": 72,
+    "min": 0.85,
+    "mediane": 1.48,
+    "max": 2.14
+  },
+  "marge_heure_hiver_h": {
+    "calculs": 23,
+    "min": 2.4,
+    "mediane": 2.54,
+    "max": 2.65
+  },
+  "calculs_hors_marge": [],
+  "par_calcul": [
+    {
+      "calcul": "2026-08-14T00:00Z",
+      "depot_aws_utc": "2026-08-14T06:46:39+00:00",
+      "delai_depot_h": 6.78,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.22
+    },
+    {
+      "calcul": "2026-08-15T00:00Z",
+      "depot_aws_utc": "2026-08-15T06:39:12+00:00",
+      "delai_depot_h": 6.65,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.35
+    },
+    {
+      "calcul": "2026-08-16T00:00Z",
+      "depot_aws_utc": "2026-08-16T06:37:51+00:00",
+      "delai_depot_h": 6.63,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.37
+    },
+    {
+      "calcul": "2026-08-17T00:00Z",
+      "depot_aws_utc": "2026-08-17T06:34:35+00:00",
+      "delai_depot_h": 6.58,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.42
+    },
+    {
+      "calcul": "2026-08-18T00:00Z",
+      "depot_aws_utc": "2026-08-18T06:29:54+00:00",
+      "delai_depot_h": 6.5,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.5
+    },
+    {
+      "calcul": "2026-08-19T00:00Z",
+      "depot_aws_utc": "2026-08-19T06:31:33+00:00",
+      "delai_depot_h": 6.53,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.47
+    },
+    {
+      "calcul": "2026-08-20T00:00Z",
+      "depot_aws_utc": "2026-08-20T06:25:59+00:00",
+      "delai_depot_h": 6.43,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.57
+    },
+    {
+      "calcul": "2026-08-21T00:00Z",
+      "depot_aws_utc": "2026-08-21T06:27:21+00:00",
+      "delai_depot_h": 6.46,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.54
+    },
+    {
+      "calcul": "2026-08-22T00:00Z",
+      "depot_aws_utc": "2026-08-22T06:30:47+00:00",
+      "delai_depot_h": 6.51,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.49
+    },
+    {
+      "calcul": "2026-08-23T00:00Z",
+      "depot_aws_utc": "2026-08-23T06:27:33+00:00",
+      "delai_depot_h": 6.46,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.54
+    },
+    {
+      "calcul": "2026-08-24T00:00Z",
+      "depot_aws_utc": "2026-08-24T06:37:22+00:00",
+      "delai_depot_h": 6.62,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.38
+    },
+    {
+      "calcul": "2026-08-25T00:00Z",
+      "depot_aws_utc": "2026-08-25T06:35:31+00:00",
+      "delai_depot_h": 6.59,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.41
+    },
+    {
+      "calcul": "2026-08-26T00:00Z",
+      "depot_aws_utc": "2026-08-26T06:24:45+00:00",
+      "delai_depot_h": 6.41,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.59
+    },
+    {
+      "calcul": "2026-08-27T00:00Z",
+      "depot_aws_utc": "2026-08-27T06:23:34+00:00",
+      "delai_depot_h": 6.39,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.61
+    },
+    {
+      "calcul": "2026-08-28T00:00Z",
+      "depot_aws_utc": "2026-08-28T06:24:14+00:00",
+      "delai_depot_h": 6.4,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.6
+    },
+    {
+      "calcul": "2026-08-29T00:00Z",
+      "depot_aws_utc": "2026-08-29T06:27:04+00:00",
+      "delai_depot_h": 6.45,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.55
+    },
+    {
+      "calcul": "2026-08-30T00:00Z",
+      "depot_aws_utc": "2026-08-30T06:25:53+00:00",
+      "delai_depot_h": 6.43,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.57
+    },
+    {
+      "calcul": "2026-08-31T00:00Z",
+      "depot_aws_utc": "2026-08-31T06:28:28+00:00",
+      "delai_depot_h": 6.47,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.53
+    },
+    {
+      "calcul": "2026-09-01T00:00Z",
+      "depot_aws_utc": "2026-09-01T06:29:36+00:00",
+      "delai_depot_h": 6.49,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.51
+    },
+    {
+      "calcul": "2026-09-02T00:00Z",
+      "depot_aws_utc": "2026-09-02T06:39:17+00:00",
+      "delai_depot_h": 6.65,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.35
+    },
+    {
+      "calcul": "2026-09-03T00:00Z",
+      "depot_aws_utc": "2026-09-03T06:30:01+00:00",
+      "delai_depot_h": 6.5,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.5
+    },
+    {
+      "calcul": "2026-09-04T00:00Z",
+      "depot_aws_utc": "2026-09-04T06:29:53+00:00",
+      "delai_depot_h": 6.5,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.5
+    },
+    {
+      "calcul": "2026-09-05T00:00Z",
+      "depot_aws_utc": "2026-09-05T06:35:12+00:00",
+      "delai_depot_h": 6.59,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.41
+    },
+    {
+      "calcul": "2026-09-06T00:00Z",
+      "depot_aws_utc": "2026-09-06T07:09:14+00:00",
+      "delai_depot_h": 7.15,
+      "heure_ete": true,
+      "marge_avant_midi_h": 0.85
+    },
+    {
+      "calcul": "2026-09-07T00:00Z",
+      "depot_aws_utc": "2026-09-07T06:24:26+00:00",
+      "delai_depot_h": 6.41,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.59
+    },
+    {
+      "calcul": "2026-09-08T00:00Z",
+      "depot_aws_utc": "2026-09-08T06:31:08+00:00",
+      "delai_depot_h": 6.52,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.48
+    },
+    {
+      "calcul": "2026-09-09T00:00Z",
+      "depot_aws_utc": "2026-09-09T06:29:38+00:00",
+      "delai_depot_h": 6.49,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.51
+    },
+    {
+      "calcul": "2026-09-10T00:00Z",
+      "depot_aws_utc": "2026-09-10T06:28:34+00:00",
+      "delai_depot_h": 6.48,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.52
+    },
+    {
+      "calcul": "2026-09-11T00:00Z",
+      "depot_aws_utc": "2026-09-11T06:28:11+00:00",
+      "delai_depot_h": 6.47,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.53
+    },
+    {
+      "calcul": "2026-09-12T00:00Z",
+      "depot_aws_utc": "2026-09-12T06:24:14+00:00",
+      "delai_depot_h": 6.4,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.6
+    },
+    {
+      "calcul": "2026-09-13T00:00Z",
+      "depot_aws_utc": "2026-09-13T06:28:21+00:00",
+      "delai_depot_h": 6.47,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.53
+    },
+    {
+      "calcul": "2026-09-14T00:00Z",
+      "depot_aws_utc": "2026-09-14T06:24:13+00:00",
+      "delai_depot_h": 6.4,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.6
+    },
+    {
+      "calcul": "2026-09-15T00:00Z",
+      "depot_aws_utc": "2026-09-15T06:25:37+00:00",
+      "delai_depot_h": 6.43,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.57
+    },
+    {
+      "calcul": "2026-09-16T00:00Z",
+      "depot_aws_utc": "2026-09-16T06:30:43+00:00",
+      "delai_depot_h": 6.51,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.49
+    },
+    {
+      "calcul": "2026-09-17T00:00Z",
+      "depot_aws_utc": "2026-09-17T06:39:21+00:00",
+      "delai_depot_h": 6.66,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.34
+    },
+    {
+      "calcul": "2026-09-18T00:00Z",
+      "depot_aws_utc": "2026-09-18T06:31:53+00:00",
+      "delai_depot_h": 6.53,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.47
+    },
+    {
+      "calcul": "2026-09-19T00:00Z",
+      "depot_aws_utc": "2026-09-19T06:33:26+00:00",
+      "delai_depot_h": 6.56,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.44
+    },
+    {
+      "calcul": "2026-09-20T00:00Z",
+      "depot_aws_utc": "2026-09-20T06:37:13+00:00",
+      "delai_depot_h": 6.62,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.38
+    },
+    {
+      "calcul": "2026-09-21T00:00Z",
+      "depot_aws_utc": "2026-09-21T06:42:59+00:00",
+      "delai_depot_h": 6.72,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.28
+    },
+    {
+      "calcul": "2026-09-22T00:00Z",
+      "depot_aws_utc": "2026-09-22T06:36:20+00:00",
+      "delai_depot_h": 6.61,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.39
+    },
+    {
+      "calcul": "2026-09-23T00:00Z",
+      "depot_aws_utc": "2026-09-23T06:33:19+00:00",
+      "delai_depot_h": 6.56,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.44
+    },
+    {
+      "calcul": "2026-09-24T00:00Z",
+      "depot_aws_utc": "2026-09-24T06:34:20+00:00",
+      "delai_depot_h": 6.57,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.43
+    },
+    {
+      "calcul": "2026-09-25T00:00Z",
+      "depot_aws_utc": "2026-09-25T06:33:25+00:00",
+      "delai_depot_h": 6.56,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.44
+    },
+    {
+      "calcul": "2026-09-26T00:00Z",
+      "depot_aws_utc": "2026-09-26T06:34:25+00:00",
+      "delai_depot_h": 6.57,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.43
+    },
+    {
+      "calcul": "2026-09-27T00:00Z",
+      "depot_aws_utc": "2026-09-27T06:33:19+00:00",
+      "delai_depot_h": 6.56,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.44
+    },
+    {
+      "calcul": "2026-09-28T00:00Z",
+      "depot_aws_utc": "2026-09-28T06:30:37+00:00",
+      "delai_depot_h": 6.51,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.49
+    },
+    {
+      "calcul": "2026-09-29T00:00Z",
+      "depot_aws_utc": "2026-09-29T06:36:15+00:00",
+      "delai_depot_h": 6.6,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.4
+    },
+    {
+      "calcul": "2026-09-30T00:00Z",
+      "depot_aws_utc": "2026-09-30T06:36:51+00:00",
+      "delai_depot_h": 6.61,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.39
+    },
+    {
+      "calcul": "2026-10-01T00:00Z",
+      "depot_aws_utc": "2026-10-01T06:25:53+00:00",
+      "delai_depot_h": 6.43,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.57
+    },
+    {
+      "calcul": "2026-10-02T00:00Z",
+      "depot_aws_utc": "2026-10-02T06:57:37+00:00",
+      "delai_depot_h": 6.96,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.04
+    },
+    {
+      "calcul": "2026-10-03T00:00Z",
+      "depot_aws_utc": "2026-10-03T06:24:21+00:00",
+      "delai_depot_h": 6.41,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.59
+    },
+    {
+      "calcul": "2026-10-04T00:00Z",
+      "depot_aws_utc": "2026-10-04T06:24:05+00:00",
+      "delai_depot_h": 6.4,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.6
+    },
+    {
+      "calcul": "2026-10-05T00:00Z",
+      "depot_aws_utc": "2026-10-05T06:22:15+00:00",
+      "delai_depot_h": 6.37,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.63
+    },
+    {
+      "calcul": "2026-10-06T00:00Z",
+      "depot_aws_utc": "2026-10-06T06:27:19+00:00",
+      "delai_depot_h": 6.46,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.54
+    },
+    {
+      "calcul": "2026-10-07T00:00Z",
+      "depot_aws_utc": "2026-10-07T06:29:17+00:00",
+      "delai_depot_h": 6.49,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.51
+    },
+    {
+      "calcul": "2026-10-08T00:00Z",
+      "depot_aws_utc": "2026-10-08T06:31:21+00:00",
+      "delai_depot_h": 6.52,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.48
+    },
+    {
+      "calcul": "2026-10-09T00:00Z",
+      "depot_aws_utc": "2026-10-09T06:32:38+00:00",
+      "delai_depot_h": 6.54,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.46
+    },
+    {
+      "calcul": "2026-10-10T00:00Z",
+      "depot_aws_utc": "2026-10-10T06:40:55+00:00",
+      "delai_depot_h": 6.68,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.32
+    },
+    {
+      "calcul": "2026-10-11T00:00Z",
+      "depot_aws_utc": "2026-10-11T06:30:39+00:00",
+      "delai_depot_h": 6.51,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.49
+    },
+    {
+      "calcul": "2026-10-12T00:00Z",
+      "depot_aws_utc": "2026-10-12T06:32:07+00:00",
+      "delai_depot_h": 6.54,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.46
+    },
+    {
+      "calcul": "2026-10-13T00:00Z",
+      "depot_aws_utc": "2026-10-13T06:32:41+00:00",
+      "delai_depot_h": 6.54,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.46
+    },
+    {
+      "calcul": "2026-10-14T00:00Z",
+      "depot_aws_utc": "2026-10-14T06:31:34+00:00",
+      "delai_depot_h": 6.53,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.47
+    },
+    {
+      "calcul": "2026-10-15T00:00Z",
+      "depot_aws_utc": "2026-10-15T06:27:52+00:00",
+      "delai_depot_h": 6.46,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.54
+    },
+    {
+      "calcul": "2026-10-16T00:00Z",
+      "depot_aws_utc": "2026-10-16T06:33:14+00:00",
+      "delai_depot_h": 6.55,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.45
+    },
+    {
+      "calcul": "2026-10-17T00:00Z",
+      "depot_aws_utc": "2026-10-17T06:32:57+00:00",
+      "delai_depot_h": 6.55,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.45
+    },
+    {
+      "calcul": "2026-10-18T00:00Z",
+      "depot_aws_utc": "2026-10-18T05:51:27+00:00",
+      "delai_depot_h": 5.86,
+      "heure_ete": true,
+      "marge_avant_midi_h": 2.14
+    },
+    {
+      "calcul": "2026-10-19T00:00Z",
+      "depot_aws_utc": "2026-10-19T06:26:58+00:00",
+      "delai_depot_h": 6.45,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.55
+    },
+    {
+      "calcul": "2026-10-20T00:00Z",
+      "depot_aws_utc": "2026-10-20T06:34:47+00:00",
+      "delai_depot_h": 6.58,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.42
+    },
+    {
+      "calcul": "2026-10-21T00:00Z",
+      "depot_aws_utc": "2026-10-21T06:33:38+00:00",
+      "delai_depot_h": 6.56,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.44
+    },
+    {
+      "calcul": "2026-10-22T00:00Z",
+      "depot_aws_utc": "2026-10-22T06:40:56+00:00",
+      "delai_depot_h": 6.68,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.32
+    },
+    {
+      "calcul": "2026-10-23T00:00Z",
+      "depot_aws_utc": "2026-10-23T06:30:43+00:00",
+      "delai_depot_h": 6.51,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.49
+    },
+    {
+      "calcul": "2026-10-24T00:00Z",
+      "depot_aws_utc": "2026-10-24T06:34:32+00:00",
+      "delai_depot_h": 6.58,
+      "heure_ete": true,
+      "marge_avant_midi_h": 1.42
+    },
+    {
+      "calcul": "2026-10-25T00:00Z",
+      "depot_aws_utc": "2026-10-25T06:31:57+00:00",
+      "delai_depot_h": 6.53,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.47
+    },
+    {
+      "calcul": "2026-10-26T00:00Z",
+      "depot_aws_utc": "2026-10-26T06:35:54+00:00",
+      "delai_depot_h": 6.6,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.4
+    },
+    {
+      "calcul": "2026-10-27T00:00Z",
+      "depot_aws_utc": "2026-10-27T06:30:52+00:00",
+      "delai_depot_h": 6.51,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.49
+    },
+    {
+      "calcul": "2026-10-28T00:00Z",
+      "depot_aws_utc": "2026-10-28T06:27:08+00:00",
+      "delai_depot_h": 6.45,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.55
+    },
+    {
+      "calcul": "2026-10-29T00:00Z",
+      "depot_aws_utc": "2026-10-29T06:33:40+00:00",
+      "delai_depot_h": 6.56,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.44
+    },
+    {
+      "calcul": "2026-10-30T00:00Z",
+      "depot_aws_utc": "2026-10-30T06:35:43+00:00",
+      "delai_depot_h": 6.6,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.4
+    },
+    {
+      "calcul": "2026-10-31T00:00Z",
+      "depot_aws_utc": "2026-10-31T06:31:26+00:00",
+      "delai_depot_h": 6.52,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.48
+    },
+    {
+      "calcul": "2026-11-01T00:00Z",
+      "depot_aws_utc": "2026-11-01T06:31:14+00:00",
+      "delai_depot_h": 6.52,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.48
+    },
+    {
+      "calcul": "2026-11-02T00:00Z",
+      "depot_aws_utc": "2026-11-02T06:27:23+00:00",
+      "delai_depot_h": 6.46,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.54
+    },
+    {
+      "calcul": "2026-11-03T00:00Z",
+      "depot_aws_utc": "2026-11-03T06:27:33+00:00",
+      "delai_depot_h": 6.46,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.54
+    },
+    {
+      "calcul": "2026-11-04T00:00Z",
+      "depot_aws_utc": "2026-11-04T06:25:01+00:00",
+      "delai_depot_h": 6.42,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.58
+    },
+    {
+      "calcul": "2026-11-05T00:00Z",
+      "depot_aws_utc": "2026-11-05T06:29:30+00:00",
+      "delai_depot_h": 6.49,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.51
+    },
+    {
+      "calcul": "2026-11-06T00:00Z",
+      "depot_aws_utc": "2026-11-06T06:26:50+00:00",
+      "delai_depot_h": 6.45,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.55
+    },
+    {
+      "calcul": "2026-11-07T00:00Z",
+      "depot_aws_utc": "2026-11-07T06:26:39+00:00",
+      "delai_depot_h": 6.44,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.56
+    },
+    {
+      "calcul": "2026-11-08T00:00Z",
+      "depot_aws_utc": "2026-11-08T06:24:54+00:00",
+      "delai_depot_h": 6.42,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.58
+    },
+    {
+      "calcul": "2026-11-09T00:00Z",
+      "depot_aws_utc": "2026-11-09T06:33:22+00:00",
+      "delai_depot_h": 6.56,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.44
+    },
+    {
+      "calcul": "2026-11-10T00:00Z",
+      "depot_aws_utc": "2026-11-10T06:29:30+00:00",
+      "delai_depot_h": 6.49,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.51
+    },
+    {
+      "calcul": "2026-11-11T00:00Z",
+      "depot_aws_utc": "2026-11-11T06:30:23+00:00",
+      "delai_depot_h": 6.51,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.49
+    },
+    {
+      "calcul": "2026-11-12T00:00Z",
+      "depot_aws_utc": "2026-11-12T06:22:12+00:00",
+      "delai_depot_h": 6.37,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.63
+    },
+    {
+      "calcul": "2026-11-13T00:00Z",
+      "depot_aws_utc": "2026-11-13T06:26:47+00:00",
+      "delai_depot_h": 6.45,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.55
+    },
+    {
+      "calcul": "2026-11-14T00:00Z",
+      "depot_aws_utc": "2026-11-14T06:24:12+00:00",
+      "delai_depot_h": 6.4,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.6
+    },
+    {
+      "calcul": "2026-11-15T00:00Z",
+      "depot_aws_utc": "2026-11-15T06:20:59+00:00",
+      "delai_depot_h": 6.35,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.65
+    },
+    {
+      "calcul": "2026-11-16T00:00Z",
+      "depot_aws_utc": "2026-11-16T06:23:03+00:00",
+      "delai_depot_h": 6.38,
+      "heure_ete": false,
+      "marge_avant_midi_h": 2.62
+    }
+  ]
+}
