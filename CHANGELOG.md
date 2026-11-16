@@ -13,3 +13,6 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 - Workflow planifié, séparé de la CI, qui mesure chaque jour l'heure de disponibilité du calcul ECMWF (un appel par jour au plus, arrêt définitif au premier refus de quota) et l'écrit sur la branche `donnees/disponibilite-ecmwf`.
 - Clôture de l'étude de faisabilité : questions de Cagan, prémortem, décision de go dégradé, ADR 0001 (cible, règles de disponibilité, étiquettes, découpage, critères de réussite et d'échec, fonction de coût) et rapport de faisabilité en LaTeX.
 - Résumé de travail de l'étude de faisabilité : choix de la pondération de l'indice de température, licences des données ENTSO-E (conditions de 2023, liste du 18/10/2023), options de la fonction de coût.
+
+### Corrigé
+- Mesure quotidienne de la disponibilité ECMWF : la première exécution planifiée a échoué sur un délai de connexion dépassé. Une coupure réseau ou une réponse 5xx donne maintenant lieu à une seule nouvelle tentative après 2 minutes ; un deuxième échec écrit une ligne « échec » datée au lieu de faire échouer le workflow.
