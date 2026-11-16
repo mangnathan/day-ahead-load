@@ -14,7 +14,7 @@ Rédigé le 14/11/2026, avant toute modélisation. Les chiffres viennent des scr
 | 6 | Pourquoi maintenant ? | Le pas de règlement des écarts est passé à 15 minutes le 01/01/2025 et le pas du marché du lendemain le 01/10/2025. Le biais de la prévision J-1 de RTE grandit depuis 2022 (environ -1 100 MW en 2023-2024, surtout entre 13 h et 16 h). Les calculs ECMWF 9 km archivés depuis le 14/03/2024 rendent possible un test sur une météo prévue. |
 | 7 | Comment l'utilisateur la reçoit ? | Une prévision chaque jour avant midi, par API et sur un tableau de bord. Le tableau de bord ne montre que nos erreurs comparées, jamais les courbes de RTE (CGU de RTE, art. 7.1). |
 | 8 | Comment mesurer le succès ? | En erreur, pas en euros : MAPE sur le test au moins deux fois plus faible que celle du naïf J-7 ; couverture des intervalles proche de leur niveau nominal ; écart à RTE mesuré et publié, jamais visé. Seuils fixés dans l'ADR 0001. |
-| 9 | Facteurs critiques | La météo prévue disponible avant midi (calcul de 06 UTC disponible 6,7 h après son lancement, une mesure ; mesure quotidienne mise en place). Le décalage du consolidé (règle prudente M+3). L'indice national de température (12 points). Les changements d'heure. L'absence de tout appel réseau en CI. |
+| 9 | Facteurs critiques | La météo prévue disponible avant midi (calcul de 00 UTC déposé 5,9 à 7,2 h après son lancement sur 95 calculs ; avec une marge prudente de 2 h, au moins 0,85 h d'avance sur midi en été ; mesure quotidienne en place). Le décalage du consolidé (règle prudente M+3). L'indice national de température (12 points). Les changements d'heure. L'absence de tout appel réseau en CI. |
 | 10 | Recommandation | Go dégradé, voir la partie 3. |
 
 ## 2. Prémortem
@@ -41,7 +41,7 @@ On suppose que le projet a échoué, et on cherche pourquoi.
 
 | Règle | Mesure | Verdict |
 |---|---|---|
-| Une décision réaliste s'écrit avec les données disponibles à l'heure limite | Décision à midi la veille ; consolidé jusqu'au mois M-3 ; météo du calcul ECMWF de 00 UTC de la veille, disponible vers 6 h 40 UTC d'après une mesure. | Respectée |
+| Une décision réaliste s'écrit avec les données disponibles à l'heure limite | Décision à midi la veille ; consolidé jusqu'au mois M-3 ; météo du calcul ECMWF de 00 UTC de la veille, déposé 5,9 à 7,2 h après son lancement (95 calculs) ; avec une marge prudente de 2 h, toujours disponible avant midi, en été comme en hiver. | Respectée |
 | Au moins 3 années complètes en commun entre consommation, prévision J-1 de RTE et météo, avec moins de 1 % de trous | Consommation et prévision J-1 : 2012-01-01 → 2026-08-31 en consolidé ou définitif ; 60 horodatages absents sur 521 568, tous dus aux changements d'heure et traités. Échantillon commun des références : 126 demi-heures manquantes sur 43 198 (0,29 %). Météo observée (ERA5, 2012-01-01 → 2026-10-31) : 0 heure manquante sur 130 032 par point, pour chacune des 5 variables aux 12 points (mesure du 14/11/2026, `data/meteo-completude.json`). | Respectée |
 | Le naïf saisonnier fait au moins deux fois l'erreur de RTE | 6,19 / 1,69 = 3,66 (3,58 à 3,68 selon l'alignement). | Respectée |
 | Archive de prévisions météo | Elle existe, mais rejouée avant le 12/05/2026. | Go dégradé : étiquette « météo prévue rejouée » |

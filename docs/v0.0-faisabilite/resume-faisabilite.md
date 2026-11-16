@@ -79,8 +79,31 @@ Choix (16/11/2026) : deux sources lues chaque jour, dans la même ligne, avec le
 
 - L'API (`api.open-meteo.com`) reste la référence : c'est là que notre chaîne lit la prévision, et son heure est donc celle qui compte pour la règle de midi.
 - La copie publique d'Open-Meteo sur AWS (`openmeteo.s3.amazonaws.com`) est lue en complément permanent. Son heure est celle du dépôt des fichiers, un peu plus tôt que la disponibilité sur l'API : 12 h 01 contre 12 h 40 UTC pour le calcul de 06 UTC du 14/11/2026 (environ 40 min), 12 h 01 contre 12 h 55 UTC pour celui du 16/11/2026 (53,7 min, mesure locale).
-- Les jours où les deux répondent sur le même calcul, l'écart est mesuré. Les jours sans API, l'heure retenue est l'heure AWS plus le plus grand écart observé, présentée comme une estimation.
-- Ce qui compte pour la règle de midi est la marge restante, de l'ordre de 3 h 30 à 4 h 30 pour le calcul de 00 UTC : un écart de 40 à 55 min entre les deux sources ne la menace pas.
+- Les jours où les deux répondent sur le même calcul, l'écart est mesuré.
+
+### Heure de disponibilité : corrections du 16/11/2026
+
+**Un serveur par région.** `api.open-meteo.com` ne renvoie pas vers le même serveur selon l'endroit d'où l'on appelle : 157.90.83.168 depuis la France, 167.114.211.86 depuis la machine de GitHub. Le pays de chaque serveur (Allemagne pour le premier, Canada pour le second) est déduit de sa plage d'adresses, sans être vérifié. Chaque serveur a son propre fichier de métadonnées : pour le calcul de 06 UTC du 16/11/2026, le serveur atteint depuis la France le donnait disponible à 12 h 55 UTC, celui atteint depuis GitHub à 12 h 01, comme la copie AWS. La série mesurée depuis GitHub suit donc seulement le serveur nord-américain ; elle ne dit pas l'heure vue par un fournisseur qui appelle depuis l'Europe. L'adresse du serveur atteint est notée dans chaque ligne. Le serveur européen n'est pas visé de force depuis GitHub : ce serait contourner l'aiguillage d'Open-Meteo.
+
+**Le bon calcul.** La règle de midi utilise le calcul de 00 UTC de la veille. Les mesures du 14/11 et du 16/11 portaient sur celui de 06 UTC, car le fichier de métadonnées ne décrit que le dernier calcul reçu. Deux changements :
+
+- la copie AWS garde un fichier par calcul (`data_run/ecmwf_ifs/AAAA/MM/JJ/HHMMZ/meta.json`), dont le champ `created_at` est l'heure de dépôt du calcul (vérifié sur le calcul de 06 UTC du 16/11/2026 : 12:01:59, contre 12:01:23 dans le fichier général ; la date de modification de l'objet, 13:48, correspond à une réécriture ultérieure). La mesure quotidienne lit ce fichier pour le calcul de 00 UTC du jour ;
+- la lecture de l'API passe à 9 h UTC, entre la disponibilité du calcul de 00 UTC et celle du calcul de 06 UTC. Chaque ligne indique à quel calcul (00, 06, 12 ou 18 UTC) se rapporte la lecture, et l'écart n'est calculé que sur le calcul de 00 UTC.
+
+**Dépôt des calculs de 00 UTC sur AWS** (95 calculs, du 13/08 au 16/11/2026, fichiers conservés environ trois mois ; détail dans `data/depots-calculs-00utc.json`) : délai de dépôt de 5,86 à 7,15 h après le lancement, médiane 6,51 h.
+
+**Règle prudente.** Deux mesures ne suffisent pas pour fixer le retard du serveur européen sur le dépôt AWS (40 et 54 min, toutes deux sur le calcul de 06 UTC). L'heure retenue pour la règle de midi est donc le dépôt sur AWS plus une marge fixe de 2 h. Avec cette règle, la marge restante avant midi, heure de Paris, vaut :
+
+| Période | Calculs | Marge minimale | Médiane |
+|---|---|---|---|
+| Heure d'été (midi = 10 h UTC) | 72 | 0,85 h | 1,48 h |
+| Heure d'hiver (midi = 11 h UTC) | 23 | 2,40 h | 2,54 h |
+
+Aucun calcul ne sort de la marge. En été, la marge est mince (51 min au pire). Sans la marge de 2 h, l'écart entre le dépôt et midi est d'au moins 2 h 51 en été et 4 h 24 en hiver ; l'estimation de 3 h 30 à 4 h 30 donnée plus tôt reposait sur une seule mesure, faite sur le calcul de 06 UTC, et ne valait qu'en hiver. L'écart réel entre l'API européenne et AWS continuera d'être mesuré, pour justifier ou réduire la marge de 2 h.
+
+**Mesure européenne.** Pour mesurer le calcul de 00 UTC sur le serveur européen, la même commande se lance depuis un poste en France, certains matins, entre la disponibilité du calcul de 00 UTC et celle du calcul de 06 UTC (de 9 h 30 à 12 h 30 heure de Paris en hiver, de 10 h 30 à 13 h 30 en été ; chaque ligne indique de toute façon le calcul lu), sans obligation de régularité. Les lignes vont dans un dossier local distinct.
+
+**Les échecs de connexion du 16/11/2026.** Ce qu'on sait : les trois tentatives depuis GitHub (11 h 05 et deux fois 13 h 49 UTC) ont expiré pendant l'établissement de la connexion sécurisée ; le diagnostic de 13 h 58, lancé depuis le même environnement, a atteint le serveur 167.114.211.86 et reçu une réponse en 0,06 s. Les tentatives qui ont échoué n'ont pas noté le serveur atteint : on ne peut donc pas dire si elles visaient un autre serveur. Rien n'indique un changement de serveur, puisque `api.open-meteo.com` n'a qu'une adresse vue depuis GitHub. L'explication la plus probable reste un incident passager. Les deux coupures observées en local pendant le téléchargement visaient d'autres hôtes d'Open-Meteo. Si ces échecs se reproduisent, le statut et le serveur atteint de chaque ligne le montreront.
 
 ### Appels et garde-fous
 

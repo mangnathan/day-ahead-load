@@ -27,7 +27,7 @@ La décision est prise à **midi, heure de Paris, la veille** du jour livré. Se
 ### Ce qui est disponible à midi
 
 - Consommation consolidée : un mois M est considéré comme disponible le 1er du mois M+3. C'est une règle prudente tirée d'une observation datée : le 14/11/2026, le consolidé s'arrêtait au 31/08/2026, alors que la documentation annonce la mi-M+1.
-- Météo prévue : le calcul ECMWF IFS 9 km de 00 UTC de la veille (Open-Meteo, Single Runs API). Le calcul de 06 UTC du 14/11/2026 était disponible 6,7 h après son lancement ; celui de 00 UTC l'est donc vers 6 h 40 UTC, plusieurs heures avant midi. L'heure de disponibilité est mesurée chaque jour par un workflow séparé de la CI.
+- Météo prévue : le calcul ECMWF IFS 9 km de 00 UTC de la veille (Open-Meteo, Single Runs API). Sur 95 calculs (13/08 → 16/11/2026), il est déposé sur la copie AWS d'Open-Meteo 5,9 à 7,2 h après son lancement. L'heure retenue est ce dépôt plus une marge prudente fixe de 2 h ; avec elle, la marge restante avant midi, heure de Paris, est d'au moins 0,85 h en heure d'été et 2,40 h en heure d'hiver, sans aucun calcul hors marge. L'heure de disponibilité est mesurée chaque jour par un workflow séparé de la CI, pour justifier ou réduire la marge de 2 h (révision du 16/11/2026 ; la première version citait une mesure du calcul de 06 UTC).
 - Prévision J-1 de RTE : publiée après midi. Toute référence qui l'utilise est étiquetée « avantagée ».
 
 ### Météo
@@ -138,6 +138,7 @@ Paramètres :
 | Plan gratuit AWS sans carte | Essai au début de la phase AWS ; LocalStack si une carte est demandée |
 | Prix des écarts ENTSO-E et valeur de q (v0.1) | Compte ENTSO-E et jeton d'API (demande par courriel, environ 3 jours ouvrés) |
 | Date de passage au régime d'écart unique (05/10/2024) | Source officielle de RTE ou de la CRE |
+| Heure de disponibilité du calcul de 00 UTC sur le serveur européen d'Open-Meteo (`api.open-meteo.com` renvoie vers un serveur par région ; pays déduits des plages d'adresses, non vérifiés) | Mesurée régulièrement seulement depuis l'Europe : mesures locales ponctuelles d'ici là, puis depuis la chaîne en phase AWS ; la série GitHub suit le serveur nord-américain |
 
 ## Alternatives écartées
 

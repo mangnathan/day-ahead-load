@@ -105,7 +105,7 @@ Le modèle utilise un indice national de température et quatre autres variables
 
 \aretenir{Les calculs ECMWF archivés avant le 13/05/2026 sont décrits par Open-Meteo comme des \emph{hindcasts} du cycle 49R1. Ceux du 14/03/2024 au 11/11/2024 ont donc été rejoués avec un modèle devenu opérationnel plus tard. Ils portent l'étiquette «~météo prévue rejouée, avantage possible~». D'après ECMWF, ce changement de cycle améliore d'environ 11~\% le score de la température à 2~m à un jour d'échéance, pour la prévision d'ensemble, en hiver, sur l'hémisphère nord.}
 
-L'heure de disponibilité du calcul de 00~UTC est mesurée chaque jour par un workflow séparé de la CI. Une première mesure donne environ 6~h~40 UTC, bien avant midi.
+Sur 95 calculs de 00~UTC (du 13/08 au 16/11/2026), le dépôt sur la copie AWS d'Open-Meteo a lieu 5,9 à 7,2~h après le lancement. L'heure retenue pour la règle de midi est ce dépôt plus une marge prudente de 2~h. Avec elle, il reste au moins 0,85~h avant midi en heure d'été et 2,40~h en heure d'hiver, sans aucun calcul hors marge. La marge d'été est mince ; l'écart réel entre l'API et le dépôt est mesuré chaque jour par un workflow séparé de la CI, pour justifier ou réduire ces 2~h. L'API d'Open-Meteo renvoie vers un serveur par région : la série mesurée depuis GitHub suit le serveur nord-américain, et l'heure vue depuis l'Europe n'est mesurée que ponctuellement.
 
 \subsection{Écart entre sources sur la validation}
 
@@ -297,6 +297,7 @@ Ces points ne bloquent pas la v0.0 et sont suivis dans l'ADR 0001 :
   \item prévision J-1 de la plateforme ENTSO-E face à éCO2mix, et prévision J-2 de RTE ;
   \item panier de 32 stations, seulement si les résidus régionaux le justifient ;
   \item rupture du biais de RTE, vérifiée vers le 15/12/2026 ;
+  \item heure de disponibilité du calcul de 00~UTC sur le serveur européen d'Open-Meteo, mesurée régulièrement seulement depuis l'Europe ;
   \item plan gratuit AWS sans carte.
 \end{itemize}
 

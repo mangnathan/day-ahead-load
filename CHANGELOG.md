@@ -15,6 +15,8 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 - Résumé de travail de l'étude de faisabilité : choix de la pondération de l'indice de température, licences des données ENTSO-E (conditions de 2023, liste du 18/10/2023), options de la fonction de coût.
 
 ### Modifié
+- Mesure quotidienne de la disponibilité ECMWF : elle vise le calcul de 00 UTC, celui de la règle de midi. Lecture de l'API à 9 h UTC avec le calcul lu et l'adresse du serveur atteint, et lecture du fichier propre au calcul de 00 UTC sur la copie AWS (heure de dépôt). Nouveau fichier `disponibilite-ecmwf-00utc.csv`.
+- Règle de disponibilité de la météo prévue : dépôt sur AWS + 2 h, vérifiée sur 95 calculs de 00 UTC, en heure d'été comme en heure d'hiver.
 - Mesure quotidienne de la disponibilité ECMWF : lecture de l'API (référence) et de la copie publique d'Open-Meteo sur AWS, dans une même ligne avec le statut de chacune, et écart entre les deux les jours où les deux répondent. Nouveau fichier `disponibilite-ecmwf.csv` ; l'ancien est gardé comme historique.
 
 ### Corrigé
