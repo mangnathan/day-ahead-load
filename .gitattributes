@@ -1,0 +1,5 @@
+# Fins de ligne LF dans le dépôt, quel que soit le système : sous Windows, Python écrit des CRLF
+# par défaut, ce qui rendait les différences illisibles.
+* text=auto eol=lf
+*.pdf binary
+*.png binary

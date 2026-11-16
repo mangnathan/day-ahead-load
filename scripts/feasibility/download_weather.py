@@ -108,7 +108,9 @@ def run_control() -> None:
         "appel_altitude_12_points": {"en_tetes_quota": quota},
         "points": points,
     }
-    CONTROL.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    CONTROL.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
     print(f"{dl.calls} appels ; contrôle écrit dans {CONTROL}")
 
 

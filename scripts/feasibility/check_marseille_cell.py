@@ -85,7 +85,9 @@ def main() -> None:
         ),
         "appels": dl.calls,
     }
-    SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    SUMMARY.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
     print(json.dumps(summary, indent=2, ensure_ascii=False))
 
 

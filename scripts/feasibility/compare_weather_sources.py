@@ -89,7 +89,9 @@ def main() -> None:
         },
         "par_point": per_point,
     }
-    SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    SUMMARY.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
     print(json.dumps(summary["indice_national_temperature"], indent=2, ensure_ascii=False)[:2000])
 
 

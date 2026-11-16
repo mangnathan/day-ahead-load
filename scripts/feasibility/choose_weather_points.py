@@ -107,7 +107,9 @@ def main() -> None:
         "points": ranking.to_dict(orient="records"),
         "coordonnees": [p.__dict__ for p in frozen],
     }
-    SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    SUMMARY.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
     print(ranking.to_string())
 
 

@@ -60,7 +60,9 @@ def main() -> None:
         "regle": "Moins de 1 % d'heures manquantes par point et par variable (partie C).",
         "sources": results,
     }
-    SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    SUMMARY.write_text(
+        json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
+    )
     for source, result in results.items():
         print(
             source,
