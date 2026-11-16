@@ -69,6 +69,8 @@ Risque à inscrire au prémortem : calibrés sur une validation dont l'entrée m
 
 ### Appels et garde-fous
 
+Bilan au 16/11/2026 : 16 827 appels décomptés pour 16 824 estimés, en trois séances (7 269, 8 000 et 1 558), zéro refus de quota. Les 3 appels de plus sont des tentatives coupées, comptées par prudence. Le contrôle de la maille de Marseille a ensuite ajouté 402 appels, estimés avant le lancement.
+
 Estimation (5 variables, tranches de 14 jours, 1 appel par point et par tranche ou par calcul) :
 
 | Source | Période | Appels |
@@ -170,7 +172,23 @@ Par point, température à 2 m : la prévision est plus proche d'IFS historique 
 
 Lecture : IFS historique est assemblé à partir du même modèle que la prévision. Il est plus cohérent avec l'entrée du modèle, ce qui ne prouve pas qu'il donnerait une meilleure prévision de consommation. L'écart entre ERA5 et IFS historique (0,61 °C) montre que les deux « météos observées » diffèrent déjà nettement, surtout par la résolution (25 km contre 9 km). La source d'entraînement n'est pas changée à ce stade : la question est tranchée en v0.1, par la mesure décrite dans les points ouverts.
 
+Ordre de grandeur : ERA5 est en moyenne 0,31 °C plus chaud qu'IFS historique sur l'indice. Avec une sensibilité de 2 313 à 2 345 MW par degré sous 15 °C, cela représente environ 720 MW en hiver : un modèle entraîné sur ERA5 et nourri par une prévision proche d'IFS pourrait garder un biais de cet ordre. Ce risque chiffré est inscrit au prémortem.
+
+### Maille ERA5 de Marseille (16/11/2026)
+
+Le contrôle terrestre est passé : le centre de maille (43,50 ; 5,25) tombe sur Rognac. Mais ce contrôle ne voit pas l'étang de Berre, car les contours des communes l'incluent (un point au milieu de l'étang tombe sur Berre-l'Étang). La part d'eau a donc été estimée à part, avec l'altitude du modèle de terrain Copernicus GLO-90 servi par Open-Meteo, sur une grille de 20 × 20 points couvrant la maille (402 appels décomptés, points témoins compris) :
+
+- les témoins sont bien vus comme de l'eau : -2 m au milieu de l'étang, 0 m dans la rade de Marseille ;
+- au plus 10,5 % des points sont à 0,5 m ou moins (borne haute, une terre très basse comptant comme eau) ;
+- l'altitude médiane est de 128 m, contre 58 m pour le point de Marseille.
+
+La maille n'est donc pas dominée par l'eau. Sa limite est autre : elle représente surtout l'arrière-pays, de Rognac vers Aix-en-Provence, plus haut et plus continental que Marseille, ce qui explique probablement l'écart de 1,68 °C. Noté pour la v0.1 : la variante C (ERA5 corrigé vers IFS par point, mois et heure) corrige la part systématique de cet écart ; les résidus de Marseille seront regardés à part. Détail : `data/marseille-maille-era5.json`.
+
 ## Points encore ouverts
 
-- Source d'entraînement (ERA5 ou IFS historique) : en v0.1, entraîner le même modèle sur les mêmes années (2017-01-01 → 2024-03-14, seule période commune) avec l'une puis l'autre source, et comparer la MAPE sur la validation avec la météo prévue en entrée. ERA5 garde l'avantage de couvrir 2012 à 2016 ; ce gain d'historique est mesuré à part.
+- Source d'entraînement : tranchée en v0.1 par la comparaison de trois variantes, entraînées avec le même modèle et comparées sur la MAPE de la validation, avec la météo prévue en entrée :
+  - A, ERA5 brut ;
+  - B, IFS historique (2017 → 2024-03) ;
+  - C, ERA5 corrigé vers IFS : écart moyen par point, par mois et par heure, calculé sur la période commune 2017 → 2024-03-14, dans l'entraînement seulement, puis appliqué à tout ERA5. Cette variante garde les années 2012 à 2016.
+  Pour comparer à durée égale, A et C sont aussi entraînés sur 2017 → 2024-03-14. Le gain des années 2012 à 2016 est mesuré à part.
 - Prévision J-1 de la plateforme ENTSO-E (6.1.b) : comparaison avec éCO2mix et heure de publication (compte ENTSO-E reporté).
