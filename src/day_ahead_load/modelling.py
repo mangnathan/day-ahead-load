@@ -95,3 +95,73 @@ def cross_validate(table: pd.DataFrame, years: Sequence[int] = HELD_OUT_YEARS) -
             )
         )
     return out
+
+
+# Test de bruit des comparaisons sur la validation (journal des choix, entrée 4).
+BLOCK_DAYS = 7
+REPLICATES = 10_000
+MIN_RELATIVE_GAIN = 0.01
+
+
+def validation_forecast(table: pd.DataFrame, train_first: date) -> tuple[pd.Series, int]:
+    """Entraîne sur les jours livrés de `train_first` au 14/03/2024, prévoit la validation.
+
+    Refuse une table qui contient des lignes du test ou au-delà.
+    """
+    if not table["periode"].isin(["entrainement", "validation"]).all():
+        raise ValueError("comparaison réservée à l'entraînement et à la validation")
+    day = pd.Series(pd.to_datetime(table["jour"]).to_numpy(), index=table.index)
+    train = (
+        (table["periode"] == "entrainement")
+        & (day >= pd.Timestamp(train_first))
+        & table[tb.TARGET].notna()
+    )
+    fitted = fit(design(table[train]), table.loc[train, tb.TARGET])
+    validation = table[table["periode"] == "validation"]
+    forecast = np.asarray(fitted.predict(design(validation)), dtype=float)
+    return pd.Series(forecast, index=validation.index), int(train.sum())
+
+
+@dataclass(frozen=True)
+class PairedGap:
+    """Option simple S contre option plus complexe K, sur les mêmes demi-heures."""
+
+    simple_mape: float
+    complex_mape: float
+    difference: float  # MAPE(K) − MAPE(S), en points de pourcentage
+    low: float
+    high: float
+    relative_gain: float  # (MAPE(S) − MAPE(K)) / MAPE(S)
+
+    @property
+    def complex_retained(self) -> bool:
+        return self.relative_gain > MIN_RELATIVE_GAIN and self.high < 0
+
+
+def paired_gap(
+    truth: pd.Series,
+    simple: np.ndarray,
+    complex_: np.ndarray,
+    days: pd.Series,
+    first_day: date,
+    replicates: int = REPLICATES,
+    seed: int = SEED,
+) -> PairedGap:
+    """Différence appariée de MAPE, intervalle à 95 % par bootstrap par blocs de 7 jours livrés
+    consécutifs à partir de `first_day`, tirés avec remise."""
+    values = truth.to_numpy(dtype=float)
+    keep = ~np.isnan(values)
+    ape_s = np.abs(simple[keep] - values[keep]) / values[keep] * 100
+    ape_k = np.abs(complex_[keep] - values[keep]) / values[keep] * 100
+    offsets = (pd.to_datetime(days.to_numpy()[keep]) - pd.Timestamp(first_day)).days
+    blocks = np.asarray(offsets, dtype=int) // BLOCK_DAYS
+    if blocks.min() < 0:
+        raise ValueError("jour antérieur au premier bloc")
+    count = int(blocks.max()) + 1
+    sums = np.bincount(blocks, weights=ape_k - ape_s, minlength=count)
+    sizes = np.bincount(blocks, minlength=count).astype(float)
+    draws = np.random.default_rng(seed).integers(0, count, size=(replicates, count))
+    boot = sums[draws].sum(axis=1) / sizes[draws].sum(axis=1)
+    low, high = np.percentile(boot, [2.5, 97.5])
+    s, k = float(ape_s.mean()), float(ape_k.mean())
+    return PairedGap(s, k, k - s, float(low), float(high), (s - k) / s)

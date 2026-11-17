@@ -278,7 +278,8 @@ def feature_names() -> list[str]:
     return [*INSTANT_VARIABLES, RADIATION, *(f"temperature_lissee_{h}h" for h in SMOOTHING_HOURS)]
 
 
-def _national(by_point: Mapping[Point, pd.DataFrame], weights: Mapping[str, float]) -> pd.DataFrame:
+def national(by_point: Mapping[Point, pd.DataFrame], weights: Mapping[str, float]) -> pd.DataFrame:
+    """Indice national horaire de chaque variable, moyenne des points pondérée par région."""
     return pd.DataFrame(
         {
             name: wc.weighted_index({p: f[name] for p, f in by_point.items()}, weights)
@@ -291,7 +292,7 @@ def archive_index(
     root: Path, source: str, points: Sequence[Point], weights: Mapping[str, float]
 ) -> pd.DataFrame:
     """Indice national horaire (UTC) d'une source d'archive, pondéré par région."""
-    return _national({p: wc.archive_series(root, source, p) for p in points}, weights)
+    return national({p: wc.archive_series(root, source, p) for p in points}, weights)
 
 
 def runs_index(root: Path, points: Sequence[Point], weights: Mapping[str, float]) -> pd.DataFrame:
@@ -307,4 +308,4 @@ def runs_index(root: Path, points: Sequence[Point], weights: Mapping[str, float]
         if not frames:
             raise FileNotFoundError(f"aucun calcul ECMWF pour {point.nom}")
         by_point[point] = pd.concat(frames, names=["calcul", "heure"])
-    return _national(by_point, weights)
+    return national(by_point, weights)
