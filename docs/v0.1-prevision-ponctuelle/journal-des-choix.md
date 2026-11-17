@@ -125,3 +125,11 @@ Comparaisons sur la validation : 5. Règle de l'entrée 4 appliquée telle qu'é
 Point ouvert, à trancher avant la comparaison des familles : l'entrée 2 fait commencer l'entraînement de la régression linéaire et de LightGBM au 02/03/2013. Avec une durée retenue au 01/01/2017, le niveau existe sur toute la période, et la contrainte de l'entrée 2 ne joue plus.
 
 Comparaisons sur la validation après cette entrée : 5. Mesures dans l'entraînement : 2.
+
+## 11. Remplace l'entrée 2 : début de l'entraînement des deux familles — 17/11/2026
+
+Comparaisons sur la validation : 5. Mesures dans l'entraînement : 2.
+
+Remplace l'entrée 2 : les deux familles partent du 01/01/2017, durée retenue en entrée 10. La contrainte du niveau avant le 02/03/2013 ne joue plus. L'entrée 2 reste écrite telle quelle : le journal ne fait que s'allonger.
+
+Point ouvert, non tranché : pourquoi les années 2012-2016 dégradent la prévision de 2024-2025 (entrée 10). Les variantes du niveau touchent au même problème de changement de niveau et pourront apporter un élément de réponse.
