@@ -5,6 +5,7 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 ## [Non publié]
 
 ### Ajouté
+- Table de données de la v0.1 à la demi-heure (ADR 0002) : cible consolidée ou définitive, calendrier (jours fériés par la bibliothèque `holidays`, lundi de Pentecôte, ponts, période de Noël), météo nationale passée à la demi-heure et vue à midi la veille (ERA5 à l'entraînement, calculs ECMWF de 00 UTC ensuite, y compris dans les lissages, avec calcul de secours dont chaque utilisation est enregistrée), niveau des 52 dernières semaines consolidées publiées. Cible du test masquée par défaut.
 - CI GitHub Actions bloquante sur chaque PR et chaque push sur `main` : installation depuis `uv.lock`, ruff, mypy strict et pytest. Actions épinglées sur un SHA de commit.
 - Garde-fou des tests : toute connexion réseau pendant un test échoue ; les tests ne tournent que sur des données fictives.
 - Étude de faisabilité : mesures de l'historique éCO2mix, diagnostic de la prévision J-1 de RTE (alignement, changements d'heure, biais mensuel), références simples sous la règle de midi la veille, choix des poids de l'indice national de température.
