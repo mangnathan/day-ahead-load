@@ -1,0 +1,31 @@
+# Journal des choix de la v0.1
+
+Chaque choix fait en regardant des résultats est noté ici, daté, avec sa règle écrite avant le calcul. Le compteur « comparaisons sur la validation » donne le nombre de modèles déjà évalués sur la validation au moment de l'entrée : plus il grandit, plus le résultat de validation du modèle retenu devient optimiste, et le test, ouvert une seule fois en v1.0, sert à mesurer cet effet. Les mesures faites à l'intérieur de l'entraînement ne touchent pas à la validation et sont comptées à part.
+
+## 1. Modèle figé pour les comparaisons — 17/11/2026
+
+Comparaisons sur la validation : 0. Mesures dans l'entraînement : 0.
+
+- LightGBM 4.7.0, interface native (`lightgbm.train`, sans scikit-learn), objectif de régression, réglages par défaut : 100 itérations, taux d'apprentissage 0,1, 31 feuilles, profondeur libre, 20 lignes au moins par feuille, aucun sous-échantillonnage, aucune régularisation, perte quadratique.
+- Reproductibilité : graine 20261117, `deterministic=True`, `force_row_wise=True`, un seul fil d'exécution.
+- Variables : demi-heure du jour, jour de la semaine, mois, férié, lundi de Pentecôte, pont, Noël, température, nébulosité, vent, rayonnement, températures lissées sur 24 h et 72 h, niveau des 52 dernières semaines. Les indicateurs valent 0 ou 1 ; les variables de calendrier entières sont lues comme des nombres, réglage par défaut. Les valeurs manquantes sont laissées à LightGBM.
+- Cible : la consommation, en MW. Les variantes du niveau (rapport consommation / niveau, sans niveau) sont mesurées plus tard, chacune comptée.
+
+Ce modèle ne change pas d'une comparaison à l'autre. Code : `src/day_ahead_load/modelling.py`.
+
+## 2. Début de l'entraînement de la régression linéaire — 17/11/2026
+
+Comparaisons sur la validation : 0. Mesures dans l'entraînement : 0.
+
+Le niveau des 52 semaines manque pour les jours livrés du 01/01/2012 au 01/03/2013. LightGBM gère ces valeurs manquantes, la régression linéaire non : son entraînement commence au 02/03/2013. Dans la comparaison des deux familles, LightGBM est lui aussi entraîné à partir du 02/03/2013, pour que les deux familles soient comparées sur les mêmes jours.
+
+## 3. Convention de la demi-heure — règle écrite le 17/11/2026, avant le calcul
+
+Comparaisons sur la validation : 0. Mesures dans l'entraînement : 0 avant cette entrée.
+
+- Options : (t − 30 min, t], convention de l'ADR 0002, et (t − 15 min, t + 15 min]. L'interpolation des valeurs instantanées au milieu de l'intervalle, le rayonnement pondéré par la durée de recouvrement de chaque heure et la fin des fenêtres de lissage suivent l'option.
+- Données : entraînement seulement (jours livrés jusqu'au 14/03/2024), météo ERA5, modèle de l'entrée 1.
+- Validation croisée temporelle : chaque année de 2019 à 2023 est mise de côté à tour de rôle ; le modèle est entraîné sur tous les jours livrés antérieurs au 1er janvier de cette année, depuis le 01/01/2012. Critère : moyenne des cinq MAPE annuelles, sur les demi-heures où la cible existe.
+- Décision : l'option à la plus faible MAPE moyenne. Si l'écart relatif entre les deux est inférieur à 1 %, on garde (t − 30 min, t], qui suit l'alignement mesuré en v0.0.
+
+Résultat : à compléter après le calcul.
