@@ -42,3 +42,45 @@ Résultat, le 17/11/2026 (`docs/v0.1-prevision-ponctuelle/data/convention-demi-h
 Écart relatif −2,1 %, au-delà du seuil de 1 % : **(t − 15 min, t + 15 min] est retenue**, règle appliquée telle qu'écrite. Le signal est fragile : trois années sur cinq, l'écart moyen vient surtout de 2021 et de 2023. Les MAPE annuelles, de 2,5 % à 6,1 %, varient bien plus d'une année à l'autre que d'une option à l'autre : 2020 (confinements) et 2022-2023 (baisse de la consommation) pèsent sur le modèle quelle que soit la convention.
 
 Mesures dans l'entraînement après cette entrée : 2. Comparaisons sur la validation : toujours 0.
+
+Ce choix est définitif : on n'y revient pas, même si la comparaison des sources ou la suite le rendent gênant.
+
+## 4. Source météo et durée de l'entraînement — règle écrite le 17/11/2026, avant le calcul
+
+Comparaisons sur la validation : 0 avant cette entrée. Mesures dans l'entraînement : 2.
+
+**Modèles.** Cinq modèles, tous avec le modèle de l'entrée 1 et la convention de l'entrée 3. Ils ne diffèrent que par la météo de l'entraînement et par le premier jour livré de l'entraînement (dernier jour : 14/03/2024) :
+
+| Modèle | Météo de l'entraînement | Entraînement depuis |
+|---|---|---|
+| A12 | ERA5 | 01/01/2012 |
+| A17 | ERA5 | 01/01/2017 |
+| C12 | ERA5 corrigé de l'écart moyen IFS − ERA5 | 01/01/2012 |
+| C17 | ERA5 corrigé de l'écart moyen IFS − ERA5 | 01/01/2017 |
+| B17 | IFS historique (n'existe pas avant 2017) | 01/01/2017 |
+
+La validation est la même pour les cinq : jours livrés du 15/03/2024 au 31/08/2025, météo des calculs ECMWF de 00 UTC vue à midi la veille, demi-heures où la cible existe. Critère : la MAPE. Chaque modèle est une entrée du journal, avec le total cumulé des comparaisons sur la validation : 5 à la fin de cette comparaison. Les familles de modèles et les variantes du niveau s'y ajouteront.
+
+**Correction de C.** Pour chaque point, chaque mois civil et chaque heure UTC, l'écart moyen IFS − ERA5 est calculé sur les heures communes du 01/01/2017 au 14/03/2024, donc dans l'entraînement seulement. Il est ajouté aux valeurs ERA5 du point, de 2012 à 2024, avant le passage à l'indice national. Les valeurs corrigées sont ensuite ramenées dans leurs bornes physiques :
+
+| Variable | Corrigée | Bornes |
+|---|---|---|
+| Température à 2 m | oui | aucune |
+| Rayonnement | oui | ≥ 0 |
+| Nébulosité | oui | entre 0 et 100 |
+| Vent à 10 m | oui | ≥ 0 |
+| Humidité relative | non | entre 0 et 100 si elle entre plus tard dans le modèle |
+
+L'humidité n'est pas corrigée parce qu'elle n'entre pas dans le modèle de la v0.1 (ADR 0002) : la corriger ne changerait aucun des cinq modèles.
+
+**Test de bruit.** Une différence de 1 % sur 17,5 mois peut venir du hasard des semaines. Pour chaque comparaison entre une option simple S et une option plus complexe K :
+
+- on calcule l'erreur absolue en pourcentage de S et de K sur chaque demi-heure de la validation, puis la différence appariée MAPE(K) − MAPE(S) ;
+- on calcule un intervalle de confiance à 95 % de cette différence par un bootstrap par blocs d'une semaine, pour respecter la dépendance dans le temps. Les blocs sont 7 jours livrés consécutifs à partir du 15/03/2024 : 76 blocs complets et un dernier bloc de 3 jours, du 29/08 au 31/08/2025. On fait 10 000 tirages avec remise de 77 blocs, avec la graine 20261117, et on prend les percentiles 2,5 et 97,5 ;
+- on retient K seulement si elle fait mieux de plus de 1 % relatif, (MAPE(S) − MAPE(K)) / MAPE(S) > 1 %, **et** si l'intervalle exclut 0 (borne haute < 0). Sinon on garde S.
+
+**Ordre de simplicité : A, puis C, puis B.** A n'a qu'une source et le plus long historique. C ajoute une étape de correction mais garde 2012-2016. B demande une seconde source et perd 5 ans.
+
+**Décision 1 : la source, à durée égale (A17, C17, B17).** Option retenue au départ : A17. C17 lui est opposée avec la règle du test de bruit et la remplace si elle passe. B17 est ensuite opposée à l'option retenue, avec la même règle.
+
+**Décision 2 : la durée, pour la source retenue.** Si la source est A ou C, 2012 est l'option de référence. 2017 la remplace seulement si elle passe la même règle : plus de 1 % relatif de mieux, et un intervalle qui exclut 0. Si la source est B, la durée est 2017, faute de données IFS avant.
