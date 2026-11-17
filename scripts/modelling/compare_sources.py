@@ -171,11 +171,7 @@ def main() -> None:
     SUMMARY.write_text(
         json.dumps(summary, indent=2, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"
     )
-    print(
-        json.dumps(
-            {k: summary[k] for k in ("modeles", "etapes", "retenu")}, indent=2, ensure_ascii=False
-        )
-    )
+    print(f"retenu : {retained} ; détail dans {SUMMARY}")
 
 
 if __name__ == "__main__":
