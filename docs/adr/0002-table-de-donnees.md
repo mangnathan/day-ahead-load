@@ -1,6 +1,6 @@
 # ADR 0002 : table de données à la demi-heure
 
-- Statut : proposé
+- Statut : accepté le 17/11/2026, sauf la convention de la demi-heure (mesure ci-dessous)
 - Date : 17 novembre 2026
 - Version : v0.1
 
@@ -22,6 +22,8 @@ Code : `src/day_ahead_load/table.py`, `weather_features.py`, `calendar_features.
 ### Convention de la demi-heure
 
 La valeur étiquetée t couvre l'intervalle (t − 30 min, t]. La spécification d'éCO2mix dit « puissance moyenne » sans préciser le côté de l'intervalle : c'est une **hypothèse**. Elle est cohérente avec l'alignement mesuré en v0.0, où aucune combinaison gagnante n'utilisait de quart d'heure postérieur à t, mais cette mesure ne la prouve pas.
+
+**Règle de décision, écrite avant de calculer (17/11/2026).** Deux options sont comparées : (t − 30 min, t] et (t − 15 min, t + 15 min]. Même modèle LightGBM figé, validation croisée temporelle à l'intérieur de l'entraînement seulement, sans toucher à la validation. On garde l'option à la plus faible MAPE. Si l'écart relatif entre les deux est inférieur à 1 %, on garde (t − 30 min, t], qui suit l'alignement mesuré en v0.0. La mesure est notée dans le journal des choix de la v0.1. L'interpolation au milieu de la demi-heure et la règle du rayonnement découlent de la convention : si la mesure fait changer la convention, elles changent avec elle.
 
 ### Passage de l'heure à la demi-heure
 
@@ -50,11 +52,19 @@ Le passage d'ERA5 aux calculs ECMWF dans les lissages est le même type d'écart
 
 **Calcul de secours.** Une valeur absente d'un calcul est prise dans le calcul antérieur le plus récent qui couvre l'heure, comme le ferait la production. Constaté dans le cache le 17/11/2026 : le rayonnement de l'échéance 0 manque dans les 975 calculs (une moyenne de l'heure précédente n'existe pas au lancement), et le calcul du 23/06/2026, dans le test, n'a ni température, ni vent, ni humidité sur ses 72 heures, aux 12 points.
 
+Trois conditions, chacune vérifiée :
+
+- le calcul de secours est plus ancien que le calcul prévu, donc lancé au plus tard à 00 UTC de J-1 et disponible à midi la veille (test `test_fallback_runs_are_all_available_at_noon_the_day_before`) ;
+- chaque utilisation est enregistrée, avec le jour livré, la variable, l'heure, le calcul prévu et le calcul utilisé (`docs/v0.1-prevision-ponctuelle/data/calcul-de-secours.csv`). Seules les heures que lit réellement une variable sont comptées. Le rayonnement de l'échéance 0 n'est pas une panne et n'est jamais compté (test `test_radiation_at_lead_zero_is_not_counted_as_a_fallback`) ;
+- le test est évalué tel quel, avec le secours, puisque c'est ce qui se passerait en production. Ses résultats indiqueront le nombre de jours concernés.
+
+Comptage du 17/11/2026 : aucune utilisation en validation. Dans le test, 4 jours livrés (24 au 27/06/2026), tous dus au calcul du 23/06/2026 : 96 valeurs horaires de température, lues surtout par les lissages, et 26 de vent.
+
 ### Niveau récent
 
 Moyenne de la consommation consolidée ou définitive des 52 semaines qui précèdent la fin du consolidé publié à midi la veille (règle M+3 de l'ADR 0001). Une année glissante donne le niveau sans effet de saison. La référence « hebdomadaire réaliste » de la v0.0 (18,8 %) montrait qu'une fenêtre de quatre semaines vieilles de 9 à 13 semaines mêle niveau et saison.
 
-Le niveau est manquant tant que la fenêtre commence avant le début des données (jours livrés du 01/01/2012 au 01/03/2013) ou qu'il manque plus de 1 % de ses demi-heures. Test : `test_level_uses_the_52_weeks_before_the_end_of_published_consolidated_data`, avec des valeurs non publiées mises à 10⁹.
+Le niveau est manquant tant que la fenêtre commence avant le début des données (jours livrés du 01/01/2012 au 01/03/2013) ou qu'il manque plus de 1 % de ses demi-heures. LightGBM gère ces valeurs manquantes. La régression linéaire ne les gère pas : son entraînement commence au 02/03/2013. Pour que les deux familles soient comparées sur les mêmes jours, ce choix est noté dans le journal des choix. Test : `test_level_uses_the_52_weeks_before_the_end_of_published_consolidated_data`, avec des valeurs non publiées mises à 10⁹.
 
 Trois variantes seront mesurées en v0.1 : la consommation avec le niveau en variable ; le rapport consommation / niveau comme cible, car un gradient boosting ne sait pas prolonger une tendance ; la consommation sans niveau.
 
@@ -73,7 +83,7 @@ Trois variantes seront mesurées en v0.1 : la consommation avec le niveau en var
 |---|---|---|---|
 | Entraînement | 01/01/2012 → 14/03/2024 | 213 936 | Cible 48 (heures ambiguës d'octobre) ; niveau 20 448 (426 jours, avant le 02/03/2013) ; météo des premières heures de 2012 (1 à 144 selon la variable) |
 | Validation | 15/03/2024 → 31/08/2025 | 25 678 | Cible 4 (heures ambiguës) ; lissage sur 72 h 96 (15 et 16/03/2024 : aucun calcul avant le 14/03/2024) |
-| Test | 01/09/2025 → 31/08/2026 | 17 520 | Cible masquée ; météo complète grâce au calcul de secours |
+| Test | 01/09/2025 → 31/08/2026 | 17 520 | Cible masquée ; météo complète grâce au calcul de secours (4 jours concernés) |
 | Prospectif | 01/09/2026 → 14/11/2026 | 3 602 | Cible non publiée |
 
 Rayonnement prévu face à ERA5 sur la validation : corrélation 0,994 sans décalage, 0,973 avec un décalage de 30 min dans un sens ou dans l'autre. Les deux sources suivent donc la même convention une fois passées à la demi-heure.
@@ -88,4 +98,4 @@ Rayonnement prévu face à ERA5 sur la validation : corrélation 0,994 sans déc
 | Point | Ce qui le ferme |
 |---|---|
 | Côté de l'intervalle de la demi-heure d'éCO2mix | Source de RTE, ou mesure sur l'entraînement seulement, règle écrite avant |
-| Série IFS historique 2017 → 2024-03-14 pour B et C | Estimation des appels et plafond, puis accord avant le téléchargement |
+| Série IFS historique 2017 → 2024-03-14 pour B et C | Téléchargement accordé le 17/11/2026 : 188 tranches × 12 points = 2 256 appels, plafond de 8 000 par jour, une seule nouvelle tentative sur coupure réseau ou 5xx, arrêt définitif au premier 429 |
