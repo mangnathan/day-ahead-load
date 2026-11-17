@@ -95,11 +95,9 @@ Rayonnement prévu face à ERA5 sur la validation, avec la convention retenue : 
 ## Conséquences
 
 - La comparaison A / B / C et le choix de la famille de modèles s'appuient sur cette table, sans la modifier. Tout changement de convention passe par une nouvelle version de cet ADR, datée, avant toute nouvelle mesure.
-- Les variantes B et C ont besoin de la série IFS historique sur 2017 → 2024-03-14 : téléchargement en cours le 17/11/2026.
+- Les variantes B et C ont besoin de la série IFS historique sur 2017 → 2024-03-14. Téléchargement accordé et fait le 17/11/2026, en une séance : 2 256 appels estimés (188 tranches de 14 jours × 12 points), 2 259 comptés dans le journal local. Les 2 256 réponses en cache portent toutes `X-RateLimit-Cost: 1.0` ; les 3 appels de plus sont des tentatives comptées sans réponse gardée, très probablement des nouvelles tentatives après une coupure (le script ne les journalise pas une à une). Aucun refus de quota. Complétude : 63 120 heures par point (2 630 jours × 24), aucune valeur nulle sur les cinq variables.
 - La convention retenue l'a été sur un signal fragile ; si une source de RTE précise l'intervalle, elle prime, par une nouvelle version datée de cet ADR.
 
 ## Points ouverts
 
-| Point | Ce qui le ferme |
-|---|---|
-| Série IFS historique 2017 → 2024-03-14 pour B et C | Téléchargement accordé le 17/11/2026 : 188 tranches × 12 points = 2 256 appels, plafond de 8 000 par jour, une seule nouvelle tentative sur coupure réseau ou 5xx, arrêt définitif au premier 429 |
+Aucun point ouvert propre à cet ADR. Ceux de l'ADR 0001 restent valables.
