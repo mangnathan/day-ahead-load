@@ -114,6 +114,7 @@ def build(
     first: date,
     last: date,
     open_test: bool = False,
+    convention: wf.Convention = wf.END_LABEL,
 ) -> Built:
     """Assemble la table du jour `first` au jour `last`, avec le journal du calcul de secours.
 
@@ -134,10 +135,9 @@ def build(
 
     training = table["periode"] == "entrainement"
     table["source_meteo"] = np.where(training, SOURCE_TRAIN, SOURCE_FORECAST)
-    forecast, fallbacks = wf.forecast_features(table[~training], runs)
-    weather = pd.concat(
-        [wf.half_hour_features(pd.DatetimeIndex(table.index[training]), archive), forecast]
-    ).reindex(table.index)
+    forecast, fallbacks = wf.forecast_features(table[~training], runs, convention=convention)
+    past = wf.half_hour_features(pd.DatetimeIndex(table.index[training]), archive, convention)
+    weather = pd.concat([past, forecast]).reindex(table.index)
     table = table.join(weather)
     fallbacks["periode"] = [period(d) for d in fallbacks["jour"]]
 

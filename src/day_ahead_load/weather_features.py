@@ -65,6 +65,25 @@ QUARTER = pd.Timedelta(minutes=15)
 RUN_PREFIX = "run-"
 
 
+@dataclass(frozen=True)
+class Convention:
+    """Intervalle couvert par la demi-heure étiquetée t : (t + debut, t + fin]."""
+
+    name: str
+    start: pd.Timedelta
+    end: pd.Timedelta
+
+    @property
+    def middle(self) -> pd.Timedelta:
+        return (self.start + self.end) / 2
+
+
+# Convention retenue (ADR 0002) et option comparée par la mesure sur l'entraînement.
+END_LABEL = Convention("fin", -HALF_HOUR, pd.Timedelta(0))
+CENTRED = Convention("centre", -QUARTER, QUARTER)
+CONVENTIONS = {c.name: c for c in (END_LABEL, CENTRED)}
+
+
 def _regular(hourly: pd.DataFrame) -> pd.DataFrame:
     """Grille horaire complète (les heures absentes deviennent manquantes)."""
     index = pd.DatetimeIndex(hourly.index)
@@ -74,10 +93,19 @@ def _regular(hourly: pd.DataFrame) -> pd.DataFrame:
     return hourly.reindex(full)
 
 
-def half_hour_features(ends_utc: pd.DatetimeIndex, hourly: pd.DataFrame) -> pd.DataFrame:
-    """Variables des demi-heures qui finissent à `ends_utc`, depuis une série horaire UTC."""
+def half_hour_features(
+    ends_utc: pd.DatetimeIndex, hourly: pd.DataFrame, convention: Convention = END_LABEL
+) -> pd.DataFrame:
+    """Variables des demi-heures étiquetées `ends_utc`, depuis une série horaire UTC.
+
+    Valeurs instantanées : interpolées au milieu de l'intervalle. Rayonnement : moyenne des
+    heures qui recouvrent l'intervalle, pondérée par la durée du recouvrement. Lissages : heures
+    jusqu'à la fin de l'intervalle, arrondie à l'heure inférieure.
+    """
     grid = _regular(hourly)
-    middle = ends_utc - QUARTER
+    first = ends_utc + convention.start
+    last = ends_utc + convention.end
+    middle = ends_utc + convention.middle
     before = middle.floor("h")
     weight = np.asarray((middle - before) / HOUR)
     out = pd.DataFrame(index=ends_utc)
@@ -85,11 +113,18 @@ def half_hour_features(ends_utc: pd.DatetimeIndex, hourly: pd.DataFrame) -> pd.D
         low = grid[name].reindex(before).to_numpy(dtype=float)
         high = grid[name].reindex(before + HOUR).to_numpy(dtype=float)
         out[name] = (1 - weight) * low + weight * high
-    out[RADIATION] = grid[RADIATION].reindex(ends_utc.ceil("h")).to_numpy(dtype=float)
+    # Heure (étiquetée par sa fin) qui contient le début de l'intervalle, puis la suivante si
+    # l'intervalle déborde.
+    hour_end = first.floor("h") + HOUR
+    spills = np.asarray(last > hour_end)
+    share = np.where(spills, np.asarray((hour_end - first) / (last - first)), 1.0)
+    current = grid[RADIATION].reindex(hour_end).to_numpy(dtype=float)
+    following = grid[RADIATION].reindex(hour_end + HOUR).to_numpy(dtype=float)
+    out[RADIATION] = np.where(spills, share * current + (1 - share) * following, current)
     for hours in SMOOTHING_HOURS:
         smoothed = grid[TEMPERATURE].rolling(hours, min_periods=hours).mean()
-        # Heures de (t − n h, t] : de floor(t) − (n − 1) h à floor(t).
-        out[f"temperature_lissee_{hours}h"] = smoothed.reindex(ends_utc.floor("h")).to_numpy(
+        # Heures de (fin − n h, fin] : de floor(fin) − (n − 1) h à floor(fin).
+        out[f"temperature_lissee_{hours}h"] = smoothed.reindex(last.floor("h")).to_numpy(
             dtype=float
         )
     return out
@@ -159,18 +194,26 @@ def seen_at_decision(runs: pd.DataFrame, own_day: Hourly, delivered: date) -> Ho
     )
 
 
-def _used_hours(ends: pd.DatetimeIndex) -> dict[str, tuple[pd.Timestamp, pd.Timestamp]]:
+def _used_hours(
+    ends: pd.DatetimeIndex, convention: Convention
+) -> dict[str, tuple[pd.Timestamp, pd.Timestamp]]:
     """Heures que lit chaque variable pour les demi-heures `ends` (bornes incluses)."""
-    first_middle = (ends.min() - QUARTER).floor("h")
-    last_middle = (ends.max() - QUARTER).floor("h") + HOUR
+    first_middle = (ends.min() + convention.middle).floor("h")
+    last_middle = (ends.max() + convention.middle).floor("h") + HOUR
     longest = pd.Timedelta(hours=max(SMOOTHING_HOURS) - 1)
     out = {name: (first_middle, last_middle) for name in INSTANT_VARIABLES}
-    out[TEMPERATURE] = (min(first_middle, ends.min().floor("h") - longest), last_middle)
-    out[RADIATION] = (ends.min().ceil("h"), ends.max().ceil("h"))
+    smoothing_start = (ends.min() + convention.end).floor("h") - longest
+    out[TEMPERATURE] = (min(first_middle, smoothing_start), last_middle)
+    out[RADIATION] = (
+        (ends.min() + convention.start).floor("h") + HOUR,
+        (ends.max() + convention.end).ceil("h"),
+    )
     return out
 
 
-def fallbacks(delivered: date, hourly: Hourly, ends: pd.DatetimeIndex) -> pd.DataFrame:
+def fallbacks(
+    delivered: date, hourly: Hourly, ends: pd.DatetimeIndex, convention: Convention = END_LABEL
+) -> pd.DataFrame:
     """Valeurs lues pour le jour livré qui ne viennent pas du calcul prévu par la règle.
 
     Calcul prévu : celui de la veille à partir de son lancement, celui du jour UTC de l'heure
@@ -179,7 +222,7 @@ def fallbacks(delivered: date, hourly: Hourly, ends: pd.DatetimeIndex) -> pd.Dat
     """
     start = pd.Timestamp(delivered - timedelta(days=1), tz="UTC")
     rows = []
-    for name, (first, last) in _used_hours(ends).items():
+    for name, (first, last) in _used_hours(ends, convention).items():
         hours = pd.DatetimeIndex(hourly.runs.index)
         used = hourly.runs[name][np.asarray((hours >= first) & (hours <= last))].dropna()
         for moment, run in zip(pd.DatetimeIndex(used.index), used.to_numpy(), strict=True):
@@ -193,7 +236,10 @@ def fallbacks(delivered: date, hourly: Hourly, ends: pd.DatetimeIndex) -> pd.Dat
 
 
 def forecast_features(
-    rows: pd.DataFrame, runs: pd.DataFrame, own_day: Hourly | None = None
+    rows: pd.DataFrame,
+    runs: pd.DataFrame,
+    own_day: Hourly | None = None,
+    convention: Convention = END_LABEL,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Variables météo des demi-heures de `rows` (colonnes `jour` et index `fin_utc`), jour
     livré par jour livré, telles qu'elles sont connues à midi la veille, et la liste des
@@ -216,8 +262,8 @@ def forecast_features(
         if window.values.empty:
             pieces.append(pd.DataFrame(np.nan, index=ends, columns=feature_names()))
             continue
-        pieces.append(half_hour_features(ends, window.values))
-        used.append(fallbacks(delivered, window, ends))
+        pieces.append(half_hour_features(ends, window.values, convention))
+        used.append(fallbacks(delivered, window, ends, convention))
     log = (
         pd.concat(used, ignore_index=True) if used else pd.DataFrame(columns=list(FALLBACK_COLUMNS))
     )

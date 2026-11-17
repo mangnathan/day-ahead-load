@@ -29,6 +29,15 @@ def test_instant_variables_are_read_at_the_middle_of_the_half_hour() -> None:
     assert out[wf.TEMPERATURE].tolist() == [12.25, 12.75]
 
 
+def test_centred_option_splits_radiation_between_the_two_hours_it_overlaps() -> None:
+    ends = pd.DatetimeIndex(["2025-06-01 12:30", "2025-06-01 13:00"], tz=UTC)
+    out = wf.half_hour_features(ends, hourly("2025-06-01 00:00", 24), wf.CENTRED)
+    # (12 h 15, 12 h 45] dans l'heure qui finit à 13 h ; (12 h 45, 13 h 15] à moitié dans
+    # l'heure qui finit à 13 h, à moitié dans celle qui finit à 14 h.
+    assert out[wf.RADIATION].tolist() == [13.0, 13.5]
+    assert out[wf.TEMPERATURE].tolist() == [12.5, 13.0]
+
+
 def test_smoothing_uses_the_hours_of_the_trailing_window_only() -> None:
     frame = hourly("2025-06-01 00:00", 48)
     frame[wf.TEMPERATURE] = np.arange(48, dtype=float)
