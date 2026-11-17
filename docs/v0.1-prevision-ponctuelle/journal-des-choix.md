@@ -84,3 +84,44 @@ L'humidité n'est pas corrigée parce qu'elle n'entre pas dans le modèle de la 
 **Décision 1 : la source, à durée égale (A17, C17, B17).** Option retenue au départ : A17. C17 lui est opposée avec la règle du test de bruit et la remplace si elle passe. B17 est ensuite opposée à l'option retenue, avec la même règle.
 
 **Décision 2 : la durée, pour la source retenue.** Si la source est A ou C, 2012 est l'option de référence. 2017 la remplace seulement si elle passe la même règle : plus de 1 % relatif de mieux, et un intervalle qui exclut 0. Si la source est B, la durée est 2017, faute de données IFS avant.
+
+## 5. Modèle A12 — 17/11/2026
+
+ERA5, entraînement depuis le 01/01/2012 (213 888 demi-heures). MAPE de validation : 2,777 %. **Comparaisons sur la validation : 1.**
+
+## 6. Modèle A17 — 17/11/2026
+
+ERA5, entraînement depuis le 01/01/2017 (126 212 demi-heures). MAPE de validation : 2,617 %. **Comparaisons sur la validation : 2.**
+
+## 7. Modèle C12 — 17/11/2026
+
+ERA5 corrigé, entraînement depuis le 01/01/2012. MAPE de validation : 2,588 %. **Comparaisons sur la validation : 3.**
+
+## 8. Modèle C17 — 17/11/2026
+
+ERA5 corrigé, entraînement depuis le 01/01/2017. MAPE de validation : 2,575 %. **Comparaisons sur la validation : 4.**
+
+## 9. Modèle B17 — 17/11/2026
+
+IFS historique, entraînement depuis le 01/01/2017. MAPE de validation : 2,605 %. **Comparaisons sur la validation : 5.**
+
+## 10. Décision : source et durée — 17/11/2026
+
+Comparaisons sur la validation : 5. Règle de l'entrée 4 appliquée telle qu'écrite, sur 25 674 demi-heures de validation et 77 blocs d'une semaine (`docs/v0.1-prevision-ponctuelle/data/comparaison-sources.json`).
+
+| Étape | Simple | Complexe | MAPE simple | MAPE complexe | Gain relatif | IC 95 % de la différence (points) | Complexe retenue |
+|---|---|---|---|---|---|---|---|
+| Source | A17 | C17 | 2,617 % | 2,575 % | 1,6 % | [−0,195 ; +0,116] | non : l'intervalle contient 0 |
+| Source | A17 | B17 | 2,617 % | 2,605 % | 0,5 % | [−0,150 ; +0,123] | non : gain < 1 % |
+| Durée | A12 | A17 | 2,777 % | 2,617 % | 5,8 % | [−0,269 ; −0,052] | oui |
+
+**Retenu : A17, ERA5 à l'entraînement, à partir du 01/01/2017.**
+
+- Source : C17 fait mieux que A17 de 1,6 %, mais l'intervalle va de −0,19 à +0,12 point. Ce gain est du même ordre que le hasard des semaines, et le test de bruit l'écarte. Sans ce test, le seuil de 1 % seul aurait retenu C. B ne passe même pas le seuil.
+- Durée : l'entraînement depuis 2017 fait mieux, et l'intervalle exclut 0. Les années 2012-2016 dégradent la prévision de 2024-2025 avec ce modèle et ces variables. Cela peut venir d'un changement des usages de l'électricité, ou de l'absence du niveau des 52 semaines avant mars 2013 ; cette mesure ne permet pas de séparer les deux.
+- Observation hors règle : à durée 2012, la correction C fait mieux qu'A de 6,8 % (2,588 % contre 2,777 %), alors qu'à durée 2017 l'écart n'est que de 1,6 % et reste dans le bruit. Cette comparaison ne faisait pas partie de la règle. Elle ne change rien à la décision.
+- Correction de C : la nébulosité a été ramenée dans ses bornes pour 19,4 % des heures. Les valeurs ERA5 de 0 ou de 100 %, fréquentes, sont poussées au-delà par un écart moyen non nul. Pour C, cette variable est donc un mélange de correction et de troncature. Les autres variables sont peu touchées : rayonnement 1,3 %, vent 0,03 %, température 0 %.
+
+Point ouvert, à trancher avant la comparaison des familles : l'entrée 2 fait commencer l'entraînement de la régression linéaire et de LightGBM au 02/03/2013. Avec une durée retenue au 01/01/2017, le niveau existe sur toute la période, et la contrainte de l'entrée 2 ne joue plus.
+
+Comparaisons sur la validation après cette entrée : 5. Mesures dans l'entraînement : 2.
