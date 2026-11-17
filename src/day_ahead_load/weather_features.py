@@ -1,22 +1,23 @@
 """Variables météo à la demi-heure, vues au moment de la décision.
 
-Conventions écrites avant toute mesure :
+Conventions (ADR 0002) :
 
-- demi-heure : la valeur de consommation étiquetée t couvre l'intervalle (t − 30 min, t]. La
-  spécification d'éCO2mix dit « puissance moyenne » sans préciser le côté de l'intervalle ;
-  cette convention est une hypothèse, cohérente avec l'alignement mesuré en v0.0 (aucune
-  combinaison gagnante n'utilisait de quart d'heure postérieur à t) ;
+- demi-heure : la valeur de consommation étiquetée t couvre l'intervalle (t − 15 min, t + 15 min].
+  La spécification d'éCO2mix dit « puissance moyenne » sans préciser l'intervalle. L'option
+  (t − 30 min, t] a été comparée par une mesure dans l'entraînement, règle écrite avant le
+  calcul (journal des choix, entrée 3) ;
 - heures Open-Meteo (documentation de l'API historique, tableau « Hourly Parameter
   Definition ») : température, nébulosité et vent sont des valeurs instantanées à l'heure
   indiquée ; le rayonnement étiqueté h est la moyenne de (h − 1 h, h], ce que la v0.0 a vérifié
   aux 12 points pour les trois sources ;
 - variables instantanées : interpolation linéaire entre les deux heures qui encadrent le milieu
-  de la demi-heure, t − 15 min ;
-- rayonnement : la demi-heure (t − 30 min, t] est contenue dans l'heure qui finit à t arrondi à
-  l'heure supérieure. La valeur étiquetée 13 h 00 s'applique donc aux demi-heures 12 h 30 et
-  13 h 00 ;
-- températures lissées sur 24 h et 72 h : moyenne des températures horaires aux instants de
-  (t − 24 h, t] et de (t − 72 h, t]. Manquante si une seule heure manque.
+  de l'intervalle, t ;
+- rayonnement : moyenne des heures qui recouvrent l'intervalle, pondérée par la durée du
+  recouvrement. La demi-heure 12 h 30 reçoit la valeur de 13 h 00 ; la demi-heure 13 h 00
+  reçoit la moitié de celle de 13 h 00 et la moitié de celle de 14 h 00 ;
+- températures lissées sur 24 h et 72 h : moyenne des températures horaires des 24 et 72 heures
+  qui finissent à la fin de l'intervalle, arrondie à l'heure inférieure. Manquante si une seule
+  heure manque.
 
 Source de chaque heure, y compris les heures passées des lissages :
 
@@ -78,10 +79,13 @@ class Convention:
         return (self.start + self.end) / 2
 
 
-# Convention retenue (ADR 0002) et option comparée par la mesure sur l'entraînement.
+# Les deux options de l'ADR 0002. Retenue le 17/11/2026 par la mesure sur l'entraînement
+# (journal des choix, entrée 3) : (t − 15 min, t + 15 min], MAPE moyenne 4,295 % contre
+# 4,387 %, écart relatif de 2,1 %, au-delà du seuil de 1 % fixé avant le calcul.
 END_LABEL = Convention("fin", -HALF_HOUR, pd.Timedelta(0))
 CENTRED = Convention("centre", -QUARTER, QUARTER)
 CONVENTIONS = {c.name: c for c in (END_LABEL, CENTRED)}
+RETAINED = CENTRED
 
 
 def _regular(hourly: pd.DataFrame) -> pd.DataFrame:
@@ -94,7 +98,7 @@ def _regular(hourly: pd.DataFrame) -> pd.DataFrame:
 
 
 def half_hour_features(
-    ends_utc: pd.DatetimeIndex, hourly: pd.DataFrame, convention: Convention = END_LABEL
+    ends_utc: pd.DatetimeIndex, hourly: pd.DataFrame, convention: Convention = RETAINED
 ) -> pd.DataFrame:
     """Variables des demi-heures étiquetées `ends_utc`, depuis une série horaire UTC.
 
@@ -212,7 +216,7 @@ def _used_hours(
 
 
 def fallbacks(
-    delivered: date, hourly: Hourly, ends: pd.DatetimeIndex, convention: Convention = END_LABEL
+    delivered: date, hourly: Hourly, ends: pd.DatetimeIndex, convention: Convention = RETAINED
 ) -> pd.DataFrame:
     """Valeurs lues pour le jour livré qui ne viennent pas du calcul prévu par la règle.
 
@@ -239,7 +243,7 @@ def forecast_features(
     rows: pd.DataFrame,
     runs: pd.DataFrame,
     own_day: Hourly | None = None,
-    convention: Convention = END_LABEL,
+    convention: Convention = RETAINED,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Variables météo des demi-heures de `rows` (colonnes `jour` et index `fin_utc`), jour
     livré par jour livré, telles qu'elles sont connues à midi la veille, et la liste des

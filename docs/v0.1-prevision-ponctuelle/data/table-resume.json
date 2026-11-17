@@ -42,7 +42,7 @@
     "test": {
       "valeurs_horaires_par_variable": {
         "temperature_2m": 96,
-        "wind_speed_10m": 26
+        "wind_speed_10m": 25
       },
       "jours_livres_concernes": [
         "2026-06-24",
@@ -63,9 +63,9 @@
       "manquants_par_colonne": {
         "consommation": 48,
         "niveau_52_semaines": 20448,
-        "temperature_2m": 3,
-        "cloud_cover": 3,
-        "wind_speed_10m": 3,
+        "temperature_2m": 2,
+        "cloud_cover": 2,
+        "wind_speed_10m": 2,
         "shortwave_radiation": 1,
         "temperature_lissee_24h": 48,
         "temperature_lissee_72h": 144

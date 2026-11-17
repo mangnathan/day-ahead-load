@@ -1,6 +1,6 @@
 # ADR 0002 : table de données à la demi-heure
 
-- Statut : accepté le 17/11/2026, sauf la convention de la demi-heure (mesure ci-dessous)
+- Statut : accepté le 17/11/2026 ; convention de la demi-heure tranchée le même jour par la mesure prévue
 - Date : 17 novembre 2026
 - Version : v0.1
 
@@ -21,9 +21,11 @@ Code : `src/day_ahead_load/table.py`, `weather_features.py`, `calendar_features.
 
 ### Convention de la demi-heure
 
-La valeur étiquetée t couvre l'intervalle (t − 30 min, t]. La spécification d'éCO2mix dit « puissance moyenne » sans préciser le côté de l'intervalle : c'est une **hypothèse**. Elle est cohérente avec l'alignement mesuré en v0.0, où aucune combinaison gagnante n'utilisait de quart d'heure postérieur à t, mais cette mesure ne la prouve pas.
+Première version : la valeur étiquetée t couvre l'intervalle (t − 30 min, t]. La spécification d'éCO2mix dit « puissance moyenne » sans préciser le côté de l'intervalle : c'était une **hypothèse**, cohérente avec l'alignement mesuré en v0.0 mais non prouvée.
 
 **Règle de décision, écrite avant de calculer (17/11/2026).** Deux options sont comparées : (t − 30 min, t] et (t − 15 min, t + 15 min]. Même modèle LightGBM figé, validation croisée temporelle à l'intérieur de l'entraînement seulement, sans toucher à la validation. On garde l'option à la plus faible MAPE. Si l'écart relatif entre les deux est inférieur à 1 %, on garde (t − 30 min, t], qui suit l'alignement mesuré en v0.0. La mesure est notée dans le journal des choix de la v0.1. L'interpolation au milieu de la demi-heure et la règle du rayonnement découlent de la convention : si la mesure fait changer la convention, elles changent avec elle.
+
+**Résultat (17/11/2026, journal des choix, entrée 3).** MAPE moyenne sur 2019 → 2023 : 4,387 % pour (t − 30 min, t], 4,295 % pour (t − 15 min, t + 15 min], soit un écart relatif de −2,1 %, au-delà du seuil de 1 %. **Convention retenue : (t − 15 min, t + 15 min].** Le signal est fragile : cette option gagne trois années sur cinq (2019, 2021, 2023), et l'écart vient surtout de 2021 (−0,22 point) et de 2023 (−0,31 point) ; elle perd de 0,05 point en 2020 et en 2022. La règle est appliquée telle qu'écrite. Détail : `docs/v0.1-prevision-ponctuelle/data/convention-demi-heure.json`.
 
 ### Passage de l'heure à la demi-heure
 
@@ -31,11 +33,13 @@ D'après la documentation de l'API historique d'Open-Meteo (tableau « Hourly Pa
 
 | Variable | Règle | Exemple |
 |---|---|---|
-| Température, nébulosité, vent | Interpolation linéaire entre les deux heures qui encadrent le milieu de la demi-heure, t − 15 min | Demi-heure 12 h 30 : 0,75 × T(12 h) + 0,25 × T(13 h) |
-| Rayonnement | Valeur de l'heure qui contient la demi-heure, étiquetée t arrondi à l'heure supérieure | La valeur de 13 h 00 (moyenne de 12 h à 13 h) s'applique aux demi-heures 12 h 30 et 13 h 00, pas à 13 h 00 et 13 h 30 |
-| Températures lissées | Moyenne des températures horaires de (t − 24 h, t] et de (t − 72 h, t] ; manquante si une heure manque | Demi-heure 12 h 30 : heures de 13 h la veille à 12 h |
+| Variable | Convention retenue (t − 15, t + 15] | Option écartée (t − 30, t] |
+|---|---|---|
+| Température, nébulosité, vent | Interpolation linéaire au milieu de l'intervalle, t. Demi-heure 12 h 30 : 0,5 × T(12 h) + 0,5 × T(13 h) ; demi-heure 13 h 00 : T(13 h) | Milieu t − 15 min. Demi-heure 12 h 30 : 0,75 × T(12 h) + 0,25 × T(13 h) |
+| Rayonnement | Moyenne des heures qui recouvrent l'intervalle, pondérée par la durée. Demi-heure 12 h 30 : valeur de 13 h 00 ; demi-heure 13 h 00 : moitié de 13 h 00, moitié de 14 h 00 | La valeur de 13 h 00 (moyenne de 12 h à 13 h) s'applique aux demi-heures 12 h 30 et 13 h 00 |
+| Températures lissées | Moyenne des 24 et 72 heures qui finissent à la fin de l'intervalle arrondie à l'heure inférieure ; manquante si une heure manque. Demi-heure 12 h 30 : heures de 13 h la veille à 12 h | Identique pour les demi-heures pleines |
 
-Tests : `test_radiation_labelled_13h_applies_to_half_hours_12h30_and_13h00`, `test_instant_variables_are_read_at_the_middle_of_the_half_hour`, `test_smoothing_uses_the_hours_of_the_trailing_window_only`.
+Tests : `test_retained_centred_option_splits_radiation_between_the_two_hours_it_overlaps`, `test_end_option_radiation_labelled_13h_applies_to_half_hours_12h30_and_13h00`, `test_end_option_reads_instant_variables_at_the_middle_of_the_half_hour`, `test_smoothing_uses_the_hours_of_the_trailing_window_only`.
 
 Les quatre variables sont des indices nationaux, moyennes des 12 points pondérées par la consommation régionale (poids fixés en v0.0). L'humidité, téléchargée, n'entre pas dans la v0.1.
 
@@ -58,7 +62,7 @@ Trois conditions, chacune vérifiée :
 - chaque utilisation est enregistrée, avec le jour livré, la variable, l'heure, le calcul prévu et le calcul utilisé (`docs/v0.1-prevision-ponctuelle/data/calcul-de-secours.csv`). Seules les heures que lit réellement une variable sont comptées. Le rayonnement de l'échéance 0 n'est pas une panne et n'est jamais compté (test `test_radiation_at_lead_zero_is_not_counted_as_a_fallback`) ;
 - le test est évalué tel quel, avec le secours, puisque c'est ce qui se passerait en production. Ses résultats indiqueront le nombre de jours concernés.
 
-Comptage du 17/11/2026 : aucune utilisation en validation. Dans le test, 4 jours livrés (24 au 27/06/2026), tous dus au calcul du 23/06/2026 : 96 valeurs horaires de température, lues surtout par les lissages, et 26 de vent.
+Comptage du 17/11/2026 : aucune utilisation en validation. Dans le test, 4 jours livrés (24 au 27/06/2026), tous dus au calcul du 23/06/2026 : 96 valeurs horaires de température, lues surtout par les lissages, et 25 de vent (26 avec l'option écartée).
 
 ### Niveau récent
 
@@ -86,16 +90,16 @@ Trois variantes seront mesurées en v0.1 : la consommation avec le niveau en var
 | Test | 01/09/2025 → 31/08/2026 | 17 520 | Cible masquée ; météo complète grâce au calcul de secours (4 jours concernés) |
 | Prospectif | 01/09/2026 → 14/11/2026 | 3 602 | Cible non publiée |
 
-Rayonnement prévu face à ERA5 sur la validation : corrélation 0,994 sans décalage, 0,973 avec un décalage de 30 min dans un sens ou dans l'autre. Les deux sources suivent donc la même convention une fois passées à la demi-heure.
+Rayonnement prévu face à ERA5 sur la validation, avec la convention retenue : corrélation 0,995 sans décalage, 0,984 et 0,985 avec un décalage de 30 min (0,994 et 0,973 avec l'option écartée). Les deux sources suivent la même convention une fois passées à la demi-heure. La température prévue s'écarte d'ERA5 de 0,66 °C en MAE, comme avec l'option écartée.
 
 ## Conséquences
 
 - La comparaison A / B / C et le choix de la famille de modèles s'appuient sur cette table, sans la modifier. Tout changement de convention passe par une nouvelle version de cet ADR, datée, avant toute nouvelle mesure.
-- Les variantes B et C ont besoin de la série IFS historique sur 2017 → 2024-03-14, qui n'est pas encore téléchargée : seule la validation l'est.
+- Les variantes B et C ont besoin de la série IFS historique sur 2017 → 2024-03-14 : téléchargement en cours le 17/11/2026.
+- La convention retenue l'a été sur un signal fragile ; si une source de RTE précise l'intervalle, elle prime, par une nouvelle version datée de cet ADR.
 
 ## Points ouverts
 
 | Point | Ce qui le ferme |
 |---|---|
-| Côté de l'intervalle de la demi-heure d'éCO2mix | Source de RTE, ou mesure sur l'entraînement seulement, règle écrite avant |
 | Série IFS historique 2017 → 2024-03-14 pour B et C | Téléchargement accordé le 17/11/2026 : 188 tranches × 12 points = 2 256 appels, plafond de 8 000 par jour, une seule nouvelle tentative sur coupure réseau ou 5xx, arrêt définitif au premier 429 |

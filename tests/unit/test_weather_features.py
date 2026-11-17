@@ -17,19 +17,20 @@ def hourly(start: str, hours: int) -> pd.DataFrame:
     return pd.DataFrame({name: values for name in wf.VARIABLES}, index=index)
 
 
-def test_radiation_labelled_13h_applies_to_half_hours_12h30_and_13h00() -> None:
+def test_end_option_radiation_labelled_13h_applies_to_half_hours_12h30_and_13h00() -> None:
     ends = pd.DatetimeIndex(["2025-06-01 12:30", "2025-06-01 13:00", "2025-06-01 13:30"], tz=UTC)
-    out = wf.half_hour_features(ends, hourly("2025-06-01 00:00", 24))
+    out = wf.half_hour_features(ends, hourly("2025-06-01 00:00", 24), wf.END_LABEL)
     assert out[wf.RADIATION].tolist() == [13.0, 13.0, 14.0]
 
 
-def test_instant_variables_are_read_at_the_middle_of_the_half_hour() -> None:
+def test_end_option_reads_instant_variables_at_the_middle_of_the_half_hour() -> None:
     ends = pd.DatetimeIndex(["2025-06-01 12:30", "2025-06-01 13:00"], tz=UTC)
-    out = wf.half_hour_features(ends, hourly("2025-06-01 00:00", 24))
+    out = wf.half_hour_features(ends, hourly("2025-06-01 00:00", 24), wf.END_LABEL)
     assert out[wf.TEMPERATURE].tolist() == [12.25, 12.75]
 
 
-def test_centred_option_splits_radiation_between_the_two_hours_it_overlaps() -> None:
+def test_retained_centred_option_splits_radiation_between_the_two_hours_it_overlaps() -> None:
+    assert wf.RETAINED == wf.CENTRED
     ends = pd.DatetimeIndex(["2025-06-01 12:30", "2025-06-01 13:00"], tz=UTC)
     out = wf.half_hour_features(ends, hourly("2025-06-01 00:00", 24), wf.CENTRED)
     # (12 h 15, 12 h 45] dans l'heure qui finit à 13 h ; (12 h 45, 13 h 15] à moitié dans

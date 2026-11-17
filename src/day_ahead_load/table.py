@@ -114,7 +114,7 @@ def build(
     first: date,
     last: date,
     open_test: bool = False,
-    convention: wf.Convention = wf.END_LABEL,
+    convention: wf.Convention = wf.RETAINED,
 ) -> Built:
     """Assemble la table du jour `first` au jour `last`, avec le journal du calcul de secours.
 

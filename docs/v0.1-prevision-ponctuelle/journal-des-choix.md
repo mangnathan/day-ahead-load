@@ -28,4 +28,17 @@ Comparaisons sur la validation : 0. Mesures dans l'entraînement : 0 avant cette
 - Validation croisée temporelle : chaque année de 2019 à 2023 est mise de côté à tour de rôle ; le modèle est entraîné sur tous les jours livrés antérieurs au 1er janvier de cette année, depuis le 01/01/2012. Critère : moyenne des cinq MAPE annuelles, sur les demi-heures où la cible existe.
 - Décision : l'option à la plus faible MAPE moyenne. Si l'écart relatif entre les deux est inférieur à 1 %, on garde (t − 30 min, t], qui suit l'alignement mesuré en v0.0.
 
-Résultat : à compléter après le calcul.
+Résultat, le 17/11/2026 (`docs/v0.1-prevision-ponctuelle/data/convention-demi-heure.json`) :
+
+| Année mise de côté | (t − 30, t] | (t − 15, t + 15] |
+|---|---|---|
+| 2019 | 2,490 % | 2,461 % |
+| 2020 | 6,068 % | 6,116 % |
+| 2021 | 3,210 % | 2,987 % |
+| 2022 | 4,120 % | 4,168 % |
+| 2023 | 6,049 % | 5,742 % |
+| Moyenne | 4,387 % | 4,295 % |
+
+Écart relatif −2,1 %, au-delà du seuil de 1 % : **(t − 15 min, t + 15 min] est retenue**, règle appliquée telle qu'écrite. Le signal est fragile : trois années sur cinq, l'écart moyen vient surtout de 2021 et de 2023. Les MAPE annuelles, de 2,5 % à 6,1 %, varient bien plus d'une année à l'autre que d'une option à l'autre : 2020 (confinements) et 2022-2023 (baisse de la consommation) pèsent sur le modèle quelle que soit la convention.
+
+Mesures dans l'entraînement après cette entrée : 2. Comparaisons sur la validation : toujours 0.

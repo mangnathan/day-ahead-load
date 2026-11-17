@@ -6,6 +6,8 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 
 ### Ajouté
 - Table de données de la v0.1 à la demi-heure (ADR 0002) : cible consolidée ou définitive, calendrier (jours fériés par la bibliothèque `holidays`, lundi de Pentecôte, ponts, période de Noël), météo nationale passée à la demi-heure et vue à midi la veille (ERA5 à l'entraînement, calculs ECMWF de 00 UTC ensuite, y compris dans les lissages, avec calcul de secours dont chaque utilisation est enregistrée), niveau des 52 dernières semaines consolidées publiées. Cible du test masquée par défaut.
+- Journal des choix de la v0.1 : modèle LightGBM figé (réglages par défaut, graine fixée), règles écrites avant chaque calcul, compteur des comparaisons faites sur la validation.
+- Série IFS historique d'entraînement (2017 → 2024-03-14), pour la comparaison des sources météo.
 - CI GitHub Actions bloquante sur chaque PR et chaque push sur `main` : installation depuis `uv.lock`, ruff, mypy strict et pytest. Actions épinglées sur un SHA de commit.
 - Garde-fou des tests : toute connexion réseau pendant un test échoue ; les tests ne tournent que sur des données fictives.
 - Étude de faisabilité : mesures de l'historique éCO2mix, diagnostic de la prévision J-1 de RTE (alignement, changements d'heure, biais mensuel), références simples sous la règle de midi la veille, choix des poids de l'indice national de température.
@@ -16,6 +18,7 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 - Résumé de travail de l'étude de faisabilité : choix de la pondération de l'indice de température, licences des données ENTSO-E (conditions de 2023, liste du 18/10/2023), options de la fonction de coût.
 
 ### Modifié
+- Convention de la demi-heure : (t − 15 min, t + 15 min] retenue à la place de (t − 30 min, t] par une mesure dans l'entraînement seulement, selon la règle fixée avant le calcul (écart relatif de 2,1 %, signal fragile noté dans l'ADR 0002).
 - Mesure quotidienne de la disponibilité ECMWF : elle vise le calcul de 00 UTC, celui de la règle de midi. Lecture de l'API à 9 h UTC avec le calcul lu et l'adresse du serveur atteint, et lecture du fichier propre au calcul de 00 UTC sur la copie AWS (heure de dépôt). Nouveau fichier `disponibilite-ecmwf-00utc.csv`.
 - Règle de disponibilité de la météo prévue : dépôt sur AWS + 2 h, vérifiée sur 95 calculs de 00 UTC, en heure d'été comme en heure d'hiver.
 - Mesure quotidienne de la disponibilité ECMWF : lecture de l'API (référence) et de la copie publique d'Open-Meteo sur AWS, dans une même ligne avec le statut de chacune, et écart entre les deux les jours où les deux répondent. Nouveau fichier `disponibilite-ecmwf.csv` ; l'ancien est gardé comme historique.
