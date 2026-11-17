@@ -30,6 +30,7 @@ WEATHER = Path("data/raw/meteo")
 WEIGHTS = Path("docs/v0.0-faisabilite/data/indice-temperature-poids.json")
 OUTPUT = Path("data/processed/table-demi-heure-A.parquet")
 SUMMARY = Path("docs/v0.1-prevision-ponctuelle/data/table-resume.json")
+FALLBACKS = Path("docs/v0.1-prevision-ponctuelle/data/calcul-de-secours.csv")
 FIRST_DAY = date(2012, 1, 1)
 # Dernier calcul ECMWF en cache : 13/11/2026, qui couvre le jour livré du 14/11/2026.
 LAST_DAY = date(2026, 11, 14)
@@ -54,6 +55,26 @@ def summarize(table: pd.DataFrame) -> dict[str, Any]:
     return out
 
 
+def fallback_summary(log: pd.DataFrame) -> dict[str, Any]:
+    """Utilisations du calcul de secours par période : valeurs horaires lues par variable,
+    jours livrés concernés. Le rayonnement de l'échéance 0 n'y est jamais compté."""
+    out: dict[str, Any] = {
+        "regle": (
+            "valeur absente du calcul prévu : prise dans le calcul antérieur le plus récent "
+            "qui couvre l'heure ; détail dans calcul-de-secours.csv"
+        )
+    }
+    for name, rows in log.groupby("periode", sort=False):
+        out[str(name)] = {
+            "valeurs_horaires_par_variable": {
+                str(k): int(v) for k, v in rows["variable"].value_counts().sort_index().items()
+            },
+            "jours_livres_concernes": sorted({str(d) for d in rows["jour"]}),
+            "calculs_absents_ou_incomplets": sorted({str(d) for d in rows["calcul_prevu"]}),
+        }
+    return out
+
+
 def main() -> None:
     paths = [ECO2MIX / f"{name}.parquet" for name in eco2mix.DATASETS]
     instants, dropped = diagnostics.with_local_instants(diagnostics.read_raw(paths))
@@ -62,9 +83,11 @@ def main() -> None:
     archive = wf.archive_index(WEATHER, "era5", POINTS, weights)
     runs = wf.runs_index(WEATHER, POINTS, weights)
 
-    table = tb.build(instants, archive, runs, FIRST_DAY, LAST_DAY)
+    built = tb.build(instants, archive, runs, FIRST_DAY, LAST_DAY)
+    table = built.table
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     table.to_parquet(OUTPUT)
+    built.fallbacks.to_csv(FALLBACKS, index=False, lineterminator="\n")
 
     summary = {
         "variante": "A : ERA5 à l'entraînement, calculs ECMWF de 00 UTC ensuite",
@@ -78,6 +101,7 @@ def main() -> None:
         "lignes_ecartees_eco2mix": dropped,
         "colonnes": list(table.columns),
         "cible_du_test": "masquée",
+        "calcul_de_secours": fallback_summary(built.fallbacks),
         "par_periode": summarize(table),
     }
     SUMMARY.parent.mkdir(parents=True, exist_ok=True)

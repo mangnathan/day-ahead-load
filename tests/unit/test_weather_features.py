@@ -57,13 +57,13 @@ def rows_of(day: date) -> pd.DataFrame:
 
 def test_hours_of_the_delivered_day_come_from_the_previous_day_run() -> None:
     runs = synthetic_runs(date(2025, 1, 1), date(2025, 1, 10))
-    out = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
+    out, _ = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
     assert (out[wf.TEMPERATURE] == 6.0).all()  # calcul du 07/01, numéro 6
 
 
 def test_past_hours_come_from_the_runs_of_their_own_day() -> None:
     runs = synthetic_runs(date(2025, 1, 1), date(2025, 1, 10))
-    out = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
+    out, _ = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
     # Dernière demi-heure du 08/01 : étiquetée 23 h 30 à Paris, elle finit à 22 h 30 UTC. Les
     # 72 heures vont de 23 h UTC le 05/01 à 22 h UTC le 08/01 : une heure du 05/01 (calcul
     # numéro 4), 24 heures du 06/01 (numéro 5), puis 47 heures du calcul du 07/01 (numéro 6).
@@ -74,25 +74,53 @@ def test_past_hours_come_from_the_runs_of_their_own_day() -> None:
 def test_nothing_published_after_noon_the_day_before_enters_the_features() -> None:
     runs = synthetic_runs(date(2025, 1, 1), date(2025, 1, 10))
     delivered = date(2025, 1, 8)
-    clean = wf.forecast_features(rows_of(delivered), runs)
+    clean, _ = wf.forecast_features(rows_of(delivered), runs)
     poisoned = runs.copy()
     later = np.asarray(
         pd.Index(poisoned.index.get_level_values("calcul")) > delivered - timedelta(days=1)
     )
     poisoned.loc[later, :] = 1e9
-    pd.testing.assert_frame_equal(wf.forecast_features(rows_of(delivered), poisoned), clean)
+    pd.testing.assert_frame_equal(wf.forecast_features(rows_of(delivered), poisoned)[0], clean)
 
 
 def test_missing_previous_day_run_falls_back_on_the_run_before() -> None:
     runs = synthetic_runs(date(2025, 1, 1), date(2025, 1, 10))
     runs = runs.drop(date(2025, 1, 7), level="calcul")
-    out = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
+    out, log = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
     assert (out[wf.TEMPERATURE] == 5.0).all()  # calcul du 06/01, numéro 5
+    assert set(log["variable"]) == set(wf.VARIABLES)
+    assert set(log["calcul_prevu"]) == {date(2025, 1, 7)}
+    assert set(log["calcul_utilise"]) == {date(2025, 1, 6)}
+
+
+def test_fallback_runs_are_all_available_at_noon_the_day_before() -> None:
+    runs = synthetic_runs(date(2025, 1, 1), date(2025, 1, 12))
+    runs = runs.drop([date(2025, 1, 5), date(2025, 1, 7)], level="calcul")
+    rows = pd.concat([rows_of(date(2025, 1, 8)), rows_of(date(2025, 1, 9))])
+    _, log = wf.forecast_features(rows, runs)
+    assert not log.empty
+    # Lancé au plus tard à 00 UTC de la veille, donc déposé avant midi la veille (ADR 0001).
+    latest_allowed = [d - timedelta(days=1) for d in log["jour"]]
+    assert all(u <= a for u, a in zip(log["calcul_utilise"], latest_allowed, strict=True))
+    assert all(u < p for u, p in zip(log["calcul_utilise"], log["calcul_prevu"], strict=True))
 
 
 def test_missing_values_inside_a_run_fall_back_on_the_run_before() -> None:
     runs = synthetic_runs(date(2025, 1, 1), date(2025, 1, 10))
     runs.loc[date(2025, 1, 7), wf.TEMPERATURE] = np.nan
-    out = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
+    out, log = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
     assert (out[wf.TEMPERATURE] == 5.0).all()
     assert (out["cloud_cover"] == 6.0).all()  # les autres variables gardent leur calcul
+    assert set(log["variable"]) == {wf.TEMPERATURE}
+
+
+def test_radiation_at_lead_zero_is_not_counted_as_a_fallback() -> None:
+    runs = synthetic_runs(date(2025, 1, 1), date(2025, 1, 10))
+    hours = pd.DatetimeIndex(runs.index.get_level_values("heure"))
+    lead_zero = np.asarray(
+        hours == pd.to_datetime(runs.index.get_level_values("calcul")).tz_localize(UTC)
+    )
+    runs.loc[lead_zero, wf.RADIATION] = np.nan
+    out, log = wf.forecast_features(rows_of(date(2025, 1, 8)), runs)
+    assert out[wf.RADIATION].notna().all()
+    assert log.empty

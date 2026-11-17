@@ -42,6 +42,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Mapping, Sequence
+from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
@@ -94,12 +95,32 @@ def half_hour_features(ends_utc: pd.DatetimeIndex, hourly: pd.DataFrame) -> pd.D
     return out
 
 
-def _latest_known(runs: pd.DataFrame) -> pd.DataFrame:
+@dataclass(frozen=True)
+class Hourly:
+    """Série horaire et, pour chaque valeur, le jour du calcul qui l'a fournie."""
+
+    values: pd.DataFrame
+    runs: pd.DataFrame
+
+    def before(self, moment: pd.Timestamp) -> Hourly:
+        keep = np.asarray(pd.DatetimeIndex(self.values.index) < moment)
+        return Hourly(self.values[keep], self.runs[keep])
+
+
+FALLBACK_COLUMNS = ("jour", "variable", "heure_utc", "calcul_prevu", "calcul_utilise")
+
+
+def _latest_known(runs: pd.DataFrame) -> Hourly:
     """Pour chaque heure et chaque variable, la valeur du calcul le plus récent de `runs` qui
     la donne (les valeurs manquantes d'un calcul sont prises dans le calcul précédent)."""
-    ordered = runs.sort_index(level="calcul")
-    latest: pd.DataFrame = ordered.groupby(level="heure").last()
-    return latest.sort_index()
+    values: dict[str, pd.Series] = {}
+    used: dict[str, pd.Series] = {}
+    for name in runs.columns:
+        known = runs[name].dropna().sort_index(level="calcul")
+        last = known.reset_index(level="calcul").groupby(level="heure").last()
+        values[str(name)] = last[name]
+        used[str(name)] = last["calcul"]
+    return Hourly(pd.DataFrame(values).sort_index(), pd.DataFrame(used).sort_index())
 
 
 def _run_days(runs: pd.DataFrame) -> pd.DatetimeIndex:
@@ -108,7 +129,7 @@ def _run_days(runs: pd.DataFrame) -> pd.DatetimeIndex:
     )
 
 
-def own_day_hours(runs: pd.DataFrame) -> pd.DataFrame:
+def own_day_hours(runs: pd.DataFrame) -> Hourly:
     """Pour chaque heure, la valeur du calcul de 00 UTC du même jour UTC (échéances 0 à 23 h).
 
     Calcul de secours : si cette valeur manque, celle du calcul antérieur le plus récent qui
@@ -118,7 +139,7 @@ def own_day_hours(runs: pd.DataFrame) -> pd.DataFrame:
     return _latest_known(runs[np.asarray(_run_days(runs) <= valid.normalize())])
 
 
-def seen_at_decision(runs: pd.DataFrame, own_day: pd.DataFrame, delivered: date) -> pd.DataFrame:
+def seen_at_decision(runs: pd.DataFrame, own_day: Hourly, delivered: date) -> Hourly:
     """Série horaire connue à midi la veille du jour livré.
 
     À partir de 00 UTC de la veille : le calcul de 00 UTC de la veille, avec le calcul de
@@ -131,34 +152,76 @@ def seen_at_decision(runs: pd.DataFrame, own_day: pd.DataFrame, delivered: date)
     valid = pd.DatetimeIndex(runs.index.get_level_values("heure"))
     keep = (days <= start) & (days >= start - pd.Timedelta(days=3)) & (valid >= start)
     latest = _latest_known(runs[np.asarray(keep)])
-    history = own_day[pd.DatetimeIndex(own_day.index) < start]
-    return pd.concat([history, latest]).sort_index()
+    history = own_day.before(start)
+    return Hourly(
+        pd.concat([history.values, latest.values]).sort_index(),
+        pd.concat([history.runs, latest.runs]).sort_index(),
+    )
+
+
+def _used_hours(ends: pd.DatetimeIndex) -> dict[str, tuple[pd.Timestamp, pd.Timestamp]]:
+    """Heures que lit chaque variable pour les demi-heures `ends` (bornes incluses)."""
+    first_middle = (ends.min() - QUARTER).floor("h")
+    last_middle = (ends.max() - QUARTER).floor("h") + HOUR
+    longest = pd.Timedelta(hours=max(SMOOTHING_HOURS) - 1)
+    out = {name: (first_middle, last_middle) for name in INSTANT_VARIABLES}
+    out[TEMPERATURE] = (min(first_middle, ends.min().floor("h") - longest), last_middle)
+    out[RADIATION] = (ends.min().ceil("h"), ends.max().ceil("h"))
+    return out
+
+
+def fallbacks(delivered: date, hourly: Hourly, ends: pd.DatetimeIndex) -> pd.DataFrame:
+    """Valeurs lues pour le jour livré qui ne viennent pas du calcul prévu par la règle.
+
+    Calcul prévu : celui de la veille à partir de son lancement, celui du jour UTC de l'heure
+    avant. Le rayonnement de l'échéance 0 n'est jamais fourni (pas d'heure précédente) : ce
+    n'est pas une panne, il n'est pas compté.
+    """
+    start = pd.Timestamp(delivered - timedelta(days=1), tz="UTC")
+    rows = []
+    for name, (first, last) in _used_hours(ends).items():
+        hours = pd.DatetimeIndex(hourly.runs.index)
+        used = hourly.runs[name][np.asarray((hours >= first) & (hours <= last))].dropna()
+        for moment, run in zip(pd.DatetimeIndex(used.index), used.to_numpy(), strict=True):
+            nominal = start if moment >= start else moment.normalize()
+            if pd.Timestamp(run, tz="UTC") == nominal:
+                continue
+            if name == RADIATION and moment == nominal:
+                continue
+            rows.append((delivered, name, moment, nominal.date(), run))
+    return pd.DataFrame(rows, columns=list(FALLBACK_COLUMNS))
 
 
 def forecast_features(
-    rows: pd.DataFrame, runs: pd.DataFrame, own_day: pd.DataFrame | None = None
-) -> pd.DataFrame:
+    rows: pd.DataFrame, runs: pd.DataFrame, own_day: Hourly | None = None
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Variables météo des demi-heures de `rows` (colonnes `jour` et index `fin_utc`), jour
-    livré par jour livré, telles qu'elles sont connues à midi la veille."""
+    livré par jour livré, telles qu'elles sont connues à midi la veille, et la liste des
+    utilisations du calcul de secours."""
     if rows.empty:
-        return pd.DataFrame(columns=feature_names(), index=rows.index, dtype=float)
+        empty = pd.DataFrame(columns=feature_names(), index=rows.index, dtype=float)
+        return empty, pd.DataFrame(columns=list(FALLBACK_COLUMNS))
     own = own_day_hours(runs) if own_day is None else own_day
     span = pd.Timedelta(hours=max(SMOOTHING_HOURS) + 3)
     pieces = []
+    used = []
     for delivered, group in rows.groupby("jour", sort=True):
         ends = pd.DatetimeIndex(group.index)
         if not isinstance(delivered, date):
             raise TypeError(f"jour livré inattendu : {delivered!r}")
         hourly = seen_at_decision(runs, own, delivered)
-        window = hourly[
-            (pd.DatetimeIndex(hourly.index) >= ends.min() - span)
-            & (pd.DatetimeIndex(hourly.index) <= ends.max() + HOUR)
-        ]
-        if window.empty:
+        hours = pd.DatetimeIndex(hourly.values.index)
+        keep = np.asarray((hours >= ends.min() - span) & (hours <= ends.max() + HOUR))
+        window = Hourly(hourly.values[keep], hourly.runs[keep])
+        if window.values.empty:
             pieces.append(pd.DataFrame(np.nan, index=ends, columns=feature_names()))
-        else:
-            pieces.append(half_hour_features(ends, window))
-    return pd.concat(pieces)
+            continue
+        pieces.append(half_hour_features(ends, window.values))
+        used.append(fallbacks(delivered, window, ends))
+    log = (
+        pd.concat(used, ignore_index=True) if used else pd.DataFrame(columns=list(FALLBACK_COLUMNS))
+    )
+    return pd.concat(pieces), log
 
 
 def feature_names() -> list[str]:

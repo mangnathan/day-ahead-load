@@ -37,6 +37,24 @@
     "temperature_lissee_72h"
   ],
   "cible_du_test": "masquée",
+  "calcul_de_secours": {
+    "regle": "valeur absente du calcul prévu : prise dans le calcul antérieur le plus récent qui couvre l'heure ; détail dans calcul-de-secours.csv",
+    "test": {
+      "valeurs_horaires_par_variable": {
+        "temperature_2m": 96,
+        "wind_speed_10m": 26
+      },
+      "jours_livres_concernes": [
+        "2026-06-24",
+        "2026-06-25",
+        "2026-06-26",
+        "2026-06-27"
+      ],
+      "calculs_absents_ou_incomplets": [
+        "2026-06-23"
+      ]
+    }
+  },
   "par_periode": {
     "entrainement": {
       "premier_jour": "2012-01-01",

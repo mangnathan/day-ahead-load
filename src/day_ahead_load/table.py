@@ -19,6 +19,7 @@ plus de 1 % de ses demi-heures.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date, timedelta
 
 import numpy as np
@@ -38,6 +39,14 @@ TARGET = "consommation"
 LEVEL = "niveau_52_semaines"
 SOURCE_TRAIN = "era5"
 SOURCE_FORECAST = "ecmwf_00utc_veille"
+
+
+@dataclass(frozen=True)
+class Built:
+    table: pd.DataFrame
+    # Une ligne par valeur lue dans un calcul de secours : jour livré, variable, heure,
+    # calcul prévu par la règle et calcul utilisé.
+    fallbacks: pd.DataFrame
 
 
 def period(day: date) -> str:
@@ -105,8 +114,8 @@ def build(
     first: date,
     last: date,
     open_test: bool = False,
-) -> pd.DataFrame:
-    """Assemble la table du jour `first` au jour `last`.
+) -> Built:
+    """Assemble la table du jour `first` au jour `last`, avec le journal du calcul de secours.
 
     `archive` : indice national horaire de la source d'entraînement (ERA5 pour la variante A) ;
     `runs` : indice national horaire des calculs ECMWF de 00 UTC, indexé par (calcul, heure).
@@ -125,14 +134,13 @@ def build(
 
     training = table["periode"] == "entrainement"
     table["source_meteo"] = np.where(training, SOURCE_TRAIN, SOURCE_FORECAST)
+    forecast, fallbacks = wf.forecast_features(table[~training], runs)
     weather = pd.concat(
-        [
-            wf.half_hour_features(pd.DatetimeIndex(table.index[training]), archive),
-            wf.forecast_features(table[~training], runs),
-        ]
+        [wf.half_hour_features(pd.DatetimeIndex(table.index[training]), archive), forecast]
     ).reindex(table.index)
     table = table.join(weather)
+    fallbacks["periode"] = [period(d) for d in fallbacks["jour"]]
 
     if not open_test:
         table.loc[table["periode"] == "test", TARGET] = np.nan
-    return table
+    return Built(table, fallbacks)

@@ -65,19 +65,19 @@ def test_test_target_is_masked_unless_opened() -> None:
     first, last = date(2025, 8, 30), date(2025, 9, 2)
     data = instants("2024-01-01", "2025-09-03")
     archive, runs = flat_weather(first, last)
-    closed = tb.build(data, archive, runs, first, last)
+    closed = tb.build(data, archive, runs, first, last).table
     test_rows = closed["periode"] == "test"
     assert test_rows.any()
     assert closed.loc[test_rows, tb.TARGET].isna().all()
     assert closed.loc[~test_rows, tb.TARGET].notna().all()
-    opened = tb.build(data, archive, runs, first, last, open_test=True)
+    opened = tb.build(data, archive, runs, first, last, open_test=True).table
     assert opened.loc[test_rows, tb.TARGET].notna().all()
 
 
 def test_training_rows_use_the_archive_and_later_rows_the_forecast() -> None:
     first, last = date(2024, 3, 13), date(2024, 3, 16)
     archive, runs = flat_weather(first, last)
-    built = tb.build(instants("2023-01-01", "2024-03-17"), archive, runs, first, last)
+    built = tb.build(instants("2023-01-01", "2024-03-17"), archive, runs, first, last).table
     training = built["periode"] == "entrainement"
     assert (built.loc[training, "source_meteo"] == tb.SOURCE_TRAIN).all()
     assert (built.loc[training, wf.TEMPERATURE] == 10.0).all()
