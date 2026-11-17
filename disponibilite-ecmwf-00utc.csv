@@ -1,2 +1,3 @@
 date_appel_utc,heure_appel_utc,statut_api,serveur_api,calcul_api,initialisation_api_utc,disponibilite_api_utc,statut_aws,depot_aws_00utc,ecart_api_moins_aws_min,detail
 2026-11-16,2026-11-16T15:54:07+00:00,ok,167.114.211.86,06,2026-11-16T06:00:00+00:00,2026-11-16T12:01:23+00:00,ok,2026-11-16T06:23:03+00:00,,
+2026-11-17,2026-11-17T10:24:03+00:00,ok,51.81.167.44,00,2026-11-17T00:00:00+00:00,2026-11-17T06:22:17+00:00,ok,2026-11-17T06:23:07+00:00,-0.8,
