@@ -95,6 +95,16 @@ SOURCES: dict[str, Source] = {
         date(2025, 8, 31),
         single_runs=False,
     ),
+    # v0.1, variantes B et C de la comparaison des sources d'entraînement (ADR 0001) : même
+    # modèle et mêmes paramètres que `ifs_historique`, sur l'entraînement à partir de 2017.
+    "ifs_historique_entrainement": Source(
+        "ifs_historique_entrainement",
+        "https://archive-api.open-meteo.com/v1/archive",
+        "ecmwf_ifs",
+        date(2017, 1, 1),
+        date(2024, 3, 14),
+        single_runs=False,
+    ),
     "ecmwf_00utc": Source(
         "ecmwf_00utc",
         "https://single-runs-api.open-meteo.com/v1/forecast",

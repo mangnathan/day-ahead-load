@@ -17,6 +17,10 @@ Au premier refus de quota (429), un fichier d'arrêt est écrit et plus aucun ap
 tant qu'il existe. Une coupure réseau ou une réponse 5xx donne lieu à une seule nouvelle
 tentative, après 5 minutes de pause et comptée dans le plafond ; un deuxième échec arrête la
 séance.
+
+v0.1 : la source `ifs_historique_entrainement` (IFS historique du 01/01/2017 au 14/03/2024,
+2 256 appels) s'ajoute à la fin. Les sources déjà complètes sont relues depuis le cache, sans
+appel.
 """
 
 from __future__ import annotations
@@ -36,6 +40,8 @@ LEDGER = RAW_ROOT / "journal-appels.json"
 STOP_FILE = RAW_ROOT / "ARRET-QUOTA.json"
 CONTROL = Path("docs/v0.0-faisabilite/data/meteo-controle.json")
 DOWNLOAD_ORDER = ("ifs_historique", "era5", "ecmwf_00utc")
+# Ajoutée en v0.1 : même modèle et mêmes mailles que `ifs_historique`, déjà contrôlées.
+DOWNLOAD_SOURCES = (*DOWNLOAD_ORDER, "ifs_historique_entrainement")
 
 
 def downloader() -> w.Downloader:
@@ -132,7 +138,7 @@ def run_download() -> None:
     dl = downloader()
     points = controlled_points()
     try:
-        for source in DOWNLOAD_ORDER:
+        for source in DOWNLOAD_SOURCES:
             for point, elevation in points:
                 for request in w.requests_for(source, point, elevation):
                     dl.get(request)
