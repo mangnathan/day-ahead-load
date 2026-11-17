@@ -1,0 +1,82 @@
+{
+  "variante": "A : ERA5 à l'entraînement, calculs ECMWF de 00 UTC ensuite",
+  "entrees": {
+    "eco2mix-national-cons-def.parquet": {
+      "sha256": "864f8942b0224e414c9cd244a793e1f0150dfc8f363f723da92577b03563f647"
+    },
+    "eco2mix-national-tr.parquet": {
+      "sha256": "2dc99a8ea354aac8d4063af8f5abb82923b968245f7e65b280b6b87c7baa639b"
+    },
+    "poids_indice": "docs\\v0.0-faisabilite\\data\\indice-temperature-poids.json",
+    "points": 12,
+    "calculs_ecmwf_en_cache": 975,
+    "holidays": "0.107"
+  },
+  "lignes_ecartees_eco2mix": {
+    "lignes_heure_inexistante_mars": 60,
+    "lignes_heure_ambigue_octobre": 60
+  },
+  "colonnes": [
+    "jour",
+    "demi_heure",
+    "periode",
+    "jour_semaine",
+    "mois",
+    "ferie",
+    "lundi_pentecote",
+    "pont",
+    "noel",
+    "consommation",
+    "niveau_52_semaines",
+    "source_meteo",
+    "temperature_2m",
+    "cloud_cover",
+    "wind_speed_10m",
+    "shortwave_radiation",
+    "temperature_lissee_24h",
+    "temperature_lissee_72h"
+  ],
+  "cible_du_test": "masquée",
+  "par_periode": {
+    "entrainement": {
+      "premier_jour": "2012-01-01",
+      "dernier_jour": "2024-03-14",
+      "demi_heures": 213936,
+      "manquants_par_colonne": {
+        "consommation": 48,
+        "niveau_52_semaines": 20448,
+        "temperature_2m": 3,
+        "cloud_cover": 3,
+        "wind_speed_10m": 3,
+        "shortwave_radiation": 1,
+        "temperature_lissee_24h": 48,
+        "temperature_lissee_72h": 144
+      }
+    },
+    "validation": {
+      "premier_jour": "2024-03-15",
+      "dernier_jour": "2025-08-31",
+      "demi_heures": 25678,
+      "manquants_par_colonne": {
+        "consommation": 4,
+        "temperature_lissee_72h": 96
+      }
+    },
+    "test": {
+      "premier_jour": "2025-09-01",
+      "dernier_jour": "2026-08-31",
+      "demi_heures": 17520,
+      "manquants_par_colonne": {
+        "consommation": 17520
+      }
+    },
+    "prospectif": {
+      "premier_jour": "2026-09-01",
+      "dernier_jour": "2026-11-14",
+      "demi_heures": 3602,
+      "manquants_par_colonne": {
+        "consommation": 3602
+      }
+    }
+  }
+}
