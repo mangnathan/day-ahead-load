@@ -179,3 +179,46 @@ Comparaisons sur la validation : 5 avant cette entrée. Mesures dans l'entraîne
 Colinéarité : les indicatrices du jour de la semaine et du férié sont en partie redondantes avec les couples (demi-heure, type de jour), et les degrés croisés avec les tranches et avec le mois se recouvrent. Une modalité de référence est retirée par groupe : le couple (00 h 00, ouvré), le lundi et janvier pour les indicatrices, et janvier pour le chauffage croisé avec le mois. L'effet moyen du chauffage et de la climatisation est déjà porté par les 8 tranches horaires, qui restent toutes. Les redondances qui restent sont laissées à `lstsq`, qui reste stable quand la matrice n'est pas de plein rang : les prévisions ne changent pas, et les coefficients restent interprétables. Le nombre de colonnes et le rang de la matrice d'entraînement sont écrits dans le résultat.
 
 Une entrée manquante est remplacée par sa moyenne sur l'entraînement. Cela concerne la température lissée sur 72 h de 96 demi-heures de validation (15 et 16/03/2024). L'entraînement depuis 2017 n'a aucune entrée manquante (entrée 6).
+
+## 13. Modèle L-sans — 20/11/2026
+
+Régression linéaire sans niveau, ERA5 depuis le 01/01/2017 (126 212 demi-heures). 199 colonnes, rang 199. MAPE de validation : 4,176 %. **Comparaisons sur la validation : 6.**
+
+## 14. Modèle L-niveau — 20/11/2026
+
+Régression linéaire avec le niveau en variable. 200 colonnes, rang 200. MAPE de validation : 3,650 %. **Comparaisons sur la validation : 7.**
+
+## 15. Modèle L-rapport — 20/11/2026
+
+Régression linéaire sur le rapport consommation / niveau. 199 colonnes, rang 199. MAPE de validation : 3,846 %. **Comparaisons sur la validation : 8.**
+
+## 16. Modèle G-sans — 20/11/2026
+
+LightGBM sans niveau. MAPE de validation : 4,348 %. **Comparaisons sur la validation : 9.**
+
+## 17. Modèle G-rapport — 20/11/2026
+
+LightGBM sur le rapport consommation / niveau. MAPE de validation : 3,519 %. **Comparaisons sur la validation : 10.**
+
+G-niveau est A17 (entrée 6) et n'est pas recompté. Le script retrouve exactement sa MAPE de 2,617 %.
+
+## 18. Décision : famille et niveau — 20/11/2026
+
+Comparaisons sur la validation : 10, comme annoncé en entrée 12. Règle de l'entrée 12 appliquée telle qu'écrite, sur 25 674 demi-heures de validation (`docs/v0.1-prevision-ponctuelle/data/comparaison-familles.json`).
+
+| Retenu jusque-là | Candidat | MAPE retenu | MAPE candidat | Gain relatif | IC 95 % de la différence (points) | Candidat retenu |
+|---|---|---|---|---|---|---|
+| L-sans | L-niveau | 4,176 % | 3,650 % | 12,6 % | [−1,031 ; −0,017] | oui |
+| L-niveau | L-rapport | 3,650 % | 3,846 % | −5,4 % | [+0,034 ; +0,348] | non : moins bon |
+| L-niveau | G-sans | 3,650 % | 4,348 % | −19,1 % | [+0,088 ; +1,306] | non : moins bon |
+| L-niveau | G-niveau | 3,650 % | 2,617 % | 28,3 % | [−1,383 ; −0,679] | oui |
+| G-niveau | G-rapport | 2,617 % | 3,519 % | −34,5 % | [+0,591 ; +1,227] | non : moins bon |
+
+**Retenu : G-niveau, LightGBM avec le niveau des 52 semaines en variable, ERA5 à l'entraînement depuis le 01/01/2017.** C'est le modèle A17 : le modèle figé de l'entrée 1, sans changement.
+
+- Rang : la matrice de la régression est de plein rang dans les trois variantes. La redondance attendue entre le jour de la semaine, le férié et le type de jour ne se produit pas, parce que des fériés tombent un dimanche ou un samedi.
+- Le rapport est moins bon que le niveau en variable dans les deux familles, nettement pour LightGBM (−34,5 %, intervalle loin de 0). Il ne corrige donc pas, sur cette validation, le défaut d'extrapolation qu'il visait. Cette mesure ne dit pas pourquoi.
+- Observations hors règle : le niveau en variable améliore LightGBM de 39,8 % par rapport à LightGBM sans niveau (2,617 % contre 4,348 %). Sans niveau, LightGBM est moins bon que la régression linéaire sans niveau. Ces deux comparaisons ne faisaient pas partie de la règle. Elles ne changent rien à la décision.
+- Point ouvert de l'entrée 11 (pourquoi 2012-2016 dégradent la prévision) : le niveau pèse lourd dans la qualité du modèle, ce qui va dans le sens d'un problème de changement de niveau. La mesure ne tranche pas : A12 avait le niveau à partir de mars 2013. La question reste ouverte.
+
+Comparaisons sur la validation après cette entrée : 10. Mesures dans l'entraînement : 2.

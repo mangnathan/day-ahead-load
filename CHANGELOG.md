@@ -9,6 +9,7 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 - Journal des choix de la v0.1 : modèle LightGBM figé (réglages par défaut, graine fixée), règles écrites avant chaque calcul, compteur des comparaisons faites sur la validation.
 - Série IFS historique d'entraînement (2017 → 2024-03-14), pour la comparaison des sources météo.
 - Comparaison des sources météo et de la durée de l'entraînement (5 modèles sur la validation) : test de bruit par différence appariée de MAPE et bootstrap par blocs d'une semaine, correction de l'écart moyen IFS − ERA5. ERA5 retenu, entraînement à partir du 01/01/2017.
+- Comparaison des familles et des variantes du niveau sur la grille complète (régression linéaire avec interactions température × tranche horaire et × mois, LightGBM ; sans niveau, niveau en variable, rapport), 10 comparaisons au total sur la validation. LightGBM avec le niveau en variable retenu.
 - CI GitHub Actions bloquante sur chaque PR et chaque push sur `main` : installation depuis `uv.lock`, ruff, mypy strict et pytest. Actions épinglées sur un SHA de commit.
 - Garde-fou des tests : toute connexion réseau pendant un test échoue ; les tests ne tournent que sur des données fictives.
 - Étude de faisabilité : mesures de l'historique éCO2mix, diagnostic de la prévision J-1 de RTE (alignement, changements d'heure, biais mensuel), références simples sous la règle de midi la veille, choix des poids de l'indice national de température.
