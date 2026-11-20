@@ -165,3 +165,124 @@ def paired_gap(
     low, high = np.percentile(boot, [2.5, 97.5])
     s, k = float(ape_s.mean()), float(ape_k.mean())
     return PairedGap(s, k, k - s, float(low), float(high), (s - k) / s)
+
+
+# Familles et variantes du niveau (journal des choix, entrée 12).
+TRAIN_FIRST = date(2017, 1, 1)
+HEATING_BASE = 15.0  # °C, sensibilité mesurée sous 15 °C en v0.0
+COOLING_BASE = 18.0  # °C, fixé a priori, sans mesure
+SLICE_HALF_HOURS = 6  # tranches horaires de 3 h
+FAMILIES = ("lineaire", "lightgbm")
+LEVEL_VARIANTS = ("sans", "niveau", "rapport")
+WORKING, SATURDAY, SUNDAY_OR_HOLIDAY = 0, 1, 2
+SMOOTHED = ("temperature_lissee_24h", "temperature_lissee_72h")
+RAW_LINEAR = ("cloud_cover", "wind_speed_10m", "shortwave_radiation")
+
+
+def day_type(table: pd.DataFrame) -> np.ndarray:
+    """Ouvré, samedi, dimanche ou férié. Le lundi de Pentecôte reste un jour ouvré."""
+    weekday = table["jour_semaine"].to_numpy()
+    holiday = table["ferie"].to_numpy(dtype=bool)
+    return np.where(
+        holiday | (weekday == 6), SUNDAY_OR_HOLIDAY, np.where(weekday == 5, SATURDAY, WORKING)
+    )
+
+
+def _linear_inputs(with_level: bool) -> list[str]:
+    inputs = ["temperature_2m", *SMOOTHED, *RAW_LINEAR]
+    return [*inputs, tb.LEVEL] if with_level else inputs
+
+
+def linear_design(table: pd.DataFrame, means: pd.Series) -> pd.DataFrame:
+    """Matrice de la régression : constante, profil, calendrier, degrés croisés (entrée 12).
+
+    `means` : moyennes de l'entraînement, qui remplacent les entrées manquantes ; leur index
+    dit aussi si le niveau entre dans la matrice.
+    """
+    raw = table[list(means.index)].astype(float).fillna(means)
+    slot = table["demi_heure"].to_numpy(dtype=int)
+    kind = day_type(table)
+    weekday = table["jour_semaine"].to_numpy(dtype=int)
+    month = table["mois"].to_numpy(dtype=int)
+    columns: dict[str, np.ndarray] = {"constante": np.ones(len(table))}
+    for s in range(48):
+        for k in (WORKING, SATURDAY, SUNDAY_OR_HOLIDAY):
+            if (s, k) != (0, WORKING):
+                columns[f"profil_{s:02d}_{k}"] = ((slot == s) & (kind == k)).astype(float)
+    for d in range(1, 7):
+        columns[f"jour_semaine_{d}"] = (weekday == d).astype(float)
+    for m in range(2, 13):
+        columns[f"mois_{m:02d}"] = (month == m).astype(float)
+    for flag in ("ferie", "lundi_pentecote", "pont", "noel"):
+        columns[flag] = table[flag].to_numpy(dtype=float)
+    temperature = raw["temperature_2m"].to_numpy()
+    heating = np.maximum(HEATING_BASE - temperature, 0.0)
+    cooling = np.maximum(temperature - COOLING_BASE, 0.0)
+    band = slot // SLICE_HALF_HOURS
+    for b in range(48 // SLICE_HALF_HOURS):
+        columns[f"chauffage_tranche_{b}"] = heating * (band == b)
+        columns[f"climatisation_tranche_{b}"] = cooling * (band == b)
+    for m in range(2, 13):
+        columns[f"chauffage_mois_{m:02d}"] = heating * (month == m)
+    for name in SMOOTHED:
+        values = raw[name].to_numpy()
+        columns[f"chauffage_{name}"] = np.maximum(HEATING_BASE - values, 0.0)
+        columns[f"climatisation_{name}"] = np.maximum(values - COOLING_BASE, 0.0)
+    for name in RAW_LINEAR:
+        columns[name] = raw[name].to_numpy()
+    if tb.LEVEL in means.index:
+        columns[tb.LEVEL] = raw[tb.LEVEL].to_numpy()
+    return pd.DataFrame(columns, index=table.index)
+
+
+@dataclass(frozen=True)
+class GridResult:
+    forecast: pd.Series
+    train_rows: int
+    columns: int | None  # régression linéaire seulement
+    rank: int | None
+
+
+def grid_forecast(
+    table: pd.DataFrame, family: str, level: str, train_first: date = TRAIN_FIRST
+) -> GridResult:
+    """Entraîne une case de la grille (famille × niveau) et prévoit la validation.
+
+    Rapport : la cible est consommation / niveau, sans le niveau en entrée ; la prévision est
+    remultipliée par le niveau du jour livré. Refuse les lignes du test ou au-delà.
+    """
+    if family not in FAMILIES or level not in LEVEL_VARIANTS:
+        raise ValueError(f"case inconnue : {family}, {level}")
+    if not table["periode"].isin(["entrainement", "validation"]).all():
+        raise ValueError("comparaison réservée à l'entraînement et à la validation")
+    day = pd.Series(pd.to_datetime(table["jour"]).to_numpy(), index=table.index)
+    train_mask = (
+        (table["periode"] == "entrainement")
+        & (day >= pd.Timestamp(train_first))
+        & table[tb.TARGET].notna()
+    )
+    train = table[train_mask]
+    validation = table[table["periode"] == "validation"]
+    target = train[tb.TARGET].astype(float)
+    if level == "rapport":
+        target = target / train[tb.LEVEL].astype(float)
+    with_level = level == "niveau"
+    columns = rank = None
+    if family == "lightgbm":
+        features = [f for f in FEATURES if with_level or f != tb.LEVEL]
+        fitted = fit(design(train, features), target)
+        forecast = np.asarray(fitted.predict(design(validation, features)), dtype=float)
+    else:
+        means = train[_linear_inputs(with_level)].astype(float).mean()
+        x = linear_design(train, means).to_numpy()
+        coef, _, rank, _ = np.linalg.lstsq(x, target.to_numpy(), rcond=None)
+        columns = x.shape[1]
+        forecast = linear_design(validation, means).to_numpy() @ coef
+    if level == "rapport":
+        forecast = forecast * validation[tb.LEVEL].to_numpy(dtype=float)
+    return GridResult(
+        pd.Series(forecast, index=validation.index),
+        len(train),
+        columns,
+        None if rank is None else int(rank),
+    )

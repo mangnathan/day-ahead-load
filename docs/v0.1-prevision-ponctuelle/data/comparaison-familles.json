@@ -1,0 +1,146 @@
+{
+  "regle": "journal des choix, entrée 12",
+  "entrainement": {
+    "meteo": "ERA5",
+    "premier_jour": "2017-01-01",
+    "dernier_jour": "2024-03-14"
+  },
+  "regression_lineaire": {
+    "chauffage_sous_degres": 15.0,
+    "climatisation_au_dessus_degres": 18.0,
+    "tranches_horaires": 8,
+    "manquants": "remplacés par la moyenne de l'entraînement"
+  },
+  "validation": {
+    "premier_jour": "2024-03-15",
+    "dernier_jour": "2025-08-31",
+    "demi_heures_jugees": 25674,
+    "tirages_bootstrap": 10000,
+    "graine": 20261117
+  },
+  "modeles": {
+    "L-sans": {
+      "rang_de_simplicite": 1,
+      "famille": "lineaire",
+      "niveau": "sans",
+      "lignes_entrainement": 126212,
+      "mape_validation_pct": 4.1764,
+      "colonnes": 199,
+      "rang_de_la_matrice": 199,
+      "comparaisons_cumulees": 6
+    },
+    "L-niveau": {
+      "rang_de_simplicite": 2,
+      "famille": "lineaire",
+      "niveau": "niveau",
+      "lignes_entrainement": 126212,
+      "mape_validation_pct": 3.6495,
+      "colonnes": 200,
+      "rang_de_la_matrice": 200,
+      "comparaisons_cumulees": 7
+    },
+    "L-rapport": {
+      "rang_de_simplicite": 3,
+      "famille": "lineaire",
+      "niveau": "rapport",
+      "lignes_entrainement": 126212,
+      "mape_validation_pct": 3.846,
+      "colonnes": 199,
+      "rang_de_la_matrice": 199,
+      "comparaisons_cumulees": 8
+    },
+    "G-sans": {
+      "rang_de_simplicite": 4,
+      "famille": "lightgbm",
+      "niveau": "sans",
+      "lignes_entrainement": 126212,
+      "mape_validation_pct": 4.3483,
+      "comparaisons_cumulees": 9
+    },
+    "G-niveau": {
+      "rang_de_simplicite": 5,
+      "famille": "lightgbm",
+      "niveau": "niveau",
+      "lignes_entrainement": 126212,
+      "mape_validation_pct": 2.617,
+      "deja_evalue": "A17"
+    },
+    "G-rapport": {
+      "rang_de_simplicite": 6,
+      "famille": "lightgbm",
+      "niveau": "rapport",
+      "lignes_entrainement": 126212,
+      "mape_validation_pct": 3.5193,
+      "comparaisons_cumulees": 10
+    }
+  },
+  "etapes": [
+    {
+      "retenu_jusque_la": "L-sans",
+      "candidat": "L-niveau",
+      "mape_retenu_pct": 4.1764,
+      "mape_candidat_pct": 3.6495,
+      "difference_candidat_moins_retenu_pts": -0.5269,
+      "intervalle_95_pts": [
+        -1.0312,
+        -0.0169
+      ],
+      "gain_relatif": 0.1262,
+      "candidat_retenu": true
+    },
+    {
+      "retenu_jusque_la": "L-niveau",
+      "candidat": "L-rapport",
+      "mape_retenu_pct": 3.6495,
+      "mape_candidat_pct": 3.846,
+      "difference_candidat_moins_retenu_pts": 0.1965,
+      "intervalle_95_pts": [
+        0.0336,
+        0.3477
+      ],
+      "gain_relatif": -0.0538,
+      "candidat_retenu": false
+    },
+    {
+      "retenu_jusque_la": "L-niveau",
+      "candidat": "G-sans",
+      "mape_retenu_pct": 3.6495,
+      "mape_candidat_pct": 4.3483,
+      "difference_candidat_moins_retenu_pts": 0.6988,
+      "intervalle_95_pts": [
+        0.0879,
+        1.3058
+      ],
+      "gain_relatif": -0.1915,
+      "candidat_retenu": false
+    },
+    {
+      "retenu_jusque_la": "L-niveau",
+      "candidat": "G-niveau",
+      "mape_retenu_pct": 3.6495,
+      "mape_candidat_pct": 2.617,
+      "difference_candidat_moins_retenu_pts": -1.0325,
+      "intervalle_95_pts": [
+        -1.3833,
+        -0.6788
+      ],
+      "gain_relatif": 0.2829,
+      "candidat_retenu": true
+    },
+    {
+      "retenu_jusque_la": "G-niveau",
+      "candidat": "G-rapport",
+      "mape_retenu_pct": 2.617,
+      "mape_candidat_pct": 3.5193,
+      "difference_candidat_moins_retenu_pts": 0.9023,
+      "intervalle_95_pts": [
+        0.591,
+        1.2266
+      ],
+      "gain_relatif": -0.3448,
+      "candidat_retenu": false
+    }
+  ],
+  "retenu": "G-niveau",
+  "comparaisons_sur_la_validation_cumulees": 10
+}

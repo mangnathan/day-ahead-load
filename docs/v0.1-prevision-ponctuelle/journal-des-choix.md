@@ -125,3 +125,100 @@ Comparaisons sur la validation : 5. Règle de l'entrée 4 appliquée telle qu'é
 Point ouvert, à trancher avant la comparaison des familles : l'entrée 2 fait commencer l'entraînement de la régression linéaire et de LightGBM au 02/03/2013. Avec une durée retenue au 01/01/2017, le niveau existe sur toute la période, et la contrainte de l'entrée 2 ne joue plus.
 
 Comparaisons sur la validation après cette entrée : 5. Mesures dans l'entraînement : 2.
+
+## 11. Remplace l'entrée 2 : début de l'entraînement des deux familles — 17/11/2026
+
+Comparaisons sur la validation : 5. Mesures dans l'entraînement : 2.
+
+Remplace l'entrée 2 : les deux familles partent du 01/01/2017, durée retenue en entrée 10. La contrainte du niveau avant le 02/03/2013 ne joue plus. L'entrée 2 reste écrite telle quelle : le journal ne fait que s'allonger.
+
+Point ouvert, non tranché : pourquoi les années 2012-2016 dégradent la prévision de 2024-2025 (entrée 10). Les variantes du niveau touchent au même problème de changement de niveau et pourront apporter un élément de réponse.
+
+## 12. Familles de modèles et variantes du niveau — règle écrite le 17/11/2026, avant le calcul
+
+Comparaisons sur la validation : 5 avant cette entrée. Mesures dans l'entraînement : 2.
+
+**Cadre commun.** Météo ERA5 à l'entraînement, jours livrés du 01/01/2017 au 14/03/2024 (entrées 10 et 11), convention de l'entrée 3. La validation et le test de bruit sont ceux de l'entrée 4, avec les mêmes réglages : différence appariée de MAPE, bootstrap par blocs d'une semaine, 10 000 tirages, graine 20261117. Un modèle plus complexe ne remplace le modèle retenu que s'il fait mieux de plus de 1 % relatif **et** si l'intervalle à 95 % de la différence exclut 0.
+
+**Grille complète, pas d'étapes.** Choisir la famille avec le niveau en variable, puis le niveau pour la famille retenue, laisserait un trou : si la régression linéaire gagnait la première étape, LightGBM avec le rapport ne serait jamais essayé. C'est pourtant la variante qui doit corriger le défaut de LightGBM, qui ne sait pas prolonger une tendance au-delà des valeurs de l'entraînement. Les six combinaisons sont donc évaluées.
+
+**Ordre total de simplicité.** La famille compte avant le niveau :
+
+| Rang | Modèle | Famille | Niveau |
+|---|---|---|---|
+| 1 | L-sans | régression linéaire | sans niveau |
+| 2 | L-niveau | régression linéaire | niveau en variable |
+| 3 | L-rapport | régression linéaire | rapport |
+| 4 | G-sans | LightGBM | sans niveau |
+| 5 | G-niveau | LightGBM | niveau en variable : c'est A17 (entrée 6) |
+| 6 | G-rapport | LightGBM | rapport |
+
+- Famille : la régression a un nombre fixe de coefficients, qui se lisent directement, et aucun réglage d'apprentissage. LightGBM apprend des interactions et des seuils qu'on ne lui donne pas.
+- Niveau : sans niveau, le modèle a une entrée de moins. Le niveau en variable ajoute une entrée. Le rapport change la cible et demande de remultiplier la prévision.
+
+**Règle sur la grille.** On part du modèle de rang 1. Chaque modèle suivant, dans l'ordre des rangs, est comparé au modèle retenu jusque-là, avec la règle de l'entrée 4. S'il la passe, il devient le modèle retenu. Le dernier modèle retenu est le modèle de la v0.1.
+
+**Compteur connu d'avance.** Cinq modèles nouveaux : L-sans (comparaison 6), L-niveau (7), L-rapport (8), G-sans (9), G-rapport (10). G-niveau est A17, déjà évalué en entrée 6, et n'est pas recompté. **Total cumulé à la fin : 10 comparaisons sur la validation.** Chaque modèle nouveau aura son entrée, avec le total cumulé.
+
+**Variantes du niveau.**
+
+- Sans niveau : l'entrée `niveau_52_semaines` est retirée, la cible reste la consommation.
+- Niveau en variable : le niveau est une entrée, la cible est la consommation.
+- Rapport : la cible devient consommation / niveau, et le niveau est retiré des entrées. La prévision est le rapport prévu multiplié par le niveau du jour livré, connu à midi la veille. La MAPE est toujours calculée sur la consommation.
+
+**Régression linéaire.** Moindres carrés ordinaires (`numpy.linalg.lstsq`, sans scikit-learn), avec une constante et sans régularisation. Les interactions entre la température et l'heure suivent la référence linéaire classique des prévisions de consommation, le « vanilla benchmark » de Tao Hong dans la compétition GEFCom2012, qui croise la température avec l'heure et avec le mois. Sans elles, LightGBM gagnerait d'avance et la comparaison n'apprendrait rien : l'effet du chauffage n'est pas le même à 3 h du matin et à 19 h. Entrées :
+
+- profil de la journée : une indicatrice par couple (demi-heure, type de jour), avec trois types de jour : ouvré, samedi, dimanche ou férié. Le lundi de Pentecôte reste un jour ouvré avec son indicatrice propre, comme pour LightGBM ;
+- jour de la semaine, mois, férié, lundi de Pentecôte, pont, Noël, en indicatrices ;
+- degrés de chauffage max(15 − T, 0) et de climatisation max(T − 18, 0). Le seuil de 15 °C vient de la v0.0, où la sensibilité de 2 313 à 2 345 MW par degré était mesurée sous 15 °C. Le seuil de 18 °C est fixé a priori, sans mesure : c'est un réglage de la famille linéaire, fixé ici pour ne pas être ajusté sur la validation ;
+- pour la température de la demi-heure, les degrés de chauffage et de climatisation croisés avec 8 tranches horaires de 3 h (heure de Paris : 0 h-3 h, 3 h-6 h, …, 21 h-24 h), et les degrés de chauffage croisés avec le mois ;
+- pour les températures lissées sur 24 h et sur 72 h, les degrés de chauffage et de climatisation, sans interaction ;
+- nébulosité, vent et rayonnement, bruts ;
+- niveau des 52 semaines, brut, selon la variante.
+
+Colinéarité : les indicatrices du jour de la semaine et du férié sont en partie redondantes avec les couples (demi-heure, type de jour), et les degrés croisés avec les tranches et avec le mois se recouvrent. Une modalité de référence est retirée par groupe : le couple (00 h 00, ouvré), le lundi et janvier pour les indicatrices, et janvier pour le chauffage croisé avec le mois. L'effet moyen du chauffage et de la climatisation est déjà porté par les 8 tranches horaires, qui restent toutes. Les redondances qui restent sont laissées à `lstsq`, qui reste stable quand la matrice n'est pas de plein rang : les prévisions ne changent pas, et les coefficients restent interprétables. Le nombre de colonnes et le rang de la matrice d'entraînement sont écrits dans le résultat.
+
+Une entrée manquante est remplacée par sa moyenne sur l'entraînement. Cela concerne la température lissée sur 72 h de 96 demi-heures de validation (15 et 16/03/2024). L'entraînement depuis 2017 n'a aucune entrée manquante (entrée 6).
+
+## 13. Modèle L-sans — 20/11/2026
+
+Régression linéaire sans niveau, ERA5 depuis le 01/01/2017 (126 212 demi-heures). 199 colonnes, rang 199. MAPE de validation : 4,176 %. **Comparaisons sur la validation : 6.**
+
+## 14. Modèle L-niveau — 20/11/2026
+
+Régression linéaire avec le niveau en variable. 200 colonnes, rang 200. MAPE de validation : 3,650 %. **Comparaisons sur la validation : 7.**
+
+## 15. Modèle L-rapport — 20/11/2026
+
+Régression linéaire sur le rapport consommation / niveau. 199 colonnes, rang 199. MAPE de validation : 3,846 %. **Comparaisons sur la validation : 8.**
+
+## 16. Modèle G-sans — 20/11/2026
+
+LightGBM sans niveau. MAPE de validation : 4,348 %. **Comparaisons sur la validation : 9.**
+
+## 17. Modèle G-rapport — 20/11/2026
+
+LightGBM sur le rapport consommation / niveau. MAPE de validation : 3,519 %. **Comparaisons sur la validation : 10.**
+
+G-niveau est A17 (entrée 6) et n'est pas recompté. Le script retrouve exactement sa MAPE de 2,617 %.
+
+## 18. Décision : famille et niveau — 20/11/2026
+
+Comparaisons sur la validation : 10, comme annoncé en entrée 12. Règle de l'entrée 12 appliquée telle qu'écrite, sur 25 674 demi-heures de validation (`docs/v0.1-prevision-ponctuelle/data/comparaison-familles.json`).
+
+| Retenu jusque-là | Candidat | MAPE retenu | MAPE candidat | Gain relatif | IC 95 % de la différence (points) | Candidat retenu |
+|---|---|---|---|---|---|---|
+| L-sans | L-niveau | 4,176 % | 3,650 % | 12,6 % | [−1,031 ; −0,017] | oui |
+| L-niveau | L-rapport | 3,650 % | 3,846 % | −5,4 % | [+0,034 ; +0,348] | non : moins bon |
+| L-niveau | G-sans | 3,650 % | 4,348 % | −19,1 % | [+0,088 ; +1,306] | non : moins bon |
+| L-niveau | G-niveau | 3,650 % | 2,617 % | 28,3 % | [−1,383 ; −0,679] | oui |
+| G-niveau | G-rapport | 2,617 % | 3,519 % | −34,5 % | [+0,591 ; +1,227] | non : moins bon |
+
+**Retenu : G-niveau, LightGBM avec le niveau des 52 semaines en variable, ERA5 à l'entraînement depuis le 01/01/2017.** C'est le modèle A17 : le modèle figé de l'entrée 1, sans changement.
+
+- Rang : la matrice de la régression est de plein rang dans les trois variantes. La redondance attendue entre le jour de la semaine, le férié et le type de jour ne se produit pas, parce que des fériés tombent un dimanche ou un samedi.
+- Le rapport est moins bon que le niveau en variable dans les deux familles, nettement pour LightGBM (−34,5 %, intervalle loin de 0). Il ne corrige donc pas, sur cette validation, le défaut d'extrapolation qu'il visait. Cette mesure ne dit pas pourquoi.
+- Observations hors règle : le niveau en variable améliore LightGBM de 39,8 % par rapport à LightGBM sans niveau (2,617 % contre 4,348 %). Sans niveau, LightGBM est moins bon que la régression linéaire sans niveau. Ces deux comparaisons ne faisaient pas partie de la règle. Elles ne changent rien à la décision.
+- Point ouvert de l'entrée 11 (pourquoi 2012-2016 dégradent la prévision) : le niveau pèse lourd dans la qualité du modèle, ce qui va dans le sens d'un problème de changement de niveau. La mesure ne tranche pas : A12 avait le niveau à partir de mars 2013. La question reste ouverte.
+
+Comparaisons sur la validation après cette entrée : 10. Mesures dans l'entraînement : 2.
