@@ -49,7 +49,12 @@ def test_runs_are_00_utc_of_each_day() -> None:
 
 
 def test_estimate_matches_the_written_figures() -> None:
-    assert w.estimate(POINTS) == {"era5": 4644, "ifs_historique": 468, "ecmwf_00utc": 11700}
+    assert w.estimate(POINTS) == {
+        "era5": 4644,
+        "ifs_historique": 468,
+        "ifs_historique_entrainement": 2256,
+        "ecmwf_00utc": 11700,
+    }
 
 
 def budget(tmp_path: Path, cap: int = 3) -> w.Budget:

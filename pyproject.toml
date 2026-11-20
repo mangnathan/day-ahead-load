@@ -9,6 +9,7 @@ requires-python = ">=3.12"
 dependencies = [
     # Jours fériés français calculés sans appel réseau (licence MIT).
     "holidays>=0.60",
+    "lightgbm>=4.5",
     "pandas>=2.2",
     "pyarrow>=21",
     # Base des fuseaux horaires : Windows n'en fournit pas, et l'heure de Paris est partout.

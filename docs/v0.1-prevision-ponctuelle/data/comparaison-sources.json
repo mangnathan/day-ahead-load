@@ -1,0 +1,158 @@
+{
+  "regle": "journal des choix, entrée 4",
+  "validation": {
+    "premier_jour": "2024-03-15",
+    "dernier_jour": "2025-08-31",
+    "demi_heures_jugees": 25674,
+    "blocs_de_7_jours": 77,
+    "tirages_bootstrap": 10000,
+    "graine": 20261117
+  },
+  "correction_C": {
+    "temperature_2m": {
+      "bornes": [
+        null,
+        null
+      ],
+      "ecart_moyen_absolu_par_point_mois_heure": 0.6125,
+      "part_ramenee_dans_les_bornes": 0.0
+    },
+    "shortwave_radiation": {
+      "bornes": [
+        0.0,
+        null
+      ],
+      "ecart_moyen_absolu_par_point_mois_heure": 3.6487,
+      "part_ramenee_dans_les_bornes": 0.013146
+    },
+    "cloud_cover": {
+      "bornes": [
+        0.0,
+        100.0
+      ],
+      "ecart_moyen_absolu_par_point_mois_heure": 2.4599,
+      "part_ramenee_dans_les_bornes": 0.19395
+    },
+    "wind_speed_10m": {
+      "bornes": [
+        0.0,
+        null
+      ],
+      "ecart_moyen_absolu_par_point_mois_heure": 1.0311,
+      "part_ramenee_dans_les_bornes": 0.00033
+    },
+    "non_corrigees": {
+      "relative_humidity_2m": "n'entre pas dans le modèle de la v0.1 (ADR 0002)"
+    }
+  },
+  "modeles": {
+    "A12": {
+      "source": "ERA5",
+      "entrainement_depuis": "2012-01-01",
+      "lignes_entrainement": 213888,
+      "meteo_manquante_entrainement": {
+        "temperature_2m": 2,
+        "cloud_cover": 2,
+        "wind_speed_10m": 2,
+        "shortwave_radiation": 1,
+        "temperature_lissee_24h": 48,
+        "temperature_lissee_72h": 144
+      },
+      "mape_validation_pct": 2.7773,
+      "comparaisons_cumulees": 1
+    },
+    "A17": {
+      "source": "ERA5",
+      "entrainement_depuis": "2017-01-01",
+      "lignes_entrainement": 126212,
+      "meteo_manquante_entrainement": {},
+      "mape_validation_pct": 2.617,
+      "comparaisons_cumulees": 2
+    },
+    "C12": {
+      "source": "ERA5 corrigé de l'écart moyen IFS − ERA5 (point, mois, heure UTC)",
+      "entrainement_depuis": "2012-01-01",
+      "lignes_entrainement": 213888,
+      "meteo_manquante_entrainement": {
+        "temperature_2m": 2,
+        "cloud_cover": 2,
+        "wind_speed_10m": 2,
+        "shortwave_radiation": 1,
+        "temperature_lissee_24h": 48,
+        "temperature_lissee_72h": 144
+      },
+      "mape_validation_pct": 2.5879,
+      "comparaisons_cumulees": 3
+    },
+    "C17": {
+      "source": "ERA5 corrigé de l'écart moyen IFS − ERA5 (point, mois, heure UTC)",
+      "entrainement_depuis": "2017-01-01",
+      "lignes_entrainement": 126212,
+      "meteo_manquante_entrainement": {},
+      "mape_validation_pct": 2.5754,
+      "comparaisons_cumulees": 4
+    },
+    "B17": {
+      "source": "IFS historique",
+      "entrainement_depuis": "2017-01-01",
+      "lignes_entrainement": 126212,
+      "meteo_manquante_entrainement": {
+        "temperature_2m": 2,
+        "cloud_cover": 2,
+        "wind_speed_10m": 2,
+        "shortwave_radiation": 1,
+        "temperature_lissee_24h": 48,
+        "temperature_lissee_72h": 144
+      },
+      "mape_validation_pct": 2.6045,
+      "comparaisons_cumulees": 5
+    }
+  },
+  "etapes": [
+    {
+      "decision": "source",
+      "simple": "A17",
+      "complexe": "C17",
+      "mape_simple_pct": 2.617,
+      "mape_complexe_pct": 2.5754,
+      "difference_complexe_moins_simple_pts": -0.0416,
+      "intervalle_95_pts": [
+        -0.1948,
+        0.1156
+      ],
+      "gain_relatif": 0.0159,
+      "complexe_retenue": false
+    },
+    {
+      "decision": "source",
+      "simple": "A17",
+      "complexe": "B17",
+      "mape_simple_pct": 2.617,
+      "mape_complexe_pct": 2.6045,
+      "difference_complexe_moins_simple_pts": -0.0125,
+      "intervalle_95_pts": [
+        -0.1498,
+        0.1232
+      ],
+      "gain_relatif": 0.0048,
+      "complexe_retenue": false
+    },
+    {
+      "decision": "duree",
+      "simple": "A12",
+      "complexe": "A17",
+      "mape_simple_pct": 2.7773,
+      "mape_complexe_pct": 2.617,
+      "difference_complexe_moins_simple_pts": -0.1602,
+      "intervalle_95_pts": [
+        -0.2688,
+        -0.0524
+      ],
+      "gain_relatif": 0.0577,
+      "complexe_retenue": true
+    }
+  ],
+  "duree": "2012 de référence ; 2017 seulement si la règle du test de bruit passe",
+  "retenu": "A17",
+  "comparaisons_sur_la_validation_cumulees": 5
+}

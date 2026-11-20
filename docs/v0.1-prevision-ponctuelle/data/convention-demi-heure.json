@@ -1,0 +1,69 @@
+{
+  "regle": "plus faible MAPE moyenne sur 2019-2023 (entraînement seulement) ; écart relatif inférieur à 1 % : (t − 30, t] conservé",
+  "options": {
+    "fin": {
+      "intervalle": "(t − 30 min, t]",
+      "par_annee": {
+        "2019": {
+          "lignes_entrainement": 122708,
+          "lignes_jugees": 17516,
+          "mape_pct": 2.4902
+        },
+        "2020": {
+          "lignes_entrainement": 140224,
+          "lignes_jugees": 17564,
+          "mape_pct": 6.0681
+        },
+        "2021": {
+          "lignes_entrainement": 157788,
+          "lignes_jugees": 17516,
+          "mape_pct": 3.2101
+        },
+        "2022": {
+          "lignes_entrainement": 175304,
+          "lignes_jugees": 17516,
+          "mape_pct": 4.12
+        },
+        "2023": {
+          "lignes_entrainement": 192820,
+          "lignes_jugees": 17516,
+          "mape_pct": 6.0486
+        }
+      },
+      "mape_moyenne_pct": 4.3874
+    },
+    "centre": {
+      "intervalle": "(t − 15 min, t + 15 min]",
+      "par_annee": {
+        "2019": {
+          "lignes_entrainement": 122708,
+          "lignes_jugees": 17516,
+          "mape_pct": 2.461
+        },
+        "2020": {
+          "lignes_entrainement": 140224,
+          "lignes_jugees": 17564,
+          "mape_pct": 6.116
+        },
+        "2021": {
+          "lignes_entrainement": 157788,
+          "lignes_jugees": 17516,
+          "mape_pct": 2.9872
+        },
+        "2022": {
+          "lignes_entrainement": 175304,
+          "lignes_jugees": 17516,
+          "mape_pct": 4.168
+        },
+        "2023": {
+          "lignes_entrainement": 192820,
+          "lignes_jugees": 17516,
+          "mape_pct": 5.7421
+        }
+      },
+      "mape_moyenne_pct": 4.2949
+    }
+  },
+  "ecart_relatif_centre_moins_fin": -0.0211,
+  "retenue": "centre"
+}
