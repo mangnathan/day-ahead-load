@@ -313,3 +313,172 @@ Le modèle est indiscernable de la prévision brute de RTE, publiée après la d
 Toujours ouvert depuis l'entrée 11 : pourquoi les années 2012-2016 dégradent la prévision de 2024-2025.
 
 Comparaisons sur la validation après cette entrée : 10. Mesures dans l'entraînement : 2.
+
+## 21. Incertitude de la v0.2 — règle écrite le 24/11/2026, avant le calcul
+
+Comparaisons sur la validation : 10 avant cette entrée. Mesures dans l'entraînement : 2.
+
+### Limite constatée de la v0.1 : un avantage de date
+
+A17 a été entraîné une fois, sur les jours livrés jusqu'au 14/03/2024. Avec la règle M+3, les consommations consolidées de janvier, février et mars 2024 ne sont publiées que le 1er avril, le 1er mai et le 1er juin 2024. Pour les jours de validation du 15/03 au 01/06/2024, A17 a donc appris sur des données qu'un fournisseur n'aurait pas encore eues à midi la veille. Les variables, niveau compris, respectent toutes la règle de midi. Le bilan de la v0.1 n'est pas réécrit. Le tag v0.1 étant posé, cette limite est mentionnée dans le rapport de la v0.2 et dans le CHANGELOG. Elle est mesurée plus bas : écart de MAPE entre A17 figé et la procédure mensuelle, du 15/03 au 30/06/2024.
+
+### Réentraînement mensuel appliqué à la validation
+
+La procédure de l'ADR 0001, prévue pour le test, est appliquée dès maintenant à la validation. Ce n'est pas une comparaison : aucun choix n'en dépend.
+
+- **Dix-huit modèles**, de mars 2024 à août 2025. Le modèle du mois M prévoit tous les jours de validation du mois M.
+- **Fin de l'entraînement : dernier jour du mois M − 4.** Le modèle du mois M doit exister à midi la veille du 1er de M, c'est-à-dire le dernier jour de M − 1. À cette heure, le consolidé publié s'arrête à la fin de M − 4 : le mois M − 3 ne paraît que le 1er de M. Un test automatique échoue si une ligne d'entraînement d'un modèle est datée après la fin de M − 4, donc a fortiori après la fin de M − 3.
+- **Début de l'entraînement** : 01/01/2017, comme A17 (entrées 10 et 11).
+- **Configuration figée** : les réglages de l'entrée 1 (LightGBM par défaut, objectif de régression), 100 itérations comme A17, qui n'a pas d'arrêt anticipé, la graine 20261117 pour chaque entraînement, une exécution déterministe sur un seul fil, et les 14 variables d'A17.
+- **Météo** : ERA5 pour toutes les lignes d'entraînement, y compris les jours de validation une fois entrés dans l'entraînement. ERA5 paraît avec environ 5 jours de retard : il est disponible bien avant la fin de M − 4. Les jours prévus gardent la météo vue à midi la veille (ADR 0002).
+- **Niveau** : la moyenne des 52 semaines de consolidé respecte déjà la règle M+3 pour chaque jour livré, ce que vérifie un test de la table. Pour la ligne d'entraînement la plus récente d'un modèle, le niveau ne lit donc que du consolidé publié avant cette ligne, donc avant la fin de M − 4.
+- **On garde la procédure quel que soit le résultat.** Si sa MAPE de validation est moins bonne que celle d'A17 figé, la procédure ne change pas, et A17 figé ne revient pas. Les deux MAPE sont publiées côte à côte, pour information : sur toute la validation, sur l'évaluation, et du 15/03 au 30/06/2024 pour mesurer l'avantage de date.
+- **Traçabilité** : pour chaque modèle, le mois, la date de la dernière ligne d'entraînement, le nombre de lignes et l'empreinte sha256 de la configuration. Le tableau des 18 modèles est publié avec les résultats.
+
+### Résidus et fenêtre de calibration
+
+- **Résidu** : consommation − prévision du modèle de son mois, avec la météo prévue. Chaque résidu est hors échantillon par construction : le jour n'était pas dans l'entraînement de son modèle.
+- **Disponibilité** : à midi la veille d'un jour livré D, on dispose des résidus des jours publiés en consolidé, c'est-à-dire jusqu'à la fin du mois M − 3, où M est le mois de la décision (la veille de D). On garde ceux des 12 derniers mois civils disponibles. Il n'y a que des résidus calculés avec la météo prévue, donc postérieurs au 15/03/2024, et aucun complément par ERA5.
+- **Jours jugés** : seuls les jours qui disposent d'au moins 90 jours de résidus. Le 01/09/2024 se décide le 31/08, avec les résidus du 15/03 au 31/05/2024, soit 78 jours : il n'est pas jugé. Les jours suivants se décident en septembre, avec 108 jours. **Période d'évaluation : du 02/09/2024 au 31/08/2025.**
+- **Fenêtre réduite** : moins de 12 mois de résidus pour les décisions antérieures à juin 2025. Étiquette « fenêtre de calibration réduite avant juin 2025 ».
+- **Hiver sans résidus d'hiver** : les jours de décembre 2024 à février 2025 sont calibrés sur des résidus de mars à novembre 2024 au plus, sans aucun mois d'hiver. Risque connu : couverture probablement basse en hiver sur la validation. Ce défaut n'existe pas sur le test, dont la fenêtre contient l'hiver 2024-25. On ne corrige rien. La couverture est publiée par saison, et aussi sur l'évaluation hors hiver 2024-25, à titre d'information seulement. L'admissibilité reste jugée sur les 12 mois entiers.
+
+### Candidats
+
+Chaque quantile est la prévision du modèle du mois plus le quantile empirique (interpolation linéaire de `numpy.quantile`) des résidus du groupe de la demi-heure prévue, aux niveaux 0,025, 0,1, 0,5, 0,9 et 0,975. Intervalle à 80 % : de q0,1 à q0,9. Intervalle à 95 % : de q0,025 à q0,975.
+
+| Ordre | Candidat | Groupes de résidus |
+|---|---|---|
+| 1 | Q1 | demi-heure de la journée (48 groupes) |
+| 2 | Q2 | tranche de 3 h (heure de Paris) × type de jour (24 groupes) |
+| 3 | Q3 | Q2 × température prévue de la demi-heure, sous 10 °C ou à 10 °C et plus (48 groupes) |
+
+- **Types de jour** : ouvré ; samedi ; dimanche, jour férié, pont ou période du 24/12 au 01/01. Le lundi de Pentecôte reste un jour ouvré, comme dans le modèle.
+- **Repli de Q3** : un groupe qui compte moins de 100 résidus à la date de calibration prend les résidus de son groupe Q2. La règle s'applique à chaque date de calibration. Le nombre de groupes et de demi-heures concernés est publié.
+- **La médiane n'est pas la prévision ponctuelle.** La prévision ponctuelle reste celle du modèle. q0,5 est une sortie à part : son biais et sa MAPE sont publiés à titre d'information, sans comparaison à A17 et sans effet sur aucun choix.
+
+### Référence
+
+C'est la référence de l'ADR 0001 : J-7, plus les quantiles empiriques des erreurs passées de J-7 par demi-heure de la journée, sur les 12 derniers mois de consolidé disponibles à midi la veille, aux mêmes cinq niveaux, sur les mêmes demi-heures jugées. Elle n'a pas besoin de la météo prévue et dispose donc d'emblée de 12 mois d'erreurs, ce qui l'avantage au début de l'évaluation. Elle n'est pas une option et n'est pas comptée.
+
+### Règle de décision
+
+1. **Admissibilité** : sur toute la période d'évaluation, l'intervalle à 80 % couvre entre 75 et 85 % des demi-heures, **et** l'intervalle à 95 % entre 92 et 98 %, bornes des intervalles comprises. Un candidat non admissible n'est jamais retenu, même avec un meilleur pinball.
+2. **Choix** : le premier candidat admissible dans l'ordre Q1, Q2, Q3 est retenu au départ. Chaque candidat admissible suivant le remplace seulement s'il fait mieux de plus de 1 % relatif sur le pinball moyen des cinq niveaux **et** si l'intervalle à 95 % de la différence appariée exclut 0. L'intervalle est calculé par bootstrap par blocs de 7 jours livrés consécutifs à partir du 02/09/2024, avec 10 000 tirages et la graine 20261117.
+3. **Aucun candidat admissible** : on ne règle rien pour forcer la couverture. Le résultat est écrit tel quel, et toute correction devient une nouvelle comparaison, avec sa règle écrite avant.
+
+**Compteur** : Q1, Q2 et Q3 sont les comparaisons 11, 12 et 13. La procédure mensuelle et la référence J-7 ne sont pas comptées. **Total à la fin : 13.**
+
+### Ce qui est publié
+
+- Pour chaque candidat et pour la référence : la couverture à 80 et à 95 %, le pinball par niveau et en moyenne (en MW), et la largeur moyenne des intervalles à 80 et à 95 % (en MW). Le tout sur l'évaluation entière, par saison et par tranche de 3 h. Une couverture juste avec des intervalles très larges ne vaut rien, et la largeur se lit plus facilement que le pinball.
+- La couverture sur l'évaluation hors hiver 2024-25 et sur juin-août 2025 (fenêtre complète), à titre d'information.
+- Le biais et la MAPE de q0,5, à titre d'information.
+- Les MAPE d'A17 figé et de la procédure mensuelle, et le tableau des 18 modèles.
+
+**Étiquettes** : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 (10 comparaisons) » ; « fenêtre de calibration réduite avant juin 2025 ».
+
+## 22. Résultats de l'incertitude de la v0.2 — 24/11/2026
+
+Règle de l'entrée 21 appliquée telle qu'écrite (`docs/v0.2-incertitude/data/intervalles.json`). **Comparaisons sur la validation : 13** (Q1 : 11, Q2 : 12, Q3 : 13). Étiquettes : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 (10 comparaisons) » ; « fenêtre de calibration réduite avant juin 2025 ».
+
+**Évaluation** : du 02/09/2024 au 31/08/2025, 17 464 demi-heures jugées, de 108 à 365 jours de résidus selon la date de décision.
+
+### Procédure mensuelle
+
+| Mois | Dernière ligne d'entraînement | Fin autorisée (M − 4) | Lignes |
+|---|---|---|---|
+| 2024-03 | 30/11/2023 | 30/11/2023 | 121 172 |
+| 2024-04 | 31/12/2023 | 31/12/2023 | 122 660 |
+| 2024-05 | 31/01/2024 | 31/01/2024 | 124 148 |
+| 2024-06 | 29/02/2024 | 29/02/2024 | 125 540 |
+| 2024-07 | 31/03/2024 | 31/03/2024 | 127 026 |
+| 2024-08 | 30/04/2024 | 30/04/2024 | 128 466 |
+| 2024-09 | 31/05/2024 | 31/05/2024 | 129 954 |
+| 2024-10 | 30/06/2024 | 30/06/2024 | 131 394 |
+| 2024-11 | 31/07/2024 | 31/07/2024 | 132 882 |
+| 2024-12 | 31/08/2024 | 31/08/2024 | 134 370 |
+| 2025-01 | 30/09/2024 | 30/09/2024 | 135 810 |
+| 2025-02 | 31/10/2024 | 31/10/2024 | 137 296 |
+| 2025-03 | 30/11/2024 | 30/11/2024 | 138 736 |
+| 2025-04 | 31/12/2024 | 31/12/2024 | 140 224 |
+| 2025-05 | 31/01/2025 | 31/01/2025 | 141 712 |
+| 2025-06 | 28/02/2025 | 28/02/2025 | 143 056 |
+| 2025-07 | 31/03/2025 | 31/03/2025 | 144 542 |
+| 2025-08 | 30/04/2025 | 30/04/2025 | 145 982 |
+
+Les 18 modèles ont la même empreinte de configuration (sha256 commençant par `89536f7563a5`, valeur complète dans le fichier de résultats).
+
+MAPE, pour information (mensuelle − figée, en points, intervalle à 95 %) :
+
+| Période | A17 figé | Procédure mensuelle | Différence |
+|---|---|---|---|
+| Toute la validation | 2,617 % | 2,667 % | +0,050 [−0,022 ; +0,122] |
+| Évaluation | 2,563 % | 2,590 % | +0,027 [−0,047 ; +0,102] |
+| 15/03 → 30/06/2024 (avantage de date) | 2,995 % | 2,983 % | −0,012 [−0,153 ; +0,179] |
+
+La procédure mensuelle est gardée, comme écrit d'avance. Son écart avec A17 figé n'est pas distinguable du bruit, et l'avantage de date de la v0.1 n'a pas d'effet mesurable sur mars-juin 2024.
+
+### Candidats et référence
+
+| | Couverture 80 % | Couverture 95 % | Largeur 80 % | Largeur 95 % | Pinball moyen | Admissible |
+|---|---|---|---|---|---|---|
+| Q1 | 77,50 % | 94,20 % | 3 774 MW | 6 624 MW | 288,2 MW | oui |
+| Q2 | 76,83 % | 93,98 % | 3 846 MW | 6 914 MW | 293,9 MW | oui |
+| Q3 | 73,52 % | 92,43 % | 3 642 MW | 6 709 MW | 297,9 MW | **non** (80 % sous 75 %) |
+| Référence J-7 | 78,40 % | 94,14 % | 11 280 MW | 20 362 MW | 830,5 MW | (référence) |
+
+**Décision** : Q1 et Q2 sont admissibles, Q3 ne l'est pas. Q1 est retenu au départ. Q2 fait moins bien que Q1 (+5,7 MW de pinball, intervalle [+3,3 ; +8,3], soit −2,0 %) : **Q1 est retenu**. Q3 n'est jamais jugé sur le pinball, puisqu'il n'est pas admissible. Son repli vers Q2 a joué pour 125 couples (mois de décision, groupe), soit 3 808 demi-heures jugées.
+
+**Face à la référence — indication sur la validation, pas le critère** : pinball de Q1 288,2 MW contre 830,5 MW pour J-7, soit −542,4 MW, intervalle [−676,0 ; −424,6]. Les intervalles de Q1 sont environ trois fois plus étroits que ceux de la référence pour une couverture voisine.
+
+**Par saison (Q1)** :
+
+| Saison | Couverture 80 % | Couverture 95 % | Largeur 95 % |
+|---|---|---|---|
+| Automne | 84,89 % | 95,97 % | 6 917 MW |
+| Hiver | 65,81 % | 88,15 % | 6 395 MW |
+| Printemps | 83,64 % | 98,78 % | 6 892 MW |
+| Été | 75,59 % | 93,82 % | 6 294 MW |
+
+Le risque connu se vérifie : en hiver, la couverture tombe à 65,8 % et 88,2 %, parce que les intervalles d'hiver sont calibrés sur des résidus sans hiver. Ils sont même plus étroits qu'au printemps et à l'automne. Hors hiver 2024-25, à titre d'information : 81,35 % et 96,19 %. Sur juin-août 2025, avec la fenêtre complète : 75,59 % et 93,82 %. La référence J-7 souffre du même défaut en hiver (56,9 % et 89,1 %) et couvre trop en été (96,5 % et 99,98 %).
+
+**Par tranche de 3 h (Q1)** : la couverture à 80 % va de 73,9 % (12 h-15 h) à 81,5 % (6 h-9 h), celle à 95 % de 91,2 % (15 h-18 h) à 95,7 % (21 h-24 h).
+
+**Médiane, pour information** : q0,5 de Q1 a un biais de +289 MW et une MAPE de 2,540 %.
+
+### Observation hors règle
+
+Les fenêtres de calibration qui contiennent mars 2024 incluent les résidus des 15 et 16/03/2024, gonflés de 7 à 8 GW par le lissage sur 72 h manquant (entrée 20). Ils peuvent élargir les quantiles extrêmes des décisions antérieures à juin 2025. L'effet n'est pas mesuré, et la règle n'est pas changée.
+
+Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
+
+## 23. Précisions sur les résultats de la v0.2 — 24/11/2026
+
+Comparaisons sur la validation : 13, inchangé. Aucune règle ne change ; les mesures ci-dessous sont des informations, sans effet sur la décision de l'entrée 22.
+
+**Fin de l'entraînement des modèles mensuels.** L'entrée 21 fixe bien la fin de l'entraînement au dernier jour de M − 4, et non de M − 3. Le modèle du mois M prévoit dès le 1er du mois, donc il doit exister à midi le dernier jour de M − 1, quand le consolidé publié ne va que jusqu'à la fin de M − 4.
+
+**Modèle et résidus ne sont pas alignés jour par jour.** Le modèle est réentraîné chaque mois, et la fenêtre des résidus est relue chaque jour, comme l'écrit l'entrée 21. Ce décalage est gardé ; ce n'est pas une nouvelle comparaison.
+
+| Jour livré | Décision | Modèle : appris jusqu'à | Résidus : jusqu'à |
+|---|---|---|---|
+| 1er du mois M | dernier jour de M − 1 | fin de M − 4 | fin de M − 4 |
+| du 2 au dernier jour de M | dans le mois M | fin de M − 4 (modèle figé pour le mois) | fin de M − 3 |
+
+Aucune fuite : chaque résidu est publié à midi la veille et vient d'un modèle qui n'avait pas vu son jour.
+
+**Cause des résidus gonflés des 15 et 16/03/2024.** L'archive de météo prévue commence au calcul du 14/03/2024. La première demi-heure du 15/03 (23 h UTC le 14/03) demande, pour sa température lissée sur 72 h, les heures à partir du 12/03 à 0 h UTC, qu'aucun calcul en cache ne contient. Les 96 demi-heures des 15 et 16/03 n'ont donc pas ce lissage ; le premier lissage complet arrive le 17/03 à 0 h, heure de Paris. Il ne manque aucun calcul, le calcul de secours n'a servi à rien sur la validation, et la prévision de ces deux jours n'a pas de valeur aberrante : écart moyen avec ERA5 de 0,97 °C pour la température (au plus 1,78 °C), 0,92 °C pour le lissage sur 24 h, 1,5 m/s pour le vent. Ce n'est pas un défaut des données mais la limite de début de l'archive : l'observation de l'entrée 22 est gardée telle quelle.
+
+- Information, sans effet sur la décision : Q1 sans ces 96 demi-heures dans les fenêtres de résidus couvre 76,45 % et 93,58 %, avec des intervalles de 3 685 et 6 345 MW et un pinball de 289,0 MW (contre 77,50 %, 94,20 %, 3 774 et 6 624 MW, 288,2 MW).
+- Ces 96 demi-heures n'entrent dans aucune fenêtre de résidus du test : la première commence le 01/06/2024. Un test automatique le vérifie.
+
+**Prévision ponctuelle officielle.** C'est désormais A17 avec réentraînement mensuel : **MAPE de validation 2,667 %**. Le chiffre de 2,617 % reste dans l'historique de la v0.1, sous l'étiquette « modèle figé ». Rapport au naïf J-7 sur l'échantillon commun du bilan de la v0.1 (25 607 demi-heures), indication sur la validation et non critère : **0,441, intervalle [0,382 ; 0,512]**. Le modèle figé y retrouve son rapport de 0,433 [0,375 ; 0,503]. Sur le même échantillon, la prévision mensuelle fait 2,665 % ; son écart à RTE J-1 brute est de +0,084 point, intervalle [−0,200 ; +0,370], et à J-7 de −3,372 points, intervalle [−4,252 ; −2,548].
+
+**Biais de la médiane et du modèle.** Sur l'évaluation, q0,5 prévoit trop de 289 MW en moyenne, et la prévision ponctuelle mensuelle de 259 MW. Le biais vient donc surtout du modèle ; le décalage de la fenêtre de résidus n'y ajoute qu'environ 30 MW. Point ouvert pour la v0.3 : la décision d'achat se prendra à un quantile, et ce biais coûtera directement des euros.
+
+**Prédiction pour le test.** Sur le test, Q1 mélange les saisons dans chaque groupe : on s'attend à une couverture inférieure à la cible en hiver et supérieure en été. La couverture par saison du test sera lue au regard de cette prédiction. Une méthode qui tient compte de la saison sera une nouvelle comparaison, dans une version ultérieure ; elle ne pourra pas être jugée sur la validation, faute de résidus d'hiver dans les fenêtres de l'hiver 2024-25.
+
+**Cibles absentes.** Les quatre demi-heures de validation sans cible sont celles du 27/10/2024 étiquetées 2 h 00 et 2 h 30, qui existent chacune deux fois le jour du passage à l'heure d'hiver et restent sans cible par construction (ADR 0002).
+
+Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.

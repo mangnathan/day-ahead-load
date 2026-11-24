@@ -6,6 +6,8 @@ d'une comparaison à l'autre : seules les entrées changent (convention, source 
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import date
@@ -153,17 +155,30 @@ def paired_gap(
     keep = ~np.isnan(values)
     ape_s = np.abs(simple[keep] - values[keep]) / values[keep] * 100
     ape_k = np.abs(complex_[keep] - values[keep]) / values[keep] * 100
-    offsets = (pd.to_datetime(days.to_numpy()[keep]) - pd.Timestamp(first_day)).days
+    return paired_loss_gap(ape_s, ape_k, days.to_numpy()[keep], first_day, replicates, seed)
+
+
+def paired_loss_gap(
+    simple: np.ndarray,
+    complex_: np.ndarray,
+    days: np.ndarray,
+    first_day: date,
+    replicates: int = REPLICATES,
+    seed: int = SEED,
+) -> PairedGap:
+    """Même test pour toute perte par demi-heure (erreur en %, pinball…) : les champs de
+    PairedGap portent alors la perte moyenne de chaque option, dans son unité."""
+    offsets = (pd.to_datetime(days) - pd.Timestamp(first_day)).days
     blocks = np.asarray(offsets, dtype=int) // BLOCK_DAYS
     if blocks.min() < 0:
         raise ValueError("jour antérieur au premier bloc")
     count = int(blocks.max()) + 1
-    sums = np.bincount(blocks, weights=ape_k - ape_s, minlength=count)
+    sums = np.bincount(blocks, weights=complex_ - simple, minlength=count)
     sizes = np.bincount(blocks, minlength=count).astype(float)
     draws = np.random.default_rng(seed).integers(0, count, size=(replicates, count))
     boot = sums[draws].sum(axis=1) / sizes[draws].sum(axis=1)
     low, high = np.percentile(boot, [2.5, 97.5])
-    s, k = float(ape_s.mean()), float(ape_k.mean())
+    s, k = float(simple.mean()), float(complex_.mean())
     return PairedGap(s, k, k - s, float(low), float(high), (s - k) / s)
 
 
@@ -286,3 +301,62 @@ def grid_forecast(
         columns,
         None if rank is None else int(rank),
     )
+
+
+# Réentraînement mensuel (ADR 0001), appliqué à la validation en v0.2 (journal, entrée 21).
+
+
+def training_cutoff(month: date) -> date:
+    """Dernier jour livré que le modèle du mois M peut apprendre : la fin du mois M − 4.
+
+    Le modèle doit exister à midi la veille du 1er de M, soit le dernier jour de M − 1 ; le
+    consolidé publié s'arrête alors à la fin de M − 4 (le mois M − 3 paraît le 1er de M).
+    """
+    first_unpublished = (pd.Period(month, "M") - 3).start_time
+    return (first_unpublished - pd.Timedelta(days=1)).date()
+
+
+def config_sha256() -> str:
+    """Empreinte de la configuration figée, identique pour chaque modèle mensuel."""
+    config = {
+        "params": PARAMS,
+        "rounds": ROUNDS,
+        "features": list(FEATURES),
+        "train_first": str(TRAIN_FIRST),
+        "lightgbm": lgb.__version__,
+    }
+    text = json.dumps(config, sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+@dataclass(frozen=True)
+class MonthlyModel:
+    month: date
+    last_training_day: date
+    rows: int
+    config_sha256: str
+    booster: lgb.Booster
+
+
+def monthly_training_rows(table: pd.DataFrame, month: date) -> pd.DataFrame:
+    """Lignes d'entraînement du modèle du mois M : jours livrés du 01/01/2017 à la fin de M − 4,
+    cible connue. Refuse toute ligne du test ou au-delà."""
+    if not table["periode"].isin(["entrainement", "validation"]).all():
+        raise ValueError("entraînement réservé aux lignes d'entraînement et de validation")
+    day = pd.to_datetime(table["jour"])
+    keep = (
+        (day >= pd.Timestamp(TRAIN_FIRST))
+        & (day <= pd.Timestamp(training_cutoff(month)))
+        & table[tb.TARGET].notna()
+    )
+    return table[keep]
+
+
+def fit_monthly(rows: pd.DataFrame, month: date) -> MonthlyModel:
+    """Entraîne le modèle du mois M. Échoue si une ligne est postérieure à la fin de M − 4."""
+    cutoff = training_cutoff(month)
+    last = max(rows["jour"])
+    if last > cutoff:
+        raise ValueError(f"ligne d'entraînement du {last}, après la fin de M − 4 ({cutoff})")
+    booster = fit(design(rows), rows[tb.TARGET])
+    return MonthlyModel(month, last, len(rows), config_sha256(), booster)

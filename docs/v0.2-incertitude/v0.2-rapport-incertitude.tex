@@ -1,0 +1,155 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\rapporttitre}{Incertitude}
+\newcommand{\rapportversion}{v0.2}
+\input{../latex/preambule}
+\usepackage{needspace}
+\usepackage{etoolbox}
+% Laisse un peu plus d'espace entre les mots plutôt que de déborder.
+\setlength{\emergencystretch}{3em}
+% Un titre de section ne reste jamais seul en bas de page.
+\pretocmd{\section}{\needspace{10\baselineskip}}{}{}
+
+\begin{document}
+
+\pagedegarde{Des intervalles autour de la prévision du lendemain, calibrés sur ses erreurs passées}{24 novembre 2026}{Version 0.2, test fermé}
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+
+\section*{Synthèse}
+\addcontentsline{toc}{section}{Synthèse}
+
+La v0.1 a choisi une prévision ponctuelle de la consommation du lendemain. La v0.2 lui ajoute une fourchette : cinq quantiles par demi-heure, d'où l'on tire un intervalle à 80~\% et un intervalle à 95~\%. Tout est mesuré sur la validation ; le test reste fermé jusqu'à la v1.0.
+
+\begin{itemize}
+  \item La prévision ponctuelle est désormais réentraînée chaque mois, comme le prévoit le cadrage pour le test. MAPE officielle de validation : 2,667~\%.
+  \item Les quantiles ajoutent à la prévision les quantiles des erreurs passées de la même demi-heure, publiées avant midi la veille, sur 12 mois au plus.
+  \item Sur l'année d'évaluation, les intervalles couvrent 77,5~\% et 94,2~\% des demi-heures, dans les plages fixées avant la mesure. Ils sont trop étroits en hiver : 65,8~\% et 88,2~\%.
+  \item Ils sont environ trois fois plus étroits que ceux de la référence fondée sur J-7, pour une couverture voisine.
+\end{itemize}
+
+\aretenir{Ces chiffres portent sur une période déjà utilisée pour choisir le modèle, avec une météo prévue en partie rejouée et une fenêtre de calibration réduite avant juin 2025. Le test les confirmera ou non.}
+
+\section{Le cadre}
+
+Le cadrage (ADR 0001) a fixé, avant toute modélisation, ce que la fourchette doit atteindre sur le test :
+
+\begin{itemize}
+  \item cinq quantiles par demi-heure : 0,025, 0,1, 0,5, 0,9 et 0,975 ;
+  \item un intervalle à 80~\% (de q0,1 à q0,9) qui couvre entre 75 et 85~\% des demi-heures, \textbf{et} un intervalle à 95~\% (de q0,025 à q0,975) qui en couvre entre 92 et 98~\% ;
+  \item un score par quantiles (pinball moyen des cinq niveaux) meilleur que celui d'une référence : J-7, plus les quantiles empiriques des erreurs passées de J-7 par demi-heure.
+\end{itemize}
+
+La calibration doit utiliser les erreurs des 12 derniers mois disponibles, calculées avec la météo prévue. Les règles de la v0.2 ont été écrites dans le journal des choix avant tout calcul (entrée 21) ; les résultats y sont notés (entrées 22 et 23).
+
+\section{La prévision réentraînée chaque mois}
+
+Le cadrage prévoit, sur le test, de réentraîner le modèle au début de chaque mois avec les seules données disponibles. En v0.1, le modèle avait été entraîné une seule fois, jusqu'au 14/03/2024. Pour que les erreurs servant à calibrer la fourchette soient celles de la procédure qui servira vraiment, cette procédure est appliquée dès la validation : 18 modèles, de mars 2024 à août 2025, de même configuration que le modèle de la v0.1.
+
+Le modèle du mois M prévoit dès le 1er du mois : il doit donc exister à midi le dernier jour de M~$-$~1. À cette heure, la consommation consolidée n'est publiée que jusqu'à la fin de M~$-$~4. Chaque modèle apprend jusqu'à cette date et pas au-delà ; un test automatique le vérifie, et les 18 modèles s'y arrêtent exactement.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+\textbf{Période} & \textbf{Modèle figé} & \textbf{Réentraîné chaque mois} & \textbf{Différence (IC 95~\%)} \\
+\midrule
+Toute la validation & 2,617~\% & 2,667~\% & $+0{,}050$ $[-0{,}022 ; +0{,}122]$ \\
+Du 15/03 au 30/06/2024 & 2,995~\% & 2,983~\% & $-0{,}012$ $[-0{,}153 ; +0{,}179]$ \\
+\bottomrule
+\end{tabularx}
+\caption{MAPE de validation. La procédure mensuelle a été gardée sans condition sur ce résultat : c'est celle du cadrage.}
+\end{table}
+
+La MAPE officielle devient 2,667~\%. Rapport au naïf J-7, à titre d'indication : 0,441, intervalle de 0,382 à 0,512, contre 0,433 pour le modèle figé.
+
+La seconde ligne mesure une limite constatée de la v0.1. Le modèle figé avait appris sur des consommations de janvier à mars 2024, publiées en consolidé seulement entre avril et juin 2024 : pour les jours de validation du 15/03 au 01/06/2024, il disposait de données qu'un fournisseur n'aurait pas encore eues à midi la veille. Le modèle réentraîné chaque mois n'a pas cet avantage. L'écart est de $-0{,}012$ point, avec un intervalle qui contient 0 : pas d'effet mesurable.
+
+\section{Construire les quantiles}
+
+Chaque quantile est la prévision du modèle du mois, plus le quantile empirique des erreurs passées (consommation moins prévision) de la même demi-heure de la journée. À midi la veille d'un jour livré, seules les erreurs des jours déjà publiés en consolidé sont connues, sur les 12 derniers mois au plus. Le modèle est réentraîné chaque mois, mais les erreurs sont relues chaque jour :
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{YYll}
+\toprule
+\textbf{Jour livré} & \textbf{Décision} & \textbf{Modèle appris jusqu'à} & \textbf{Erreurs jusqu'à} \\
+\midrule
+1er du mois M & dernier jour de M~$-$~1 & fin de M~$-$~4 & fin de M~$-$~4 \\
+du 2 au dernier jour de M & dans le mois M & fin de M~$-$~4 & fin de M~$-$~3 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Il n'y a aucune fuite : chaque erreur est publiée à midi la veille et vient d'un modèle qui n'avait pas vu son jour.
+
+Les erreurs calculées avec la météo prévue n'existent qu'à partir du 15/03/2024, début de l'archive. Un jour n'est donc prévu que s'il dispose d'au moins 90 jours d'erreurs, ce qui donne une évaluation du 02/09/2024 au 31/08/2025 : 17\,464 demi-heures. La fenêtre passe de 108 jours en septembre 2024 à 12 mois à partir de juin 2025.
+
+Trois manières de regrouper les erreurs ont été comparées, de la plus simple à la plus complexe : par demi-heure (Q1), par tranche de 3~h et type de jour (Q2), puis en séparant aussi les demi-heures prévues sous 10~°C (Q3). La règle, écrite avant le calcul : un candidat dont les couvertures sortent des plages du cadrage n'est jamais retenu ; parmi les autres, un candidat plus complexe ne remplace le plus simple que s'il réduit le pinball de plus de 1~\% avec un gain qui sort du bruit des semaines.
+
+\section{Résultats}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrrrr}
+\toprule
+\textbf{Q1, retenu} & \textbf{Couverture 80~\%} & \textbf{Couverture 95~\%} & \textbf{Largeur 80~\%} & \textbf{Largeur 95~\%} \\
+\midrule
+Année d'évaluation & \textbf{77,5~\%} & \textbf{94,2~\%} & 3\,774~MW & 6\,624~MW \\
+Automne & 84,9~\% & 96,0~\% & 3\,917~MW & 6\,917~MW \\
+Hiver & \textbf{65,8~\%} & \textbf{88,2~\%} & 3\,584~MW & 6\,395~MW \\
+Printemps & 83,6~\% & 98,8~\% & 3\,877~MW & 6\,892~MW \\
+Été & 75,6~\% & 93,8~\% & 3\,717~MW & 6\,294~MW \\
+\midrule
+Plage du cadrage & 75 à 85~\% & 92 à 98~\% & & \\
+\bottomrule
+\end{tabularx}
+\caption{Couverture et largeur moyenne des intervalles de Q1, du 02/09/2024 au 31/08/2025.}
+\end{table}
+
+Sur l'année, les deux couvertures tombent dans leurs plages. Par saison, elles varient beaucoup, et l'hiver est nettement en dessous. C'était attendu : à cause du délai de publication du consolidé, les jours de décembre 2024 à février 2025 sont calibrés sur des erreurs de mars à novembre 2024, sans aucun mois d'hiver. Les intervalles d'hiver sont même plus étroits qu'au printemps ou à l'automne, alors que l'hiver est la saison où le modèle se trompe le plus. Hors hiver, la couverture est de 81,4~\% et 96,2~\%.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrrrrl}
+\toprule
+\textbf{Candidat} & \textbf{Cov. 80~\%} & \textbf{Cov. 95~\%} & \textbf{Largeur 95~\%} & \textbf{Pinball} & \textbf{Admissible} \\
+\midrule
+Q1 : par demi-heure & 77,5~\% & 94,2~\% & 6\,624~MW & 288~MW & oui, retenu \\
+Q2 : tranche de 3~h $\times$ type de jour & 76,8~\% & 94,0~\% & 6\,914~MW & 294~MW & oui \\
+Q3 : Q2 $\times$ température & 73,5~\% & 92,4~\% & 6\,709~MW & 298~MW & non \\
+Référence J-7 & 78,4~\% & 94,1~\% & 20\,362~MW & 831~MW & (référence) \\
+\bottomrule
+\end{tabularx}
+\caption{Q2 fait 2~\% de pinball en plus que Q1, avec un écart qui sort du bruit : Q1 reste retenu. Q3 couvre moins de 75~\% à 80~\%.}
+\end{table}
+
+Face à la référence, le pinball baisse de 542~MW (intervalle de 425 à 676~MW). Les intervalles de Q1 sont environ trois fois plus étroits pour une couverture voisine : c'est ce que la prévision ajoute à une simple répétition de la semaine précédente. La référence a le même défaut d'hiver (56,9~\% à 80~\%) et couvre trop en été (96,5~\%).
+
+Par tranche de 3~h, la couverture à 80~\% va de 73,9~\% (12~h--15~h) à 81,5~\% (6~h--9~h), et celle à 95~\% de 91,2~\% (15~h--18~h) à 95,7~\% (21~h--24~h).
+
+\section{Une prédiction pour le test}
+
+Sur le test, la fenêtre de 12 mois contiendra bien l'hiver 2024-25. Mais Q1 mélange les saisons dans chaque groupe : ses intervalles seront une moyenne de l'année. \textbf{On s'attend donc à une couverture inférieure à la cible en hiver et supérieure en été.} Cette prédiction est écrite avant d'ouvrir le test, et la couverture par saison du test sera lue à sa lumière. Ni le critère ni Q1 ne changent.
+
+Une méthode qui tient compte de la saison serait une nouvelle comparaison, dans une version ultérieure. Elle ne pourrait pas être jugée sur la validation : les fenêtres de l'hiver 2024-25 ne contiennent aucune erreur d'hiver.
+
+\section{Limites et points ouverts}
+
+\begin{itemize}
+  \item \textbf{Les deux premiers jours de l'archive.} L'archive de météo prévue commence au calcul du 14/03/2024. Les 96 demi-heures des 15 et 16/03/2024 n'ont pas de température lissée sur 72~h, faute de calculs plus anciens, et leurs erreurs sont gonflées de 7 à 8~GW. Elles entrent dans les fenêtres de calibration jusqu'en mai 2025. Information, sans effet sur la décision : sans elles, Q1 couvre 76,5~\% et 93,6~\%, avec un intervalle à 95~\% de 6\,345~MW. Elles n'entrent dans aucune fenêtre du test, qui commence en juin 2024 ; un test automatique le vérifie.
+  \item \textbf{Le biais de la médiane, pour la v0.3.} q0,5 prévoit trop de 289~MW en moyenne, et la prévision ponctuelle de 259~MW : le biais vient surtout du modèle. La décision d'achat se prendra à un quantile, et ce biais coûtera directement des euros.
+  \item \textbf{Cibles absentes.} Les quatre demi-heures du 27/10/2024 étiquetées 2~h~00 et 2~h~30 existent deux fois le jour du passage à l'heure d'hiver et restent sans cible : elles ne sont ni prévues ni jugées.
+  \item \textbf{Une validation déjà utilisée.} Treize comparaisons ont été faites sur cette période, et la météo prévue y est en partie rejouée par ECMWF.
+  \item \textbf{Hérités de la v0.1.} Le biais par temps froid, les valeurs d'entrée manquantes laissées au modèle et l'effet des années 2012-2016 restent ouverts.
+\end{itemize}
+
+\section{Suite}
+
+La v0.3 traduit la fourchette en décision d'achat : à quel quantile acheter pour que le coût des écarts soit le plus faible, au vu des prix des écarts publiés par ENTSO-E. Le biais de la médiane y sera traité en premier.
+
+Le détail de chaque choix est dans le journal des choix et dans l'ADR 0004. Les chiffres viennent de \nolinkurl{scripts/modelling/compare_intervals.py}, dont les sorties sont dans \nolinkurl{docs/v0.2-incertitude/data}.
+
+\end{document}

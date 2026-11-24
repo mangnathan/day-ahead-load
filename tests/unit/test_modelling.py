@@ -192,3 +192,45 @@ def test_lightgbm_with_level_in_the_grid_is_the_same_model_as_validation_forecas
     single, rows = md.validation_forecast(table, md.TRAIN_FIRST)
     pd.testing.assert_series_equal(grid.forecast, single)
     assert grid.train_rows == rows
+
+
+def test_training_cutoff_is_the_end_of_month_minus_four() -> None:
+    assert md.training_cutoff(date(2024, 9, 1)) == date(2024, 5, 31)
+    assert md.training_cutoff(date(2025, 1, 1)) == date(2024, 9, 30)
+    assert md.training_cutoff(date(2024, 3, 1)) == date(2023, 11, 30)
+
+
+def test_monthly_training_rows_stop_at_the_cutoff_and_refuse_test_rows() -> None:
+    table = pd.concat(
+        [calendar_table(date(2024, 5, 30), 4), calendar_table(date(2024, 6, 3), 1, "validation")],
+        ignore_index=True,
+    )
+    picked = md.monthly_training_rows(table, date(2024, 9, 1))
+    assert max(picked["jour"]) == date(2024, 5, 31)
+    with pytest.raises(ValueError, match="entraînement"):
+        md.monthly_training_rows(
+            pd.concat([table, calendar_table(date(2025, 9, 1), 1, "test")]), date(2024, 9, 1)
+        )
+
+
+def test_fit_monthly_fails_on_any_training_row_after_the_cutoff() -> None:
+    rows = calendar_table(date(2024, 5, 1), 31)
+    late = calendar_table(date(2024, 6, 1), 1)
+    with pytest.raises(ValueError, match="M − 4"):
+        md.fit_monthly(pd.concat([rows, late], ignore_index=True), date(2024, 9, 1))
+    model = md.fit_monthly(rows, date(2024, 9, 1))
+    assert model.last_training_day == date(2024, 5, 31)
+    assert model.rows == 31 * 48
+    assert model.config_sha256 == md.config_sha256()
+
+
+def test_paired_loss_gap_matches_paired_gap_on_percentage_errors() -> None:
+    days = weeks(3)
+    truth = pd.Series(np.full(len(days), 100.0))
+    simple = np.full(len(days), 105.0)
+    complex_ = np.where(np.arange(len(days)) % 3 == 0, 101.0, 104.0)
+    direct = md.paired_gap(truth, simple, complex_, days, FIRST)
+    generic = md.paired_loss_gap(
+        np.abs(simple - 100.0), np.abs(complex_ - 100.0), days.to_numpy(), FIRST
+    )
+    assert direct == generic
