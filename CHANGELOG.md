@@ -4,6 +4,9 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 
 ## [Non publié]
 
+### Ajouté
+- Client des prix des écarts d'ENTSO-E (17.1.G, France) pour la v0.3 : 31 appels estimés avant tout appel, plafond local de 100 par jour, arrêt définitif au premier refus de quota, appel de contrôle avant le téléchargement, jeton lu dans `.env` et jamais écrit ni affiché (test dédié). `.env.example` documente la clé.
+
 ## [v0.2] — 2026-11-24
 
 Incertitude autour de la prévision, mesurée sur la validation, test fermé (ADR 0004).
