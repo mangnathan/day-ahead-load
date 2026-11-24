@@ -1,7 +1,8 @@
 """Figure du README : MAPE de validation du modèle et des références, en SVG.
 
-Lit seulement le bilan de la v0.1 (erreurs agrégées) : aucune série de consommation ni courbe
-de RTE n'est dessinée. Écrit une version pour le thème clair et une pour le thème sombre.
+Lit seulement les erreurs agrégées de la v0.2 (prévision réentraînée chaque mois, sur
+l'échantillon du bilan de la v0.1) : aucune série de consommation ni courbe de RTE n'est
+dessinée. Écrit une version pour le thème clair et une pour le thème sombre.
 
     uv run python scripts/docs/readme_figure.py
 """
@@ -12,13 +13,13 @@ import json
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-BILAN = Path("docs/v0.1-prevision-ponctuelle/data/bilan-v0-1.json")
+RESULTS = Path("docs/v0.2-incertitude/data/intervalles.json")
 OUTPUT = Path("docs/images")
 BARS = (
     ("rte_corrige_meme_mois_an_dernier", "RTE J-1 corrigée (même mois l'an dernier)", "avantagée"),
     ("rte_corrige_retard_reel", "RTE J-1 corrigée (28 derniers jours publiés)", "avantagée"),
     ("rte_j1_brut", "RTE J-1 brute", "avantagée"),
-    ("modele", "day-ahead-load, modèle de la v0.1", "disponible à midi"),
+    ("modele", "day-ahead-load, réentraîné chaque mois", "disponible à midi"),
     ("naif_j7", "Même demi-heure 7 jours avant", "optimiste"),
     ("naif_annee_precedente", "Même jour, 52 semaines avant", "réaliste"),
 )
@@ -103,9 +104,10 @@ def svg(values: dict[str, float], theme: dict[str, str]) -> str:
 
 
 def main() -> None:
-    bilan = json.loads(BILAN.read_text(encoding="utf-8"))
-    values = {key: float(v["mape_reference_pct"]) for key, v in bilan["references"].items()}
-    values["modele"] = float(bilan["echantillon_commun"]["mape_modele_pct"])
+    official = json.loads(RESULTS.read_text(encoding="utf-8"))["procedure_mensuelle"]
+    gaps = official["ecart_aux_references_echantillon_du_bilan"]
+    values = {key: float(v["mape_reference_pct"]) for key, v in gaps.items()}
+    values["modele"] = float(official["rapport_au_naif_j7"]["procedure_mensuelle"]["mape_pct"])
     OUTPUT.mkdir(parents=True, exist_ok=True)
     for name, theme in THEMES.items():
         path = OUTPUT / f"mape-validation-{name}.svg"

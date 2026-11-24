@@ -7,6 +7,11 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 ### Ajouté
 - Incertitude de la v0.2 : réentraînement mensuel appliqué à la validation (18 modèles, entraînement jusqu'à la fin du mois M − 4, garde-fou testé), quantiles 0,025 à 0,975 par les résidus passés de la demi-heure (Q1), retenu selon la règle écrite avant le calcul : couverture 77,5 % et 94,2 % sur l'évaluation, pinball 288 MW contre 831 MW pour la référence J-7. 13 comparaisons sur la validation.
 - Limite constatée de la v0.1 : A17 a appris sur des consommations consolidées publiées après les premiers jours de validation (15/03 au 01/06/2024). Écart mesuré avec la procédure mensuelle sur mars-juin 2024 : −0,012 point de MAPE, non distinguable du bruit.
+- ADR 0004 (incertitude de la v0.2) et rapport de la v0.2 en LaTeX, avec la couverture par saison et une prédiction écrite avant le test : couverture trop basse en hiver et trop haute en été.
+- Test automatique : les résidus des 15 et 16/03/2024, sans température lissée sur 72 h au début de l'archive de météo prévue, n'entrent dans aucune fenêtre de calibration du test.
+
+### Modifié
+- Prévision ponctuelle officielle : A17 réentraîné chaque mois, MAPE de validation 2,667 % (2,617 % pour le modèle figé de la v0.1) et rapport à J-7 de 0,441. README mis à jour : état, résultats, figure, versions.
 
 ## [v0.1] — 2026-11-24
 
