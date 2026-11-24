@@ -4,6 +4,10 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 
 ## [Non publié]
 
+### Ajouté
+- Incertitude de la v0.2 : réentraînement mensuel appliqué à la validation (18 modèles, entraînement jusqu'à la fin du mois M − 4, garde-fou testé), quantiles 0,025 à 0,975 par les résidus passés de la demi-heure (Q1), retenu selon la règle écrite avant le calcul : couverture 77,5 % et 94,2 % sur l'évaluation, pinball 288 MW contre 831 MW pour la référence J-7. 13 comparaisons sur la validation.
+- Limite constatée de la v0.1 : A17 a appris sur des consommations consolidées publiées après les premiers jours de validation (15/03 au 01/06/2024). Écart mesuré avec la procédure mensuelle sur mars-juin 2024 : −0,012 point de MAPE, non distinguable du bruit.
+
 ## [v0.1] — 2026-11-24
 
 Prévision ponctuelle choisie sur la validation, test fermé (ADR 0003). L'étude de faisabilité (v0.0) n'a pas reçu de tag propre : ses entrées sont incluses dans cette version.

@@ -1,0 +1,1165 @@
+{
+  "regle": "journal des choix, entrée 21",
+  "etiquettes": [
+    "météo prévue en partie rejouée",
+    "période de validation déjà utilisée pour choisir A17 (10 comparaisons)",
+    "fenêtre de calibration réduite avant juin 2025"
+  ],
+  "reference_avantage": "la référence J-7 dispose d'emblée de 12 mois d'erreurs, sans attendre la météo prévue : elle est avantagée au début de l'évaluation",
+  "evaluation": {
+    "premier_jour": "2024-09-02",
+    "dernier_jour": "2025-08-31",
+    "demi_heures_jugees": 17464,
+    "jours_de_residus_min_max": [
+      108,
+      365
+    ]
+  },
+  "procedure_mensuelle": {
+    "modeles": [
+      {
+        "mois": "2024-03",
+        "derniere_ligne_entrainement": "2023-11-30",
+        "fin_autorisee": "2023-11-30",
+        "lignes": 121172,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-04",
+        "derniere_ligne_entrainement": "2023-12-31",
+        "fin_autorisee": "2023-12-31",
+        "lignes": 122660,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-05",
+        "derniere_ligne_entrainement": "2024-01-31",
+        "fin_autorisee": "2024-01-31",
+        "lignes": 124148,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-06",
+        "derniere_ligne_entrainement": "2024-02-29",
+        "fin_autorisee": "2024-02-29",
+        "lignes": 125540,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-07",
+        "derniere_ligne_entrainement": "2024-03-31",
+        "fin_autorisee": "2024-03-31",
+        "lignes": 127026,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-08",
+        "derniere_ligne_entrainement": "2024-04-30",
+        "fin_autorisee": "2024-04-30",
+        "lignes": 128466,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-09",
+        "derniere_ligne_entrainement": "2024-05-31",
+        "fin_autorisee": "2024-05-31",
+        "lignes": 129954,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-10",
+        "derniere_ligne_entrainement": "2024-06-30",
+        "fin_autorisee": "2024-06-30",
+        "lignes": 131394,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-11",
+        "derniere_ligne_entrainement": "2024-07-31",
+        "fin_autorisee": "2024-07-31",
+        "lignes": 132882,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2024-12",
+        "derniere_ligne_entrainement": "2024-08-31",
+        "fin_autorisee": "2024-08-31",
+        "lignes": 134370,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-01",
+        "derniere_ligne_entrainement": "2024-09-30",
+        "fin_autorisee": "2024-09-30",
+        "lignes": 135810,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-02",
+        "derniere_ligne_entrainement": "2024-10-31",
+        "fin_autorisee": "2024-10-31",
+        "lignes": 137296,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-03",
+        "derniere_ligne_entrainement": "2024-11-30",
+        "fin_autorisee": "2024-11-30",
+        "lignes": 138736,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-04",
+        "derniere_ligne_entrainement": "2024-12-31",
+        "fin_autorisee": "2024-12-31",
+        "lignes": 140224,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-05",
+        "derniere_ligne_entrainement": "2025-01-31",
+        "fin_autorisee": "2025-01-31",
+        "lignes": 141712,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-06",
+        "derniere_ligne_entrainement": "2025-02-28",
+        "fin_autorisee": "2025-02-28",
+        "lignes": 143056,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-07",
+        "derniere_ligne_entrainement": "2025-03-31",
+        "fin_autorisee": "2025-03-31",
+        "lignes": 144542,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      },
+      {
+        "mois": "2025-08",
+        "derniere_ligne_entrainement": "2025-04-30",
+        "fin_autorisee": "2025-04-30",
+        "lignes": 145982,
+        "sha256_configuration": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f"
+      }
+    ],
+    "mape_information": {
+      "toute_la_validation": {
+        "demi_heures": 25674,
+        "mape_a17_fige_pct": 2.617,
+        "mape_mensuelle_pct": 2.667,
+        "difference_mensuelle_moins_fige_pts": 0.05,
+        "intervalle_95_pts": [
+          -0.022,
+          0.122
+        ]
+      },
+      "evaluation": {
+        "demi_heures": 17464,
+        "mape_a17_fige_pct": 2.563,
+        "mape_mensuelle_pct": 2.59,
+        "difference_mensuelle_moins_fige_pts": 0.027,
+        "intervalle_95_pts": [
+          -0.047,
+          0.102
+        ]
+      },
+      "avantage_de_date_15_03_au_30_06_2024": {
+        "demi_heures": 5182,
+        "mape_a17_fige_pct": 2.995,
+        "mape_mensuelle_pct": 2.983,
+        "difference_mensuelle_moins_fige_pts": -0.012,
+        "intervalle_95_pts": [
+          -0.153,
+          0.179
+        ]
+      }
+    }
+  },
+  "candidats_et_reference": {
+    "Q1": {
+      "evaluation": {
+        "demi_heures": 17464,
+        "couverture_80_pct": 77.5,
+        "couverture_95_pct": 94.2,
+        "largeur_80_mw": 3773.8,
+        "largeur_95_mw": 6623.8,
+        "pinball_moyen_mw": 288.15,
+        "pinball_par_niveau_mw": {
+          "0.025": 116.37,
+          "0.1": 309.2,
+          "0.5": 635.12,
+          "0.9": 281.99,
+          "0.975": 98.07
+        }
+      },
+      "admissible": true,
+      "par_saison": {
+        "automne": {
+          "demi_heures": 4316,
+          "couverture_80_pct": 84.89,
+          "couverture_95_pct": 95.97,
+          "largeur_80_mw": 3916.9,
+          "largeur_95_mw": 6917.0,
+          "pinball_moyen_mw": 253.27,
+          "pinball_par_niveau_mw": {
+            "0.025": 108.05,
+            "0.1": 276.91,
+            "0.5": 533.1,
+            "0.9": 252.57,
+            "0.975": 95.74
+          }
+        },
+        "ete": {
+          "demi_heures": 4416,
+          "couverture_80_pct": 75.59,
+          "couverture_95_pct": 93.82,
+          "largeur_80_mw": 3716.7,
+          "largeur_95_mw": 6293.5,
+          "pinball_moyen_mw": 268.61,
+          "pinball_par_niveau_mw": {
+            "0.025": 96.02,
+            "0.1": 255.9,
+            "0.5": 607.22,
+            "0.9": 287.13,
+            "0.975": 96.76
+          }
+        },
+        "hiver": {
+          "demi_heures": 4320,
+          "couverture_80_pct": 65.81,
+          "couverture_95_pct": 88.15,
+          "largeur_80_mw": 3583.8,
+          "largeur_95_mw": 6394.6,
+          "pinball_moyen_mw": 378.97,
+          "pinball_par_niveau_mw": {
+            "0.025": 168.65,
+            "0.1": 446.79,
+            "0.5": 821.53,
+            "0.9": 344.1,
+            "0.975": 113.78
+          }
+        },
+        "printemps": {
+          "demi_heures": 4412,
+          "couverture_80_pct": 83.64,
+          "couverture_95_pct": 98.78,
+          "largeur_80_mw": 3877.1,
+          "largeur_95_mw": 6892.0,
+          "pinball_moyen_mw": 252.9,
+          "pinball_par_niveau_mw": {
+            "0.025": 93.68,
+            "0.1": 259.42,
+            "0.5": 580.32,
+            "0.9": 244.83,
+            "0.975": 86.27
+          }
+        }
+      },
+      "par_tranche_3h": {
+        "00h-03h": {
+          "demi_heures": 2176,
+          "couverture_80_pct": 79.83,
+          "couverture_95_pct": 95.08,
+          "largeur_80_mw": 3738.5,
+          "largeur_95_mw": 6210.9,
+          "pinball_moyen_mw": 270.66,
+          "pinball_par_niveau_mw": {
+            "0.025": 107.82,
+            "0.1": 285.17,
+            "0.5": 620.85,
+            "0.9": 253.97,
+            "0.975": 85.47
+          }
+        },
+        "03h-06h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 80.59,
+          "couverture_95_pct": 94.09,
+          "largeur_80_mw": 3769.1,
+          "largeur_95_mw": 6255.7,
+          "pinball_moyen_mw": 269.88,
+          "pinball_par_niveau_mw": {
+            "0.025": 106.33,
+            "0.1": 276.66,
+            "0.5": 620.35,
+            "0.9": 258.72,
+            "0.975": 87.34
+          }
+        },
+        "06h-09h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 81.46,
+          "couverture_95_pct": 95.24,
+          "largeur_80_mw": 4348.8,
+          "largeur_95_mw": 7361.2,
+          "pinball_moyen_mw": 306.79,
+          "pinball_par_niveau_mw": {
+            "0.025": 135.05,
+            "0.1": 325.14,
+            "0.5": 682.08,
+            "0.9": 292.2,
+            "0.975": 99.48
+          }
+        },
+        "09h-12h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 75.92,
+          "couverture_95_pct": 93.86,
+          "largeur_80_mw": 3605.5,
+          "largeur_95_mw": 6800.5,
+          "pinball_moyen_mw": 293.44,
+          "pinball_par_niveau_mw": {
+            "0.025": 121.29,
+            "0.1": 295.23,
+            "0.5": 621.9,
+            "0.9": 310.74,
+            "0.975": 118.03
+          }
+        },
+        "12h-15h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 73.9,
+          "couverture_95_pct": 93.86,
+          "largeur_80_mw": 3498.0,
+          "largeur_95_mw": 6611.6,
+          "pinball_moyen_mw": 288.91,
+          "pinball_par_niveau_mw": {
+            "0.025": 104.5,
+            "0.1": 284.75,
+            "0.5": 642.97,
+            "0.9": 304.52,
+            "0.975": 107.81
+          }
+        },
+        "15h-18h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 74.59,
+          "couverture_95_pct": 91.21,
+          "largeur_80_mw": 3733.8,
+          "largeur_95_mw": 6729.2,
+          "pinball_moyen_mw": 316.78,
+          "pinball_par_niveau_mw": {
+            "0.025": 138.8,
+            "0.1": 367.63,
+            "0.5": 663.87,
+            "0.9": 303.84,
+            "0.975": 109.75
+          }
+        },
+        "18h-21h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 76.33,
+          "couverture_95_pct": 94.51,
+          "largeur_80_mw": 3934.6,
+          "largeur_95_mw": 7049.2,
+          "pinball_moyen_mw": 306.38,
+          "pinball_par_niveau_mw": {
+            "0.025": 128.16,
+            "0.1": 363.25,
+            "0.5": 672.8,
+            "0.9": 276.62,
+            "0.975": 91.08
+          }
+        },
+        "21h-24h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 77.43,
+          "couverture_95_pct": 95.74,
+          "largeur_80_mw": 3561.9,
+          "largeur_95_mw": 5970.6,
+          "pinball_moyen_mw": 252.3,
+          "pinball_par_niveau_mw": {
+            "0.025": 88.96,
+            "0.1": 275.7,
+            "0.5": 556.08,
+            "0.9": 255.25,
+            "0.975": 85.52
+          }
+        }
+      },
+      "hors_hiver_2024_25_information": {
+        "demi_heures": 13144,
+        "couverture_80_pct": 81.35,
+        "couverture_95_pct": 96.19,
+        "largeur_80_mw": 3836.3,
+        "largeur_95_mw": 6699.1,
+        "pinball_moyen_mw": 258.3,
+        "pinball_par_niveau_mw": {
+          "0.025": 99.18,
+          "0.1": 263.98,
+          "0.5": 573.85,
+          "0.9": 261.58,
+          "0.975": 92.9
+        }
+      },
+      "juin_aout_2025_fenetre_complete_information": {
+        "demi_heures": 4416,
+        "couverture_80_pct": 75.59,
+        "couverture_95_pct": 93.82,
+        "largeur_80_mw": 3716.7,
+        "largeur_95_mw": 6293.5,
+        "pinball_moyen_mw": 268.61,
+        "pinball_par_niveau_mw": {
+          "0.025": 96.02,
+          "0.1": 255.9,
+          "0.5": 607.22,
+          "0.9": 287.13,
+          "0.975": 96.76
+        }
+      },
+      "mediane_information": {
+        "biais_mw": 289.2,
+        "mape_pct": 2.54
+      }
+    },
+    "Q2": {
+      "evaluation": {
+        "demi_heures": 17464,
+        "couverture_80_pct": 76.83,
+        "couverture_95_pct": 93.98,
+        "largeur_80_mw": 3845.8,
+        "largeur_95_mw": 6913.8,
+        "pinball_moyen_mw": 293.88,
+        "pinball_par_niveau_mw": {
+          "0.025": 127.33,
+          "0.1": 321.82,
+          "0.5": 639.96,
+          "0.9": 282.79,
+          "0.975": 97.53
+        }
+      },
+      "admissible": true,
+      "par_saison": {
+        "automne": {
+          "demi_heures": 4316,
+          "couverture_80_pct": 84.62,
+          "couverture_95_pct": 95.57,
+          "largeur_80_mw": 4042.1,
+          "largeur_95_mw": 7614.3,
+          "pinball_moyen_mw": 262.99,
+          "pinball_par_niveau_mw": {
+            "0.025": 132.37,
+            "0.1": 293.72,
+            "0.5": 539.61,
+            "0.9": 253.81,
+            "0.975": 95.42
+          }
+        },
+        "ete": {
+          "demi_heures": 4416,
+          "couverture_80_pct": 74.07,
+          "couverture_95_pct": 93.91,
+          "largeur_80_mw": 3765.8,
+          "largeur_95_mw": 6270.8,
+          "pinball_moyen_mw": 274.39,
+          "pinball_par_niveau_mw": {
+            "0.025": 94.91,
+            "0.1": 268.5,
+            "0.5": 627.61,
+            "0.9": 285.8,
+            "0.975": 95.12
+          }
+        },
+        "hiver": {
+          "demi_heures": 4320,
+          "couverture_80_pct": 65.3,
+          "couverture_95_pct": 88.33,
+          "largeur_80_mw": 3630.4,
+          "largeur_95_mw": 6838.7,
+          "pinball_moyen_mw": 383.42,
+          "pinball_par_niveau_mw": {
+            "0.025": 188.4,
+            "0.1": 461.23,
+            "0.5": 815.22,
+            "0.9": 341.26,
+            "0.975": 111.0
+          }
+        },
+        "printemps": {
+          "demi_heures": 4412,
+          "couverture_80_pct": 83.27,
+          "couverture_95_pct": 98.03,
+          "largeur_80_mw": 3944.7,
+          "largeur_95_mw": 6945.7,
+          "pinball_moyen_mw": 255.95,
+          "pinball_par_niveau_mw": {
+            "0.025": 95.03,
+            "0.1": 266.18,
+            "0.5": 578.87,
+            "0.9": 250.9,
+            "0.975": 88.79
+          }
+        }
+      },
+      "par_tranche_3h": {
+        "00h-03h": {
+          "demi_heures": 2176,
+          "couverture_80_pct": 80.15,
+          "couverture_95_pct": 95.04,
+          "largeur_80_mw": 3815.3,
+          "largeur_95_mw": 6632.3,
+          "pinball_moyen_mw": 276.86,
+          "pinball_par_niveau_mw": {
+            "0.025": 116.29,
+            "0.1": 298.75,
+            "0.5": 622.15,
+            "0.9": 257.87,
+            "0.975": 89.23
+          }
+        },
+        "03h-06h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 79.44,
+          "couverture_95_pct": 94.37,
+          "largeur_80_mw": 3840.2,
+          "largeur_95_mw": 6589.9,
+          "pinball_moyen_mw": 276.9,
+          "pinball_par_niveau_mw": {
+            "0.025": 117.26,
+            "0.1": 285.07,
+            "0.5": 629.93,
+            "0.9": 261.99,
+            "0.975": 90.26
+          }
+        },
+        "06h-09h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 79.99,
+          "couverture_95_pct": 94.92,
+          "largeur_80_mw": 4347.7,
+          "largeur_95_mw": 7613.5,
+          "pinball_moyen_mw": 312.8,
+          "pinball_par_niveau_mw": {
+            "0.025": 141.88,
+            "0.1": 338.65,
+            "0.5": 683.88,
+            "0.9": 295.75,
+            "0.975": 103.86
+          }
+        },
+        "09h-12h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 74.31,
+          "couverture_95_pct": 93.13,
+          "largeur_80_mw": 3619.0,
+          "largeur_95_mw": 6888.7,
+          "pinball_moyen_mw": 293.14,
+          "pinball_par_niveau_mw": {
+            "0.025": 132.9,
+            "0.1": 310.81,
+            "0.5": 616.7,
+            "0.9": 297.94,
+            "0.975": 107.36
+          }
+        },
+        "12h-15h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 74.04,
+          "couverture_95_pct": 94.32,
+          "largeur_80_mw": 3640.0,
+          "largeur_95_mw": 7057.1,
+          "pinball_moyen_mw": 295.45,
+          "pinball_par_niveau_mw": {
+            "0.025": 115.3,
+            "0.1": 297.93,
+            "0.5": 652.21,
+            "0.9": 304.08,
+            "0.975": 107.75
+          }
+        },
+        "15h-18h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 73.58,
+          "couverture_95_pct": 90.8,
+          "largeur_80_mw": 3838.5,
+          "largeur_95_mw": 6986.4,
+          "pinball_moyen_mw": 324.05,
+          "pinball_par_niveau_mw": {
+            "0.025": 144.66,
+            "0.1": 382.6,
+            "0.5": 674.78,
+            "0.9": 309.49,
+            "0.975": 108.75
+          }
+        },
+        "18h-21h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 76.1,
+          "couverture_95_pct": 94.51,
+          "largeur_80_mw": 4049.0,
+          "largeur_95_mw": 7251.2,
+          "pinball_moyen_mw": 311.27,
+          "pinball_par_niveau_mw": {
+            "0.025": 139.23,
+            "0.1": 372.3,
+            "0.5": 680.11,
+            "0.9": 277.36,
+            "0.975": 87.35
+          }
+        },
+        "21h-24h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 77.06,
+          "couverture_95_pct": 94.78,
+          "largeur_80_mw": 3616.4,
+          "largeur_95_mw": 6290.4,
+          "pinball_moyen_mw": 260.53,
+          "pinball_par_niveau_mw": {
+            "0.025": 111.05,
+            "0.1": 288.37,
+            "0.5": 559.83,
+            "0.9": 257.77,
+            "0.975": 85.62
+          }
+        }
+      },
+      "hors_hiver_2024_25_information": {
+        "demi_heures": 13144,
+        "couverture_80_pct": 80.62,
+        "couverture_95_pct": 95.84,
+        "largeur_80_mw": 3916.5,
+        "largeur_95_mw": 6938.5,
+        "pinball_moyen_mw": 264.46,
+        "pinball_par_niveau_mw": {
+          "0.025": 107.25,
+          "0.1": 276.0,
+          "0.5": 582.35,
+          "0.9": 263.58,
+          "0.975": 93.1
+        }
+      },
+      "juin_aout_2025_fenetre_complete_information": {
+        "demi_heures": 4416,
+        "couverture_80_pct": 74.07,
+        "couverture_95_pct": 93.91,
+        "largeur_80_mw": 3765.8,
+        "largeur_95_mw": 6270.8,
+        "pinball_moyen_mw": 274.39,
+        "pinball_par_niveau_mw": {
+          "0.025": 94.91,
+          "0.1": 268.5,
+          "0.5": 627.61,
+          "0.9": 285.8,
+          "0.975": 95.12
+        }
+      },
+      "mediane_information": {
+        "biais_mw": 273.7,
+        "mape_pct": 2.569
+      }
+    },
+    "Q3": {
+      "evaluation": {
+        "demi_heures": 17464,
+        "couverture_80_pct": 73.52,
+        "couverture_95_pct": 92.43,
+        "largeur_80_mw": 3642.1,
+        "largeur_95_mw": 6709.4,
+        "pinball_moyen_mw": 297.89,
+        "pinball_par_niveau_mw": {
+          "0.025": 130.61,
+          "0.1": 324.63,
+          "0.5": 646.16,
+          "0.9": 288.55,
+          "0.975": 99.52
+        }
+      },
+      "admissible": false,
+      "par_saison": {
+        "automne": {
+          "demi_heures": 4316,
+          "couverture_80_pct": 78.64,
+          "couverture_95_pct": 93.61,
+          "largeur_80_mw": 3529.4,
+          "largeur_95_mw": 7204.9,
+          "pinball_moyen_mw": 270.56,
+          "pinball_par_niveau_mw": {
+            "0.025": 143.44,
+            "0.1": 304.73,
+            "0.5": 554.27,
+            "0.9": 255.11,
+            "0.975": 95.26
+          }
+        },
+        "ete": {
+          "demi_heures": 4416,
+          "couverture_80_pct": 65.22,
+          "couverture_95_pct": 89.81,
+          "largeur_80_mw": 3074.7,
+          "largeur_95_mw": 5298.2,
+          "pinball_moyen_mw": 270.2,
+          "pinball_par_niveau_mw": {
+            "0.025": 85.99,
+            "0.1": 261.5,
+            "0.5": 610.7,
+            "0.9": 292.65,
+            "0.975": 100.14
+          }
+        },
+        "hiver": {
+          "demi_heures": 4320,
+          "couverture_80_pct": 67.96,
+          "couverture_95_pct": 88.87,
+          "largeur_80_mw": 4115.4,
+          "largeur_95_mw": 7324.9,
+          "pinball_moyen_mw": 397.87,
+          "pinball_par_niveau_mw": {
+            "0.025": 190.27,
+            "0.1": 473.77,
+            "0.5": 864.15,
+            "0.9": 348.58,
+            "0.975": 112.6
+          }
+        },
+        "printemps": {
+          "demi_heures": 4412,
+          "couverture_80_pct": 82.25,
+          "couverture_95_pct": 97.39,
+          "largeur_80_mw": 3857.0,
+          "largeur_95_mw": 7034.3,
+          "pinball_moyen_mw": 254.46,
+          "pinball_par_niveau_mw": {
+            "0.025": 104.3,
+            "0.1": 261.27,
+            "0.5": 558.11,
+            "0.9": 258.36,
+            "0.975": 90.26
+          }
+        }
+      },
+      "par_tranche_3h": {
+        "00h-03h": {
+          "demi_heures": 2176,
+          "couverture_80_pct": 75.55,
+          "couverture_95_pct": 92.19,
+          "largeur_80_mw": 3654.1,
+          "largeur_95_mw": 6429.5,
+          "pinball_moyen_mw": 291.8,
+          "pinball_par_niveau_mw": {
+            "0.025": 131.09,
+            "0.1": 318.51,
+            "0.5": 653.46,
+            "0.9": 262.46,
+            "0.975": 93.47
+          }
+        },
+        "03h-06h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 76.19,
+          "couverture_95_pct": 91.76,
+          "largeur_80_mw": 3657.2,
+          "largeur_95_mw": 6296.9,
+          "pinball_moyen_mw": 282.91,
+          "pinball_par_niveau_mw": {
+            "0.025": 125.07,
+            "0.1": 304.85,
+            "0.5": 619.36,
+            "0.9": 270.83,
+            "0.975": 94.44
+          }
+        },
+        "06h-09h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 73.81,
+          "couverture_95_pct": 94.09,
+          "largeur_80_mw": 4358.8,
+          "largeur_95_mw": 7709.2,
+          "pinball_moyen_mw": 326.57,
+          "pinball_par_niveau_mw": {
+            "0.025": 138.42,
+            "0.1": 370.6,
+            "0.5": 719.22,
+            "0.9": 298.61,
+            "0.975": 105.98
+          }
+        },
+        "09h-12h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 71.25,
+          "couverture_95_pct": 91.35,
+          "largeur_80_mw": 3380.5,
+          "largeur_95_mw": 6579.9,
+          "pinball_moyen_mw": 296.66,
+          "pinball_par_niveau_mw": {
+            "0.025": 137.85,
+            "0.1": 306.28,
+            "0.5": 622.25,
+            "0.9": 309.61,
+            "0.975": 107.32
+          }
+        },
+        "12h-15h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 71.25,
+          "couverture_95_pct": 92.67,
+          "largeur_80_mw": 3425.5,
+          "largeur_95_mw": 6769.2,
+          "pinball_moyen_mw": 295.18,
+          "pinball_par_niveau_mw": {
+            "0.025": 118.15,
+            "0.1": 294.49,
+            "0.5": 647.23,
+            "0.9": 308.21,
+            "0.975": 107.85
+          }
+        },
+        "15h-18h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 71.7,
+          "couverture_95_pct": 90.34,
+          "largeur_80_mw": 3625.8,
+          "largeur_95_mw": 6681.2,
+          "pinball_moyen_mw": 321.39,
+          "pinball_par_niveau_mw": {
+            "0.025": 138.95,
+            "0.1": 373.3,
+            "0.5": 673.56,
+            "0.9": 309.02,
+            "0.975": 112.13
+          }
+        },
+        "18h-21h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 73.21,
+          "couverture_95_pct": 93.54,
+          "largeur_80_mw": 3647.9,
+          "largeur_95_mw": 6977.5,
+          "pinball_moyen_mw": 308.34,
+          "pinball_par_niveau_mw": {
+            "0.025": 139.17,
+            "0.1": 356.12,
+            "0.5": 678.73,
+            "0.9": 280.31,
+            "0.975": 87.39
+          }
+        },
+        "21h-24h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 75.18,
+          "couverture_95_pct": 93.5,
+          "largeur_80_mw": 3387.1,
+          "largeur_95_mw": 6230.5,
+          "pinball_moyen_mw": 260.27,
+          "pinball_par_niveau_mw": {
+            "0.025": 116.17,
+            "0.1": 272.89,
+            "0.5": 555.49,
+            "0.9": 269.22,
+            "0.975": 87.56
+          }
+        }
+      },
+      "hors_hiver_2024_25_information": {
+        "demi_heures": 13144,
+        "couverture_80_pct": 75.34,
+        "couverture_95_pct": 93.6,
+        "largeur_80_mw": 3486.6,
+        "largeur_95_mw": 6507.0,
+        "pinball_moyen_mw": 265.03,
+        "pinball_par_niveau_mw": {
+          "0.025": 111.0,
+          "0.1": 275.62,
+          "0.5": 574.52,
+          "0.9": 268.82,
+          "0.975": 95.22
+        }
+      },
+      "juin_aout_2025_fenetre_complete_information": {
+        "demi_heures": 4416,
+        "couverture_80_pct": 65.22,
+        "couverture_95_pct": 89.81,
+        "largeur_80_mw": 3074.7,
+        "largeur_95_mw": 5298.2,
+        "pinball_moyen_mw": 270.2,
+        "pinball_par_niveau_mw": {
+          "0.025": 85.99,
+          "0.1": 261.5,
+          "0.5": 610.7,
+          "0.9": 292.65,
+          "0.975": 100.14
+        }
+      },
+      "mediane_information": {
+        "biais_mw": 189.3,
+        "mape_pct": 2.575
+      },
+      "repli_vers_q2": {
+        "couples_mois_de_decision_groupe": 125,
+        "demi_heures_jugees_concernees": 3808
+      }
+    },
+    "reference_j7": {
+      "evaluation": {
+        "demi_heures": 17464,
+        "couverture_80_pct": 78.4,
+        "couverture_95_pct": 94.14,
+        "largeur_80_mw": 11279.6,
+        "largeur_95_mw": 20361.8,
+        "pinball_moyen_mw": 830.5,
+        "pinball_par_niveau_mw": {
+          "0.025": 340.28,
+          "0.1": 947.22,
+          "0.5": 1691.96,
+          "0.9": 876.04,
+          "0.975": 296.99
+        }
+      },
+      "admissible": true,
+      "par_saison": {
+        "automne": {
+          "demi_heures": 4316,
+          "couverture_80_pct": 87.44,
+          "couverture_95_pct": 98.8,
+          "largeur_80_mw": 11250.2,
+          "largeur_95_mw": 21211.8,
+          "pinball_moyen_mw": 629.4,
+          "pinball_par_niveau_mw": {
+            "0.025": 290.27,
+            "0.1": 711.9,
+            "0.5": 1187.59,
+            "0.9": 698.21,
+            "0.975": 259.03
+          }
+        },
+        "ete": {
+          "demi_heures": 4416,
+          "couverture_80_pct": 96.51,
+          "couverture_95_pct": 99.98,
+          "largeur_80_mw": 11726.0,
+          "largeur_95_mw": 20739.4,
+          "pinball_moyen_mw": 526.23,
+          "pinball_par_niveau_mw": {
+            "0.025": 275.82,
+            "0.1": 636.14,
+            "0.5": 894.46,
+            "0.9": 581.95,
+            "0.975": 242.76
+          }
+        },
+        "hiver": {
+          "demi_heures": 4320,
+          "couverture_80_pct": 56.9,
+          "couverture_95_pct": 89.07,
+          "largeur_80_mw": 11159.1,
+          "largeur_95_mw": 20936.0,
+          "pinball_moyen_mw": 1231.36,
+          "pinball_par_niveau_mw": {
+            "0.025": 412.58,
+            "0.1": 1334.69,
+            "0.5": 2784.44,
+            "0.9": 1258.26,
+            "0.975": 366.85
+          }
+        },
+        "printemps": {
+          "demi_heures": 4412,
+          "couverture_80_pct": 72.46,
+          "couverture_95_pct": 88.71,
+          "largeur_80_mw": 10979.6,
+          "largeur_95_mw": 18589.9,
+          "pinball_moyen_mw": 939.25,
+          "pinball_par_niveau_mw": {
+            "0.025": 382.9,
+            "0.1": 1109.37,
+            "0.5": 1913.87,
+            "0.9": 970.1,
+            "0.975": 319.99
+          }
+        }
+      },
+      "par_tranche_3h": {
+        "00h-03h": {
+          "demi_heures": 2176,
+          "couverture_80_pct": 79.23,
+          "couverture_95_pct": 93.7,
+          "largeur_80_mw": 10375.1,
+          "largeur_95_mw": 18944.1,
+          "pinball_moyen_mw": 770.95,
+          "pinball_par_niveau_mw": {
+            "0.025": 335.08,
+            "0.1": 882.72,
+            "0.5": 1524.1,
+            "0.9": 821.18,
+            "0.975": 291.67
+          }
+        },
+        "03h-06h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 78.02,
+          "couverture_95_pct": 92.9,
+          "largeur_80_mw": 11045.7,
+          "largeur_95_mw": 20498.2,
+          "pinball_moyen_mw": 841.12,
+          "pinball_par_niveau_mw": {
+            "0.025": 371.29,
+            "0.1": 970.03,
+            "0.5": 1630.85,
+            "0.9": 916.31,
+            "0.975": 317.13
+          }
+        },
+        "06h-09h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 76.28,
+          "couverture_95_pct": 92.81,
+          "largeur_80_mw": 12583.2,
+          "largeur_95_mw": 22773.7,
+          "pinball_moyen_mw": 972.35,
+          "pinball_par_niveau_mw": {
+            "0.025": 410.58,
+            "0.1": 1113.78,
+            "0.5": 1946.41,
+            "0.9": 1051.69,
+            "0.975": 339.28
+          }
+        },
+        "09h-12h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 77.06,
+          "couverture_95_pct": 93.86,
+          "largeur_80_mw": 12473.2,
+          "largeur_95_mw": 22437.1,
+          "pinball_moyen_mw": 933.63,
+          "pinball_par_niveau_mw": {
+            "0.025": 379.49,
+            "0.1": 1064.19,
+            "0.5": 1900.09,
+            "0.9": 994.15,
+            "0.975": 330.21
+          }
+        },
+        "12h-15h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 77.47,
+          "couverture_95_pct": 94.96,
+          "largeur_80_mw": 10871.3,
+          "largeur_95_mw": 19830.2,
+          "pinball_moyen_mw": 800.7,
+          "pinball_par_niveau_mw": {
+            "0.025": 315.6,
+            "0.1": 908.8,
+            "0.5": 1667.58,
+            "0.9": 837.66,
+            "0.975": 273.86
+          }
+        },
+        "15h-18h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 80.04,
+          "couverture_95_pct": 95.92,
+          "largeur_80_mw": 11009.2,
+          "largeur_95_mw": 19235.4,
+          "pinball_moyen_mw": 764.23,
+          "pinball_par_niveau_mw": {
+            "0.025": 291.28,
+            "0.1": 846.77,
+            "0.5": 1622.04,
+            "0.9": 793.97,
+            "0.975": 267.11
+          }
+        },
+        "18h-21h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 80.22,
+          "couverture_95_pct": 95.05,
+          "largeur_80_mw": 11352.7,
+          "largeur_95_mw": 20148.5,
+          "pinball_moyen_mw": 799.17,
+          "pinball_par_niveau_mw": {
+            "0.025": 304.14,
+            "0.1": 912.19,
+            "0.5": 1695.21,
+            "0.9": 804.89,
+            "0.975": 279.44
+          }
+        },
+        "21h-24h": {
+          "demi_heures": 2184,
+          "couverture_80_pct": 78.85,
+          "couverture_95_pct": 93.91,
+          "largeur_80_mw": 10523.1,
+          "largeur_95_mw": 19021.6,
+          "pinball_moyen_mw": 761.59,
+          "pinball_par_niveau_mw": {
+            "0.025": 314.72,
+            "0.1": 879.01,
+            "0.5": 1548.77,
+            "0.9": 788.25,
+            "0.975": 277.19
+          }
+        }
+      },
+      "hors_hiver_2024_25_information": {
+        "demi_heures": 13144,
+        "couverture_80_pct": 85.46,
+        "couverture_95_pct": 95.81,
+        "largeur_80_mw": 11319.2,
+        "largeur_95_mw": 20173.0,
+        "pinball_moyen_mw": 698.74,
+        "pinball_par_niveau_mw": {
+          "0.025": 316.51,
+          "0.1": 819.87,
+          "0.5": 1332.9,
+          "0.9": 750.41,
+          "0.975": 274.03
+        }
+      },
+      "juin_aout_2025_fenetre_complete_information": {
+        "demi_heures": 4416,
+        "couverture_80_pct": 96.51,
+        "couverture_95_pct": 99.98,
+        "largeur_80_mw": 11726.0,
+        "largeur_95_mw": 20739.4,
+        "pinball_moyen_mw": 526.23,
+        "pinball_par_niveau_mw": {
+          "0.025": 275.82,
+          "0.1": 636.14,
+          "0.5": 894.46,
+          "0.9": 581.95,
+          "0.975": 242.76
+        }
+      },
+      "mediane_information": {
+        "biais_mw": -19.0,
+        "mape_pct": 6.357
+      }
+    }
+  },
+  "admissibles": [
+    "Q1",
+    "Q2"
+  ],
+  "etapes": [
+    {
+      "retenu_jusque_la": "Q1",
+      "candidat": "Q2",
+      "pinball_retenu_mw": 288.15,
+      "pinball_candidat_mw": 293.88,
+      "difference_candidat_moins_retenu_mw": 5.74,
+      "intervalle_95_mw": [
+        3.27,
+        8.3
+      ],
+      "gain_relatif": -0.0199,
+      "candidat_retenu": false
+    }
+  ],
+  "retenu": "Q1",
+  "retenu_face_a_la_reference": {
+    "etiquette": "indication sur la validation, pas le critère",
+    "retenu_jusque_la": "reference_j7",
+    "candidat": "Q1",
+    "pinball_retenu_mw": 830.5,
+    "pinball_candidat_mw": 288.15,
+    "difference_candidat_moins_retenu_mw": -542.35,
+    "intervalle_95_mw": [
+      -676.04,
+      -424.55
+    ],
+    "gain_relatif": 0.653,
+    "candidat_retenu": true
+  },
+  "comparaisons_sur_la_validation_cumulees": 13
+}

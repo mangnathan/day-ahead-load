@@ -377,3 +377,78 @@ C'est la référence de l'ADR 0001 : J-7, plus les quantiles empiriques des erre
 - Les MAPE d'A17 figé et de la procédure mensuelle, et le tableau des 18 modèles.
 
 **Étiquettes** : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 (10 comparaisons) » ; « fenêtre de calibration réduite avant juin 2025 ».
+
+## 22. Résultats de l'incertitude de la v0.2 — 24/11/2026
+
+Règle de l'entrée 21 appliquée telle qu'écrite (`docs/v0.2-incertitude/data/intervalles.json`). **Comparaisons sur la validation : 13** (Q1 : 11, Q2 : 12, Q3 : 13). Étiquettes : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 (10 comparaisons) » ; « fenêtre de calibration réduite avant juin 2025 ».
+
+**Évaluation** : du 02/09/2024 au 31/08/2025, 17 464 demi-heures jugées, de 108 à 365 jours de résidus selon la date de décision.
+
+### Procédure mensuelle
+
+| Mois | Dernière ligne d'entraînement | Fin autorisée (M − 4) | Lignes |
+|---|---|---|---|
+| 2024-03 | 30/11/2023 | 30/11/2023 | 121 172 |
+| 2024-04 | 31/12/2023 | 31/12/2023 | 122 660 |
+| 2024-05 | 31/01/2024 | 31/01/2024 | 124 148 |
+| 2024-06 | 29/02/2024 | 29/02/2024 | 125 540 |
+| 2024-07 | 31/03/2024 | 31/03/2024 | 127 026 |
+| 2024-08 | 30/04/2024 | 30/04/2024 | 128 466 |
+| 2024-09 | 31/05/2024 | 31/05/2024 | 129 954 |
+| 2024-10 | 30/06/2024 | 30/06/2024 | 131 394 |
+| 2024-11 | 31/07/2024 | 31/07/2024 | 132 882 |
+| 2024-12 | 31/08/2024 | 31/08/2024 | 134 370 |
+| 2025-01 | 30/09/2024 | 30/09/2024 | 135 810 |
+| 2025-02 | 31/10/2024 | 31/10/2024 | 137 296 |
+| 2025-03 | 30/11/2024 | 30/11/2024 | 138 736 |
+| 2025-04 | 31/12/2024 | 31/12/2024 | 140 224 |
+| 2025-05 | 31/01/2025 | 31/01/2025 | 141 712 |
+| 2025-06 | 28/02/2025 | 28/02/2025 | 143 056 |
+| 2025-07 | 31/03/2025 | 31/03/2025 | 144 542 |
+| 2025-08 | 30/04/2025 | 30/04/2025 | 145 982 |
+
+Les 18 modèles ont la même empreinte de configuration (sha256 commençant par `89536f7563a5`, valeur complète dans le fichier de résultats).
+
+MAPE, pour information (mensuelle − figée, en points, intervalle à 95 %) :
+
+| Période | A17 figé | Procédure mensuelle | Différence |
+|---|---|---|---|
+| Toute la validation | 2,617 % | 2,667 % | +0,050 [−0,022 ; +0,122] |
+| Évaluation | 2,563 % | 2,590 % | +0,027 [−0,047 ; +0,102] |
+| 15/03 → 30/06/2024 (avantage de date) | 2,995 % | 2,983 % | −0,012 [−0,153 ; +0,179] |
+
+La procédure mensuelle est gardée, comme écrit d'avance. Son écart avec A17 figé n'est pas distinguable du bruit, et l'avantage de date de la v0.1 n'a pas d'effet mesurable sur mars-juin 2024.
+
+### Candidats et référence
+
+| | Couverture 80 % | Couverture 95 % | Largeur 80 % | Largeur 95 % | Pinball moyen | Admissible |
+|---|---|---|---|---|---|---|
+| Q1 | 77,50 % | 94,20 % | 3 774 MW | 6 624 MW | 288,2 MW | oui |
+| Q2 | 76,83 % | 93,98 % | 3 846 MW | 6 914 MW | 293,9 MW | oui |
+| Q3 | 73,52 % | 92,43 % | 3 642 MW | 6 709 MW | 297,9 MW | **non** (80 % sous 75 %) |
+| Référence J-7 | 78,40 % | 94,14 % | 11 280 MW | 20 362 MW | 830,5 MW | (référence) |
+
+**Décision** : Q1 et Q2 sont admissibles, Q3 ne l'est pas. Q1 est retenu au départ. Q2 fait moins bien que Q1 (+5,7 MW de pinball, intervalle [+3,3 ; +8,3], soit −2,0 %) : **Q1 est retenu**. Q3 n'est jamais jugé sur le pinball, puisqu'il n'est pas admissible. Son repli vers Q2 a joué pour 125 couples (mois de décision, groupe), soit 3 808 demi-heures jugées.
+
+**Face à la référence — indication sur la validation, pas le critère** : pinball de Q1 288,2 MW contre 830,5 MW pour J-7, soit −542,4 MW, intervalle [−676,0 ; −424,6]. Les intervalles de Q1 sont environ trois fois plus étroits que ceux de la référence pour une couverture voisine.
+
+**Par saison (Q1)** :
+
+| Saison | Couverture 80 % | Couverture 95 % | Largeur 95 % |
+|---|---|---|---|
+| Automne | 84,89 % | 95,97 % | 6 917 MW |
+| Hiver | 65,81 % | 88,15 % | 6 395 MW |
+| Printemps | 83,64 % | 98,78 % | 6 892 MW |
+| Été | 75,59 % | 93,82 % | 6 294 MW |
+
+Le risque connu se vérifie : en hiver, la couverture tombe à 65,8 % et 88,2 %, parce que les intervalles d'hiver sont calibrés sur des résidus sans hiver. Ils sont même plus étroits qu'au printemps et à l'automne. Hors hiver 2024-25, à titre d'information : 81,35 % et 96,19 %. Sur juin-août 2025, avec la fenêtre complète : 75,59 % et 93,82 %. La référence J-7 souffre du même défaut en hiver (56,9 % et 89,1 %) et couvre trop en été (96,5 % et 99,98 %).
+
+**Par tranche de 3 h (Q1)** : la couverture à 80 % va de 73,9 % (12 h-15 h) à 81,5 % (6 h-9 h), celle à 95 % de 91,2 % (15 h-18 h) à 95,7 % (21 h-24 h).
+
+**Médiane, pour information** : q0,5 de Q1 a un biais de +289 MW et une MAPE de 2,540 %.
+
+### Observation hors règle
+
+Les fenêtres de calibration qui contiennent mars 2024 incluent les résidus des 15 et 16/03/2024, gonflés de 7 à 8 GW par le lissage sur 72 h manquant (entrée 20). Ils peuvent élargir les quantiles extrêmes des décisions antérieures à juin 2025. L'effet n'est pas mesuré, et la règle n'est pas changée.
+
+Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
