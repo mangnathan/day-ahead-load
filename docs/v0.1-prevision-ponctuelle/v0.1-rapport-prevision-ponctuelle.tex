@@ -1,0 +1,234 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\rapporttitre}{Prévision ponctuelle}
+\newcommand{\rapportversion}{v0.1}
+\input{../latex/preambule}
+\usepackage{needspace}
+\usepackage{etoolbox}
+% Laisse un peu plus d'espace entre les mots plutôt que de déborder.
+\setlength{\emergencystretch}{3em}
+% Un titre de section ne reste jamais seul en bas de page.
+\pretocmd{\section}{\needspace{10\baselineskip}}{}{}
+
+\begin{document}
+
+\pagedegarde{Choisir et mesurer la prévision de la consommation du lendemain, sur la validation seulement}{24 novembre 2026}{Version 0.1, test fermé}
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+
+\section*{Synthèse}
+\addcontentsline{toc}{section}{Synthèse}
+
+La v0.1 choisit le modèle qui prévoit la consommation française du lendemain, par demi-heure, à partir des seules données publiées avant midi la veille. Le choix se fait sur la validation, du 15/03/2024 au 31/08/2025. Le test, du 01/09/2025 au 31/08/2026, reste fermé jusqu'à la v1.0.
+
+\begin{itemize}
+  \item Modèle retenu : LightGBM aux réglages par défaut, avec le niveau des 52 dernières semaines en variable, entraîné de 2017 à mars 2024 sur la météo ERA5. MAPE de validation : 2,61~\%.
+  \item Chaque choix a suivi une règle écrite avant le calcul. Dix modèles ont été comparés sur la validation ; ce nombre est publié, parce qu'il rend le score de validation optimiste.
+  \item Un modèle plus complexe n'est retenu que si son gain dépasse 1~\% et sort du bruit des semaines. Ce test a écarté une correction de la météo qui gagnait 1,6~\%.
+  \item Le modèle bat tous les naïfs, ne se distingue pas de la prévision brute de RTE, publiée après la décision, et reste derrière ses versions corrigées.
+  \item Avec une météo parfaite, l'erreur ne baisse que de 0,03 point : à J-1, l'erreur vient surtout du modèle.
+\end{itemize}
+
+\aretenir{Rapport au naïf J-7 sur la validation : 0,43, intervalle à 95~\% de 0,38 à 0,50. Le seuil de réussite fixé en v0.0 est 0,5. C'est une indication, pas le critère : ce chiffre est probablement optimiste, et le critère se juge sur le test.}
+
+\section{Le cadre}
+
+Un fournisseur décide à midi, heure de Paris, combien acheter pour chaque demi-heure du lendemain. Le cadre a été fixé en v0.0, avant toute modélisation (ADR 0001) : découpage dans le temps, références, critères de réussite. La table de données est fixée par l'ADR 0002 :
+
+\begin{itemize}
+  \item une ligne par demi-heure réelle, indexée en UTC, avec 46 ou 50 demi-heures les jours de changement d'heure ;
+  \item une cible consolidée ou définitive, publiée par RTE sur éCO2mix ;
+  \item un calendrier : fériés, lundi de Pentecôte, ponts, période de Noël ;
+  \item une météo nationale (température, nébulosité, vent, rayonnement) pondérée par la consommation régionale aux 12 points de la v0.0 ;
+  \item le niveau de la consommation, moyenne des 52 dernières semaines de consolidé publié à midi la veille.
+\end{itemize}
+
+La règle la plus importante porte sur la météo. À l'entraînement, elle vient d'ERA5. En validation, en test et en production, elle vient du calcul ECMWF de 00~UTC de la veille, y compris dans les températures lissées sur 24~h et sur 72~h. Un test le vérifie : il remplace par une valeur absurde tout calcul postérieur à midi la veille, et les variables ne doivent pas changer.
+
+\section{Une méthode qui protège la validation}
+
+Chaque fois qu'on choisit un modèle en regardant la validation, son score sur cette période devient un peu plus flatteur. Trois règles limitent cet effet et le rendent visible.
+
+\begin{itemize}
+  \item \textbf{La règle avant le calcul.} Chaque décision est écrite et commitée dans le journal des choix avant le calcul qui la tranche. L'historique Git en garde la preuve.
+  \item \textbf{Le compteur.} Chaque modèle évalué sur la validation a une entrée datée, avec le total cumulé. Il est de 10 à la fin de la v0.1. Le journal ne fait que s'allonger : une décision qu'on revoit est remplacée par une nouvelle entrée, jamais réécrite.
+  \item \textbf{Le test de bruit.} Sur 17,5 mois, une différence de 1~\% peut venir du hasard de quelques semaines. Pour chaque comparaison, on calcule la différence appariée de MAPE et son intervalle à 95~\%, par un bootstrap qui tire des blocs d'une semaine (77 blocs, 10\,000 tirages). Le modèle plus complexe n'est retenu que s'il gagne plus de 1~\% \textbf{et} si l'intervalle exclut 0. Sinon, on garde le plus simple.
+\end{itemize}
+
+Le modèle de comparaison est figé : LightGBM 4.7.0, réglages par défaut, graine fixée, exécution déterministe. Seules les entrées changent d'une comparaison à l'autre. Chaque calcul relancé redonne un fichier identique.
+
+\section{Les choix}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{lYl}
+\toprule
+\textbf{Décision} & \textbf{Mesure} & \textbf{Retenu} \\
+\midrule
+Convention de la demi-heure & $-2{,}1$~\% en validation croisée 2019-2023, dans l'entraînement & $(t-15, t+15]$ \\
+Source météo & ERA5 corrigé : $+1{,}6$~\%, intervalle $[-0{,}20 ; +0{,}12]$ ; IFS : $+0{,}5$~\% & ERA5 \\
+Durée & 2017 contre 2012 : $+5{,}8$~\%, intervalle $[-0{,}27 ; -0{,}05]$ & depuis 2017 \\
+Famille et niveau & LightGBM contre linéaire, avec niveau : $+28{,}3$~\%, intervalle $[-1{,}38 ; -0{,}68]$ & LightGBM, niveau \\
+\bottomrule
+\end{tabularx}
+\caption{Les intervalles portent sur la différence de MAPE, en points. Un gain dont l'intervalle contient 0 est traité comme du bruit.}
+\end{table}
+
+\subsection{Convention de la demi-heure}
+
+La consommation étiquetée $t$ est une puissance moyenne, mais la documentation ne dit pas sur quel intervalle. Deux lectures ont été comparées à l'intérieur de l'entraînement, sans toucher à la validation, en mettant de côté chaque année de 2019 à 2023. L'intervalle centré $(t-15, t+15]$ gagne 2,1~\%, au-delà du seuil de 1~\% fixé d'avance. Le signal est fragile : il gagne trois années sur cinq.
+
+\subsection{Source de la météo d'entraînement}
+
+ERA5 est une réanalyse ; la météo prévue vient d'un autre modèle. Trois sources d'entraînement ont été comparées : ERA5 brut, la série IFS historique (proche de la prévision, mais seulement depuis 2017) et ERA5 corrigé de l'écart moyen IFS~$-$~ERA5 par point, mois et heure. La version corrigée gagne 1,6~\%. Le seuil de 1~\% seul l'aurait retenue, mais l'intervalle de la différence contient 0 : le gain est de l'ordre du hasard des semaines, et ERA5 brut est gardé.
+
+\subsection{Durée de l'entraînement}
+
+Entraîné à partir de 2017, le modèle fait 5,8~\% mieux qu'à partir de 2012, et l'intervalle exclut 0. Les années 2012-2016 dégradent la prévision de 2024-2025. Deux explications restent possibles, sans que la mesure les sépare : un changement des usages de l'électricité, ou l'absence du niveau avant mars 2013.
+
+\subsection{Famille de modèles et niveau}
+
+Six modèles ont été comparés : une régression linéaire et LightGBM, chacun sans niveau, avec le niveau en variable, ou sur le rapport consommation~/~niveau. La régression linéaire n'est pas une référence de façade. Elle croise la température avec l'heure et avec le mois, comme la référence linéaire de la compétition GEFCom2012 : l'effet du chauffage n'est pas le même à 3~h et à 19~h.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+\textbf{Famille} & \textbf{Sans niveau} & \textbf{Niveau en variable} & \textbf{Rapport} \\
+\midrule
+Régression linéaire & 4,18~\% & 3,65~\% & 3,85~\% \\
+LightGBM & 4,35~\% & \textbf{2,62~\%} & 3,52~\% \\
+\bottomrule
+\end{tabularx}
+\caption{MAPE de validation des six modèles. Les modèles sont parcourus du plus simple au plus complexe, chacun opposé au modèle retenu jusque-là.}
+\end{table}
+
+Le niveau pèse lourd : sans lui, LightGBM ne sait pas suivre la baisse de la consommation et fait moins bien que la régression linéaire. Le rapport consommation~/~niveau, censé corriger ce défaut, est moins bon dans les deux familles.
+
+\section{Ce que vaut le modèle}
+
+Le bilan mesure le modèle retenu sans rien choisir : aucune de ses mesures ne le modifie. Il porte sur les 25\,607 demi-heures de validation où le modèle et les dix références de la v0.0 existent toutes.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Ylrr}
+\toprule
+\textbf{Référence} & \textbf{Étiquette} & \textbf{MAPE} & \textbf{Modèle $-$ référence} \\
+\midrule
+Modèle retenu & & 2,61~\% & \\
+Même demi-heure 7 jours avant (J-7) & optimiste & 6,04~\% & $-3{,}42$ $[-4{,}30 ; -2{,}59]$ \\
+Même jour, 52 semaines avant & réaliste & 6,34~\% & $-3{,}73$ $[-4{,}60 ; -2{,}89]$ \\
+Dernier même jour publié en consolidé & réaliste & 18,76~\% & $-16{,}14$ $[-19{,}01 ; -13{,}36]$ \\
+RTE J-1 brute & avantagée & 2,58~\% & $+0{,}03$ $[-0{,}24 ; +0{,}31]$ \\
+RTE J-1 corrigée (28 derniers jours publiés) & avantagée & 1,92~\% & $+0{,}70$ $[+0{,}45 ; +0{,}96]$ \\
+RTE J-1 corrigée (même mois l'année précédente) & avantagée & 1,72~\% & $+0{,}89$ $[+0{,}68 ; +1{,}13]$ \\
+\bottomrule
+\end{tabularx}
+\caption{Différences en points de MAPE, avec leur intervalle à 95~\%. « Avantagée » : publiée après la décision. Les autres références de la v0.0 sont dans le fichier de résultats.}
+\end{table}
+
+Face à J-7, le rapport des MAPE est de 0,43, avec un intervalle de 0,38 à 0,50. Ce chiffre est probablement optimiste, pour trois raisons : dix comparaisons ont été faites sur cette période, la météo prévue de la validation est rejouée (cycle 49R1 d'ECMWF), et J-7 lit du consolidé qu'un fournisseur n'aurait pas encore à midi. Le critère de l'ADR 0001 se juge sur le test.
+
+\subsection{La part de la météo prévue}
+
+Pour savoir ce que coûte l'erreur de la prévision météo, le même modèle a prévu la validation avec la météo observée (ERA5) en entrée. Cette borne est impossible en pratique : la météo du lendemain n'est jamais connue. La MAPE passe de 2,614~\% à 2,583~\%, soit $-0{,}03$ point, avec un intervalle de $-0{,}17$ à $+0{,}09$ qui contient 0.
+
+\aretenir{À J-1, la prévision météo est assez bonne pour que son erreur pèse peu. L'erreur à couvrir par l'incertitude de la v0.2 vient surtout du modèle.}
+
+\section{Où le modèle se trompe}
+
+Le biais est mesuré comme la prévision moins la consommation : positif, le modèle prévoit trop. En moyenne, il prévoit trop d'environ 210~MW.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+\textbf{Température de l'indice (ERA5)} & \textbf{Demi-heures} & \textbf{MAPE} & \textbf{Biais} \\
+\midrule
+Sous 0~°C & 214 & 2,03~\% & $+845$~MW \\
+De 0 à 5~°C & 1\,975 & 2,47~\% & $+764$~MW \\
+De 5 à 10~°C & 4\,727 & 3,19~\% & $+673$~MW \\
+De 10 à 15~°C & 6\,290 & 2,89~\% & $+455$~MW \\
+Au-dessus de 15~°C & 12\,401 & 2,29~\% & $-177$~MW \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Par temps froid, le modèle prévoit trop de 0,67 à 0,85~GW. C'est le signe et l'ordre de grandeur du risque de 720~MW noté au prémortem de la v0.0, qui venait de l'écart entre ERA5 et la météo prévue. Mais avec la météo parfaite, l'erreur ne change presque pas : la source météo n'explique donc pas ce biais, dont la cause n'est pas établie.
+
+Autres constats :
+
+\begin{itemize}
+  \item La pire tranche horaire est 6~h--9~h (MAPE 3,34~\%, $+940$~MW), puis 3~h--6~h. Entre 12~h et 15~h, le modèle prévoit trop peu ($-455$~MW).
+  \item Les dimanches et fériés sont moins bien prévus que les jours ouvrés (3,14~\% contre 2,45~\%). Les ponts ($+897$~MW) et la période de Noël ($+1\,508$~MW) sont nettement surestimés : ces jours sont rares à l'entraînement.
+  \item Par trimestre, la MAPE va de 2,25~\% à 2,87~\%, sauf au premier trimestre 2024 (4,46~\%), expliqué plus bas.
+\end{itemize}
+
+\subsection{Les pires jours}
+
+Pour les dix pires jours, une explication n'est écrite que si elle se vérifie dans nos données : calendrier, froid ou chaleur marqués, erreur de la météo prévue. Sinon, la cause n'est pas établie.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{lrrY}
+\toprule
+\textbf{Jour} & \textbf{MAPE} & \textbf{Biais} & \textbf{Constat} \\
+\midrule
+16/03/2024 & 17,7~\% & $+8{,}2$~GW & non établi (voir ci-dessous) \\
+15/03/2024 & 14,2~\% & $+7{,}2$~GW & non établi (voir ci-dessous) \\
+02/01/2025 & 9,6~\% & $+5{,}9$~GW & non établi \\
+09/04/2024 & 9,1~\% & $-4{,}5$~GW & non établi \\
+15/09/2024 & 8,9~\% & $+3{,}4$~GW & froid marqué \\
+25/12/2024 & 8,6~\% & $+4{,}4$~GW & férié, période de Noël \\
+14/09/2024 & 7,6~\% & $+3{,}0$~GW & froid marqué \\
+06/10/2024 & 7,5~\% & $+3{,}0$~GW & non établi \\
+08/04/2024 & 7,3~\% & $-3{,}3$~GW & non établi \\
+03/01/2025 & 7,2~\% & $+4{,}7$~GW & non établi \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Les deux pires jours, les 15 et 16/03/2024, sont les premiers de la validation. Ce sont aussi exactement les 96 demi-heures où la température lissée sur 72~h manque : les calculs ECMWF en cache ne remontent pas assez loin pour couvrir leurs 72 heures. LightGBM envoie ces valeurs manquantes dans une branche qui surestime de 7 à 8~GW. En production, le calcul de secours aurait pris le relais. Ce constat a été fait après le calcul, hors de la règle des constats : il est noté comme une observation, et il gonfle la MAPE de validation d'environ 0,06 point.
+
+\section{Les variables qui comptent}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrr}
+\toprule
+\textbf{Variable} & \textbf{Permutation (points de MAPE)} & \textbf{Gain (part)} \\
+\midrule
+Demi-heure & $+8{,}65$ & 14~\% \\
+Température lissée sur 72~h & $+6{,}45$ & 53~\% \\
+Jour de la semaine & $+3{,}90$ & 6~\% \\
+Température lissée sur 24~h & $+2{,}38$ & 19~\% \\
+Mois & $+1{,}36$ & 3~\% \\
+Température de la demi-heure & $+0{,}73$ & 1~\% \\
+Niveau des 52 semaines & $+0{,}14$ & 2~\% \\
+\bottomrule
+\end{tabularx}
+\caption{Permutation : hausse de la MAPE de validation quand la variable est mélangée, moyenne de 5 tirages. Gain : part du gain total des coupures, sur l'entraînement.}
+\end{table}
+
+Les deux mesures ont leurs limites. Le gain favorise les variables qui offrent beaucoup de coupures possibles. La permutation sous-estime une variable liée à d'autres : mélanger la température laisse l'information dans ses lissages. Elle ne voit pas non plus le rôle du niveau, qui décale toute la validation par rapport à l'entraînement mais varie peu à l'intérieur. Avec le niveau, le modèle gagne pourtant 40~\% sur le même modèle sans niveau.
+
+\section{Limites et points ouverts}
+
+\begin{itemize}
+  \item Le score de validation est optimiste : dix comparaisons, une météo rejouée, un critère jugé face à un naïf lui-même optimiste. Le test le mesurera.
+  \item Faut-il interdire les valeurs d'entrée manquantes dans LightGBM, par le calcul de secours ou par un refus de prévoir ?
+  \item D'où vient le biais par temps froid, alors que la météo parfaite ne change presque rien ?
+  \item Pourquoi les années 2012-2016 dégradent-elles la prévision ?
+  \item Les vacances scolaires et le régime local d'Alsace-Moselle ne sont pas dans le modèle.
+  \item Le seuil de climatisation de la régression linéaire (18~°C) a été fixé sans mesure ; ERA5 corrigé ramène 19~\% des heures de nébulosité dans leurs bornes.
+\end{itemize}
+
+\section{Suite}
+
+La v0.2 ajoute l'incertitude autour de ce modèle, sans le modifier : intervalles à 80~\% et à 95~\% et score quantile, comparés à la référence de quantiles de l'ADR 0001. Le bilan oriente ce travail : l'erreur à couvrir vient surtout du modèle, elle est plus forte le matin, les dimanches, les ponts et à Noël, et biaisée par temps froid.
+
+Le détail de chaque choix est dans le journal des choix et dans l'ADR 0003. Les chiffres viennent des scripts de \nolinkurl{scripts/modelling}, dont les sorties sont dans \nolinkurl{docs/v0.1-prevision-ponctuelle/data}.
+
+\end{document}
