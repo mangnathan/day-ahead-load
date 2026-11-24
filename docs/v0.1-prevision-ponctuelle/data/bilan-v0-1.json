@@ -1,0 +1,502 @@
+{
+  "regle": "journal des choix, entrée 19 ; le bilan ne modifie pas le modèle",
+  "modele": "A17 : LightGBM figé, niveau en variable, ERA5 à l'entraînement depuis 2017",
+  "comparaisons_sur_la_validation": 10,
+  "echantillon_commun": {
+    "premier_jour": "2024-03-15",
+    "dernier_jour": "2025-08-31",
+    "demi_heures_avec_cible": 25674,
+    "demi_heures_jugees": 25607,
+    "mape_modele_pct": 2.614,
+    "alignement_rte": "moyenne f(t-15), f(t)"
+  },
+  "rapport_au_naif_j7": {
+    "etiquette": "indication sur la validation, pas le critère",
+    "rapport": 0.433,
+    "intervalle_95": [
+      0.375,
+      0.503
+    ],
+    "seuils_adr_0001": {
+      "reussite_au_plus": 0.5,
+      "echec_au_dessus_de": 0.75
+    },
+    "probablement_optimiste_car": [
+      "10 comparaisons faites sur cette période",
+      "météo prévue rejouée (cycle 49R1)",
+      "J-7 lui-même étiqueté « optimiste »"
+    ]
+  },
+  "references": {
+    "naif_j7": {
+      "categorie": "optimiste",
+      "mape_reference_pct": 6.036,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": -3.422,
+      "intervalle_95_pts": [
+        -4.303,
+        -2.594
+      ]
+    },
+    "naif_j2": {
+      "categorie": "optimiste",
+      "mape_reference_pct": 8.433,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": -5.819,
+      "intervalle_95_pts": [
+        -6.253,
+        -5.381
+      ]
+    },
+    "naif_j1_matin_j2_apres_midi": {
+      "categorie": "optimiste",
+      "mape_reference_pct": 6.746,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": -4.131,
+      "intervalle_95_pts": [
+        -4.485,
+        -3.768
+      ]
+    },
+    "moyenne_4_semaines": {
+      "categorie": "optimiste",
+      "mape_reference_pct": 6.464,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": -3.85,
+      "intervalle_95_pts": [
+        -4.784,
+        -2.968
+      ]
+    },
+    "naif_hebdo_realiste": {
+      "categorie": "réaliste",
+      "mape_reference_pct": 18.757,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": -16.142,
+      "intervalle_95_pts": [
+        -19.013,
+        -13.359
+      ]
+    },
+    "naif_annee_precedente": {
+      "categorie": "réaliste",
+      "mape_reference_pct": 6.343,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": -3.728,
+      "intervalle_95_pts": [
+        -4.597,
+        -2.893
+      ]
+    },
+    "rte_j1_brut": {
+      "categorie": "avantagée",
+      "mape_reference_pct": 2.58,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": 0.034,
+      "intervalle_95_pts": [
+        -0.238,
+        0.309
+      ]
+    },
+    "rte_corrige_retard_reel": {
+      "categorie": "avantagée",
+      "mape_reference_pct": 1.918,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": 0.696,
+      "intervalle_95_pts": [
+        0.45,
+        0.959
+      ]
+    },
+    "rte_corrige_meme_mois_an_dernier": {
+      "categorie": "avantagée",
+      "mape_reference_pct": 1.72,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": 0.894,
+      "intervalle_95_pts": [
+        0.679,
+        1.126
+      ]
+    },
+    "rte_corrige_4_semaines_ideal": {
+      "categorie": "borne",
+      "mape_reference_pct": 1.579,
+      "mape_modele_pct": 2.614,
+      "difference_modele_moins_reference_pts": 1.035,
+      "intervalle_95_pts": [
+        0.825,
+        1.265
+      ]
+    }
+  },
+  "meteo_parfaite": {
+    "etiquette": "borne informative, météo parfaite, impossible en pratique",
+    "mape_meteo_prevue_pct": 2.614,
+    "mape_meteo_observee_era5_pct": 2.583,
+    "difference_observee_moins_prevue_pts": -0.032,
+    "intervalle_95_pts": [
+      -0.167,
+      0.088
+    ]
+  },
+  "decoupages": {
+    "trimestre": {
+      "2024-T1": {
+        "demi_heures": 811,
+        "mape_pct": 4.455,
+        "biais_mw": 1937.6,
+        "biais_pct": 3.867
+      },
+      "2024-T2": {
+        "demi_heures": 4346,
+        "mape_pct": 2.721,
+        "biais_mw": 165.6,
+        "biais_pct": 0.37
+      },
+      "2024-T3": {
+        "demi_heures": 4416,
+        "mape_pct": 2.246,
+        "biais_mw": -55.5,
+        "biais_pct": -0.129
+      },
+      "2024-T4": {
+        "demi_heures": 4401,
+        "mape_pct": 2.7,
+        "biais_mw": 364.4,
+        "biais_pct": 0.672
+      },
+      "2025-T1": {
+        "demi_heures": 4307,
+        "mape_pct": 2.472,
+        "biais_mw": 600.3,
+        "biais_pct": 0.978
+      },
+      "2025-T2": {
+        "demi_heures": 4350,
+        "mape_pct": 2.416,
+        "biais_mw": 269.1,
+        "biais_pct": 0.611
+      },
+      "2025-T3": {
+        "demi_heures": 2976,
+        "mape_pct": 2.873,
+        "biais_mw": -627.1,
+        "biais_pct": -1.461
+      }
+    },
+    "saison": {
+      "automne": {
+        "demi_heures": 4353,
+        "mape_pct": 2.542,
+        "biais_mw": 312.2,
+        "biais_pct": 0.651
+      },
+      "ete": {
+        "demi_heures": 8814,
+        "mape_pct": 2.391,
+        "biais_mw": -200.2,
+        "biais_pct": -0.466
+      },
+      "hiver": {
+        "demi_heures": 4312,
+        "mape_pct": 2.606,
+        "biais_mw": 535.7,
+        "biais_pct": 0.839
+      },
+      "printemps": {
+        "demi_heures": 8128,
+        "mape_pct": 2.899,
+        "biais_mw": 447.2,
+        "biais_pct": 0.946
+      }
+    },
+    "temperature_indice_era5": {
+      "0-5": {
+        "demi_heures": 1975,
+        "mape_pct": 2.47,
+        "biais_mw": 763.9,
+        "biais_pct": 1.193
+      },
+      "10-15": {
+        "demi_heures": 6290,
+        "mape_pct": 2.891,
+        "biais_mw": 454.8,
+        "biais_pct": 0.979
+      },
+      "5-10": {
+        "demi_heures": 4727,
+        "mape_pct": 3.189,
+        "biais_mw": 673.1,
+        "biais_pct": 1.209
+      },
+      "< 0": {
+        "demi_heures": 214,
+        "mape_pct": 2.034,
+        "biais_mw": 845.4,
+        "biais_pct": 1.214
+      },
+      "> 15": {
+        "demi_heures": 12401,
+        "mape_pct": 2.288,
+        "biais_mw": -176.8,
+        "biais_pct": -0.399
+      }
+    },
+    "tranche_3h": {
+      "00h-03h": {
+        "demi_heures": 3140,
+        "mape_pct": 2.521,
+        "biais_mw": 168.5,
+        "biais_pct": 0.368
+      },
+      "03h-06h": {
+        "demi_heures": 3207,
+        "mape_pct": 3.002,
+        "biais_mw": 667.5,
+        "biais_pct": 1.627
+      },
+      "06h-09h": {
+        "demi_heures": 3210,
+        "mape_pct": 3.336,
+        "biais_mw": 940.4,
+        "biais_pct": 2.043
+      },
+      "09h-12h": {
+        "demi_heures": 3210,
+        "mape_pct": 2.479,
+        "biais_mw": 506.6,
+        "biais_pct": 0.972
+      },
+      "12h-15h": {
+        "demi_heures": 3210,
+        "mape_pct": 2.401,
+        "biais_mw": -455.0,
+        "biais_pct": -0.848
+      },
+      "15h-18h": {
+        "demi_heures": 3210,
+        "mape_pct": 2.497,
+        "biais_mw": -48.7,
+        "biais_pct": -0.098
+      },
+      "18h-21h": {
+        "demi_heures": 3210,
+        "mape_pct": 2.533,
+        "biais_mw": -157.7,
+        "biais_pct": -0.306
+      },
+      "21h-24h": {
+        "demi_heures": 3210,
+        "mape_pct": 2.143,
+        "biais_mw": 108.4,
+        "biais_pct": 0.219
+      }
+    },
+    "type_de_jour": {
+      "dimanche_ou_ferie": {
+        "demi_heures": 4353,
+        "mape_pct": 3.137,
+        "biais_mw": 276.3,
+        "biais_pct": 0.625
+      },
+      "ouvre": {
+        "demi_heures": 17558,
+        "mape_pct": 2.453,
+        "biais_mw": 164.0,
+        "biais_pct": 0.326
+      },
+      "samedi": {
+        "demi_heures": 3696,
+        "mape_pct": 2.765,
+        "biais_mw": 394.1,
+        "biais_pct": 0.854
+      }
+    },
+    "pont": {
+      "autre": {
+        "demi_heures": 25367,
+        "mape_pct": 2.609,
+        "biais_mw": 209.9,
+        "biais_pct": 0.43
+      },
+      "pont": {
+        "demi_heures": 240,
+        "mape_pct": 3.146,
+        "biais_mw": 897.2,
+        "biais_pct": 2.194
+      }
+    },
+    "noel": {
+      "autre": {
+        "demi_heures": 25175,
+        "mape_pct": 2.598,
+        "biais_mw": 194.2,
+        "biais_pct": 0.4
+      },
+      "noel": {
+        "demi_heures": 432,
+        "mape_pct": 3.547,
+        "biais_mw": 1507.5,
+        "biais_pct": 2.484
+      }
+    }
+  },
+  "pires_jours": {
+    "regle_des_constats": {
+      "froid_ou_chaleur_marques_degres": 5.0,
+      "erreur_meteo_prevue_degres": 2.0,
+      "erreur_meteo_prevue_mesure": "moyenne du jour des écarts absolus, prévue − ERA5"
+    },
+    "jours": [
+      {
+        "jour": "2024-03-16",
+        "mape_pct": 17.688,
+        "biais_mw": 8238.5,
+        "temperature_moyenne_era5": 12.7,
+        "moyenne_du_mois_entrainement": 9.37,
+        "ecart_absolu_moyen_meteo_prevue": 0.83,
+        "constats": [
+          "cause non établie"
+        ]
+      },
+      {
+        "jour": "2024-03-15",
+        "mape_pct": 14.16,
+        "biais_mw": 7165.9,
+        "temperature_moyenne_era5": 13.21,
+        "moyenne_du_mois_entrainement": 9.37,
+        "ecart_absolu_moyen_meteo_prevue": 1.11,
+        "constats": [
+          "cause non établie"
+        ]
+      },
+      {
+        "jour": "2025-01-02",
+        "mape_pct": 9.624,
+        "biais_mw": 5869.2,
+        "temperature_moyenne_era5": 6.45,
+        "moyenne_du_mois_entrainement": 5.36,
+        "ecart_absolu_moyen_meteo_prevue": 0.58,
+        "constats": [
+          "cause non établie"
+        ]
+      },
+      {
+        "jour": "2024-04-09",
+        "mape_pct": 9.099,
+        "biais_mw": -4467.5,
+        "temperature_moyenne_era5": 11.21,
+        "moyenne_du_mois_entrainement": 12.05,
+        "ecart_absolu_moyen_meteo_prevue": 0.53,
+        "constats": [
+          "cause non établie"
+        ]
+      },
+      {
+        "jour": "2024-09-15",
+        "mape_pct": 8.93,
+        "biais_mw": 3365.6,
+        "temperature_moyenne_era5": 13.13,
+        "moyenne_du_mois_entrainement": 18.28,
+        "ecart_absolu_moyen_meteo_prevue": 1.21,
+        "constats": [
+          "froid marqué"
+        ]
+      },
+      {
+        "jour": "2024-12-25",
+        "mape_pct": 8.609,
+        "biais_mw": 4402.8,
+        "temperature_moyenne_era5": 7.5,
+        "moyenne_du_mois_entrainement": 6.95,
+        "ecart_absolu_moyen_meteo_prevue": 0.28,
+        "constats": [
+          "férié",
+          "période de Noël"
+        ]
+      },
+      {
+        "jour": "2024-09-14",
+        "mape_pct": 7.591,
+        "biais_mw": 3027.9,
+        "temperature_moyenne_era5": 12.77,
+        "moyenne_du_mois_entrainement": 18.28,
+        "ecart_absolu_moyen_meteo_prevue": 0.95,
+        "constats": [
+          "froid marqué"
+        ]
+      },
+      {
+        "jour": "2024-10-06",
+        "mape_pct": 7.548,
+        "biais_mw": 2957.1,
+        "temperature_moyenne_era5": 13.85,
+        "moyenne_du_mois_entrainement": 14.4,
+        "ecart_absolu_moyen_meteo_prevue": 0.29,
+        "constats": [
+          "cause non établie"
+        ]
+      },
+      {
+        "jour": "2024-04-08",
+        "mape_pct": 7.32,
+        "biais_mw": -3318.9,
+        "temperature_moyenne_era5": 16.43,
+        "moyenne_du_mois_entrainement": 12.05,
+        "ecart_absolu_moyen_meteo_prevue": 0.59,
+        "constats": [
+          "cause non établie"
+        ]
+      },
+      {
+        "jour": "2025-01-03",
+        "mape_pct": 7.172,
+        "biais_mw": 4698.0,
+        "temperature_moyenne_era5": 3.14,
+        "moyenne_du_mois_entrainement": 5.36,
+        "ecart_absolu_moyen_meteo_prevue": 0.55,
+        "constats": [
+          "cause non établie"
+        ]
+      }
+    ]
+  },
+  "importance": {
+    "gain_part": {
+      "temperature_lissee_72h": 0.526,
+      "temperature_lissee_24h": 0.1897,
+      "demi_heure": 0.1365,
+      "jour_semaine": 0.0632,
+      "mois": 0.0262,
+      "niveau_52_semaines": 0.0233,
+      "temperature_2m": 0.0146,
+      "ferie": 0.0084,
+      "shortwave_radiation": 0.0036,
+      "cloud_cover": 0.0028,
+      "noel": 0.0026,
+      "wind_speed_10m": 0.0017,
+      "lundi_pentecote": 0.0007,
+      "pont": 0.0007
+    },
+    "gain_reserve": "favorise les variables qui offrent beaucoup de coupures possibles",
+    "permutation_hausse_mape_pts": {
+      "demi_heure": 8.648,
+      "temperature_lissee_72h": 6.4511,
+      "jour_semaine": 3.8978,
+      "temperature_lissee_24h": 2.3841,
+      "mois": 1.3646,
+      "temperature_2m": 0.7335,
+      "ferie": 0.4017,
+      "shortwave_radiation": 0.2374,
+      "niveau_52_semaines": 0.1417,
+      "pont": 0.0725,
+      "noel": 0.0699,
+      "cloud_cover": 0.0437,
+      "lundi_pentecote": 0.0387,
+      "wind_speed_10m": 0.0205
+    },
+    "permutation_reserve": "mélanger une variable liée à d'autres (température et lissages) sous-estime son importance",
+    "permutations_par_variable": 5
+  },
+  "calcul_de_secours_validation": 0
+}

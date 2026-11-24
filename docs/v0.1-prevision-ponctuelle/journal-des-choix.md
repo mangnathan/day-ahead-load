@@ -222,3 +222,94 @@ Comparaisons sur la validation : 10, comme annoncé en entrée 12. Règle de l'e
 - Point ouvert de l'entrée 11 (pourquoi 2012-2016 dégradent la prévision) : le niveau pèse lourd dans la qualité du modèle, ce qui va dans le sens d'un problème de changement de niveau. La mesure ne tranche pas : A12 avait le niveau à partir de mars 2013. La question reste ouverte.
 
 Comparaisons sur la validation après cette entrée : 10. Mesures dans l'entraînement : 2.
+
+## 19. Bilan de la v0.1 — règle écrite le 24/11/2026, avant le calcul
+
+Comparaisons sur la validation : 10. Mesures dans l'entraînement : 2.
+
+**Règle de fond.** Le bilan mesure, il ne choisit rien. Aucune de ses mesures ne modifie le modèle retenu (A17, entrée 18). Une piste qu'il fait apparaître va dans les points ouverts, et toute modification future du modèle sera une comparaison comptée. Le compteur reste à 10.
+
+**Échantillon commun.** Jours livrés du 15/03/2024 au 31/08/2025. Ce sont les demi-heures où la cible, la prévision du modèle et les dix références de la v0.0 existent toutes. Les références sont celles du module `references` de la v0.0, recalculées sur cette période seule, sur leur grille en heure murale de Paris. RTE est alignée sur la moyenne f(t − 15), f(t), l'alignement principal de la v0.0. Les demi-heures du modèle y sont rattachées par leur heure de Paris. Toutes les mesures du bilan portent sur cet échantillon, sauf mention contraire. Biais : prévision − consommation, positif quand le modèle prévoit trop.
+
+**1. Position face aux références.**
+
+- MAPE du modèle et de chaque référence. Pour chaque référence, la différence appariée MAPE(modèle) − MAPE(référence), avec un intervalle à 95 % par bootstrap par blocs d'une semaine, avec les réglages de l'entrée 4 (10 000 tirages, graine 20261117).
+- Rapport MAPE(modèle) / MAPE(naïf J-7), avec un intervalle à 95 % : à chaque tirage des mêmes blocs, rapport des deux MAPE de l'échantillon tiré. Il est placé face aux seuils de l'ADR 0001 (0,5 pour la réussite, 0,75 pour l'échec) avec l'étiquette **« indication sur la validation, pas le critère »**. Ce chiffre est probablement optimiste, pour trois raisons : 10 comparaisons ont été faites sur cette période ; la météo prévue est rejouée (cycle 49R1) ; J-7 lui-même est étiqueté « optimiste ».
+- Les références RTE brute et corrigées sont étiquetées « avantagées » : elles sont publiées après la décision. Seules des erreurs agrégées sont publiées, jamais les courbes.
+
+**2. Part de l'erreur qui vient de la météo prévue.** A17 est entraîné à l'identique. Il prévoit ensuite la validation avec la météo observée (ERA5) en entrée, à la place des calculs ECMWF de 00 UTC, y compris dans les lissages. On publie sa MAPE et la différence appariée avec A17, avec son intervalle. Étiquette : **« borne informative, météo parfaite, impossible en pratique »**. L'écart entre les deux MAPE mesure ce que coûte l'erreur de prévision météo.
+
+**3. Où le modèle se trompe.** MAPE, biais en MW et biais en % :
+
+- par trimestre civil ;
+- par saison météorologique : hiver (décembre à février), printemps (mars à mai), été (juin à août), automne (septembre à novembre) ;
+- par tranche de température : < 0 °C, 0-5, 5-10, 10-15, > 15 °C. C'est le contrôle direct du risque de 720 MW du prémortem, qui pèse surtout par temps froid. La température est celle de l'indice national ERA5 à la demi-heure : les tranches décrivent le temps qu'il a fait, indépendamment de l'erreur de la prévision météo ;
+- par tranche de 3 h (heure de Paris), par type de jour (ouvré, samedi, dimanche ou férié), pour les ponts et pour la période de Noël.
+
+**4. Les 10 pires jours.** Ce sont les 10 jours livrés de plus forte MAPE journalière, publiés avec leur date, leur MAPE et leur biais. Une explication n'est écrite que si elle se vérifie dans nos données :
+
+- calendrier : férié, lundi de Pentecôte, pont, Noël, changement d'heure ;
+- froid ou chaleur marqués : température moyenne du jour (indice ERA5) à plus de 5 °C sous ou au-dessus de la moyenne de son mois civil sur l'entraînement 2017-2024 ;
+- erreur de la météo prévue : écart moyen du jour de plus de 2 °C entre la température vue à midi la veille et l'indice ERA5.
+
+Ce sont des constats, pas des causes démontrées. Sans aucun de ces constats : **« cause non établie »**.
+
+**5. Importance des variables.**
+
+- Gain de LightGBM sur l'entraînement, publié avec sa réserve : il favorise les variables qui offrent beaucoup de coupures possibles.
+- Importance par permutation sur la validation : hausse de la MAPE quand une variable est mélangée entre les demi-heures. On fait 5 permutations par variable, avec la graine 20261117, et on publie leur moyenne. Réserve : mélanger une variable fortement liée à d'autres, comme la température et ses lissages, sous-estime son importance, puisque les autres portent encore l'information.
+
+**6. Calcul de secours.** On rappelle son nombre d'utilisations sur la validation : 0 (ADR 0002).
+
+## 20. Résultats du bilan de la v0.1 — 24/11/2026
+
+Comparaisons sur la validation : 10, inchangé. Règle de l'entrée 19 appliquée telle qu'écrite ; le modèle n'a pas changé. Une seconde exécution redonne le même fichier (`docs/v0.1-prevision-ponctuelle/data/bilan-v0-1.json`).
+
+**Échantillon commun** : 25 607 demi-heures sur 25 674 avec cible. MAPE du modèle : 2,614 %.
+
+**Rapport à J-7 — indication sur la validation, pas le critère** : 0,433, intervalle à 95 % [0,375 ; 0,503], face aux seuils de 0,5 (réussite) et de 0,75 (échec). Ce chiffre est probablement optimiste : 10 comparaisons ont été faites sur cette période, la météo prévue est rejouée (cycle 49R1), et J-7 lui-même est étiqueté « optimiste ».
+
+**Références** (modèle − référence, en points, intervalle à 95 %) :
+
+| Référence | Catégorie | MAPE | Différence | Intervalle |
+|---|---|---|---|---|
+| Naïf J-7 | optimiste | 6,036 % | −3,422 | [−4,303 ; −2,594] |
+| Naïf J-2 | optimiste | 8,433 % | −5,819 | [−6,253 ; −5,381] |
+| Veille le matin, J-2 l'après-midi | optimiste | 6,746 % | −4,131 | [−4,485 ; −3,768] |
+| Moyenne des 4 mêmes jours | optimiste | 6,464 % | −3,850 | [−4,784 ; −2,968] |
+| Dernier même jour publié | réaliste | 18,757 % | −16,142 | [−19,013 ; −13,359] |
+| Même jour 52 semaines avant | réaliste | 6,343 % | −3,728 | [−4,597 ; −2,893] |
+| RTE J-1 brute | avantagée | 2,580 % | +0,034 | [−0,238 ; +0,309] |
+| RTE corrigée, retard réel | avantagée | 1,918 % | +0,696 | [+0,450 ; +0,959] |
+| RTE corrigée, même mois l'an dernier | avantagée | 1,720 % | +0,894 | [+0,679 ; +1,126] |
+| RTE corrigée, 4 semaines idéales | borne | 1,579 % | +1,035 | [+0,825 ; +1,265] |
+
+Le modèle est indiscernable de la prévision brute de RTE, publiée après la décision, et reste derrière les versions corrigées.
+
+**Météo parfaite — borne informative, météo parfaite, impossible en pratique** : 2,583 % avec ERA5 en entrée, contre 2,614 % avec la météo prévue, soit −0,032 point, intervalle [−0,167 ; +0,088]. L'erreur de la prévision météo à J-1 ne coûte presque rien ici : l'erreur vient surtout du modèle.
+
+**Découpages** (biais : prévision − consommation) :
+
+- biais global d'environ +210 MW ; par saison, de −200 MW (été) à +536 MW (hiver) ;
+- par température de l'indice ERA5 : +845 MW sous 0 °C (214 demi-heures), +764 MW de 0 à 5 °C, +673 MW de 5 à 10 °C, +455 MW de 10 à 15 °C, −177 MW au-dessus de 15 °C. C'est le signe et l'ordre de grandeur du risque de 720 MW du prémortem. La mesure de la météo parfaite montre pourtant que la source météo pèse peu : la cause n'est pas établie ;
+- par tranche de 3 h : la pire est 6 h-9 h (MAPE 3,336 %, +940 MW), puis 3 h-6 h (3,002 %) ; biais négatif de 12 h à 15 h (−455 MW) ;
+- par type de jour : 2,453 % en jour ouvré, 2,765 % le samedi, 3,137 % le dimanche ou un jour férié ; ponts 3,146 % (+897 MW), période de Noël 3,547 % (+1 508 MW) ;
+- par trimestre : de 2,246 % à 2,873 %, sauf 2024-T1 (4,455 %, 811 demi-heures).
+
+**Les 10 pires jours** : 16/03/2024 (17,7 %), 15/03/2024 (14,2 %), 02/01/2025 (9,6 %), 09/04/2024 (9,1 %), 15/09/2024 (8,9 %, froid marqué), 25/12/2024 (8,6 %, férié et période de Noël), 14/09/2024 (7,6 %, froid marqué), 06/10/2024 (7,5 %), 08/04/2024 (7,3 %), 03/01/2025 (7,2 %). Sans autre mention : cause non établie.
+
+**Importance des variables.** Par permutation, la demi-heure arrive en tête (+8,65 points), puis la température lissée sur 72 h (+6,45), le jour de la semaine (+3,90), la température lissée sur 24 h (+2,38) et le mois (+1,36). Par gain, la température lissée sur 72 h compte pour 53 %. Le calcul de secours n'a servi à aucune demi-heure de validation.
+
+**Observations hors règle**, constatées après le calcul et qui ne changent rien au modèle :
+
+- Les deux pires jours, les 15 et 16/03/2024, sont exactement les 96 demi-heures de validation où la température lissée sur 72 h manque (entrée 12). Le cache des calculs ECMWF commence trop tard pour couvrir leurs 72 heures. LightGBM envoie ces valeurs manquantes dans une branche qui surestime de 7 à 8 GW, alors que ce lissage est sa variable la plus forte. En production, le calcul de secours aurait pris le relais. C'est un artefact du début de la validation, qui gonfle la MAPE de validation (environ 0,06 point, par simple calcul sur les chiffres publiés) et le trimestre 2024-T1. La règle des constats ne prévoyait pas ce cas : la table des pires jours garde « cause non établie ».
+- Le niveau n'apporte que +0,14 point par permutation, alors que la grille de l'entrée 18 montrait 39,8 % d'écart entre LightGBM avec et sans niveau. Ce n'est pas une contradiction. La permutation mesure ce qu'une variable apporte à l'intérieur de la validation, où le niveau varie peu. Son rôle est de décaler toute la période par rapport à l'entraînement, ce que la permutation ne voit pas.
+
+**Points ouverts** ajoutés :
+
+- Faut-il interdire les valeurs d'entrée manquantes dans LightGBM (calcul de secours ou refus de prévoir), plutôt que de les laisser à une branche apprise sur d'autres cas ?
+- D'où vient le biais par temps froid (+0,67 à +0,85 GW sous 10 °C) ?
+
+Toujours ouvert depuis l'entrée 11 : pourquoi les années 2012-2016 dégradent la prévision de 2024-2025.
+
+Comparaisons sur la validation après cette entrée : 10. Mesures dans l'entraînement : 2.
