@@ -452,3 +452,33 @@ Le risque connu se vérifie : en hiver, la couverture tombe à 65,8 % et 88,2 %,
 Les fenêtres de calibration qui contiennent mars 2024 incluent les résidus des 15 et 16/03/2024, gonflés de 7 à 8 GW par le lissage sur 72 h manquant (entrée 20). Ils peuvent élargir les quantiles extrêmes des décisions antérieures à juin 2025. L'effet n'est pas mesuré, et la règle n'est pas changée.
 
 Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
+
+## 23. Précisions sur les résultats de la v0.2 — 24/11/2026
+
+Comparaisons sur la validation : 13, inchangé. Aucune règle ne change ; les mesures ci-dessous sont des informations, sans effet sur la décision de l'entrée 22.
+
+**Fin de l'entraînement des modèles mensuels.** L'entrée 21 fixe bien la fin de l'entraînement au dernier jour de M − 4, et non de M − 3. Le modèle du mois M prévoit dès le 1er du mois, donc il doit exister à midi le dernier jour de M − 1, quand le consolidé publié ne va que jusqu'à la fin de M − 4.
+
+**Modèle et résidus ne sont pas alignés jour par jour.** Le modèle est réentraîné chaque mois, et la fenêtre des résidus est relue chaque jour, comme l'écrit l'entrée 21. Ce décalage est gardé ; ce n'est pas une nouvelle comparaison.
+
+| Jour livré | Décision | Modèle : appris jusqu'à | Résidus : jusqu'à |
+|---|---|---|---|
+| 1er du mois M | dernier jour de M − 1 | fin de M − 4 | fin de M − 4 |
+| du 2 au dernier jour de M | dans le mois M | fin de M − 4 (modèle figé pour le mois) | fin de M − 3 |
+
+Aucune fuite : chaque résidu est publié à midi la veille et vient d'un modèle qui n'avait pas vu son jour.
+
+**Cause des résidus gonflés des 15 et 16/03/2024.** L'archive de météo prévue commence au calcul du 14/03/2024. La première demi-heure du 15/03 (23 h UTC le 14/03) demande, pour sa température lissée sur 72 h, les heures à partir du 12/03 à 0 h UTC, qu'aucun calcul en cache ne contient. Les 96 demi-heures des 15 et 16/03 n'ont donc pas ce lissage ; le premier lissage complet arrive le 17/03 à 0 h, heure de Paris. Il ne manque aucun calcul, le calcul de secours n'a servi à rien sur la validation, et la prévision de ces deux jours n'a pas de valeur aberrante : écart moyen avec ERA5 de 0,97 °C pour la température (au plus 1,78 °C), 0,92 °C pour le lissage sur 24 h, 1,5 m/s pour le vent. Ce n'est pas un défaut des données mais la limite de début de l'archive : l'observation de l'entrée 22 est gardée telle quelle.
+
+- Information, sans effet sur la décision : Q1 sans ces 96 demi-heures dans les fenêtres de résidus couvre 76,45 % et 93,58 %, avec des intervalles de 3 685 et 6 345 MW et un pinball de 289,0 MW (contre 77,50 %, 94,20 %, 3 774 et 6 624 MW, 288,2 MW).
+- Ces 96 demi-heures n'entrent dans aucune fenêtre de résidus du test : la première commence le 01/06/2024. Un test automatique le vérifie.
+
+**Prévision ponctuelle officielle.** C'est désormais A17 avec réentraînement mensuel : **MAPE de validation 2,667 %**. Le chiffre de 2,617 % reste dans l'historique de la v0.1, sous l'étiquette « modèle figé ». Rapport au naïf J-7 sur l'échantillon commun du bilan de la v0.1 (25 607 demi-heures), indication sur la validation et non critère : **0,441, intervalle [0,382 ; 0,512]**. Le modèle figé y retrouve son rapport de 0,433 [0,375 ; 0,503]. Sur le même échantillon, la prévision mensuelle fait 2,665 % ; son écart à RTE J-1 brute est de +0,084 point, intervalle [−0,200 ; +0,370], et à J-7 de −3,372 points, intervalle [−4,252 ; −2,548].
+
+**Biais de la médiane et du modèle.** Sur l'évaluation, q0,5 prévoit trop de 289 MW en moyenne, et la prévision ponctuelle mensuelle de 259 MW. Le biais vient donc surtout du modèle ; le décalage de la fenêtre de résidus n'y ajoute qu'environ 30 MW. Point ouvert pour la v0.3 : la décision d'achat se prendra à un quantile, et ce biais coûtera directement des euros.
+
+**Prédiction pour le test.** Sur le test, Q1 mélange les saisons dans chaque groupe : on s'attend à une couverture inférieure à la cible en hiver et supérieure en été. La couverture par saison du test sera lue au regard de cette prédiction. Une méthode qui tient compte de la saison sera une nouvelle comparaison, dans une version ultérieure ; elle ne pourra pas être jugée sur la validation, faute de résidus d'hiver dans les fenêtres de l'hiver 2024-25.
+
+**Cibles absentes.** Les quatre demi-heures de validation sans cible sont celles du 27/10/2024 étiquetées 2 h 00 et 2 h 30, qui existent chacune deux fois le jour du passage à l'heure d'hiver et restent sans cible par construction (ADR 0002).
+
+Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
