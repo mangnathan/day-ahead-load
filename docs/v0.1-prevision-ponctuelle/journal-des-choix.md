@@ -260,3 +260,56 @@ Ce sont des constats, pas des causes démontrées. Sans aucun de ces constats : 
 - Importance par permutation sur la validation : hausse de la MAPE quand une variable est mélangée entre les demi-heures. On fait 5 permutations par variable, avec la graine 20261117, et on publie leur moyenne. Réserve : mélanger une variable fortement liée à d'autres, comme la température et ses lissages, sous-estime son importance, puisque les autres portent encore l'information.
 
 **6. Calcul de secours.** On rappelle son nombre d'utilisations sur la validation : 0 (ADR 0002).
+
+## 20. Résultats du bilan de la v0.1 — 24/11/2026
+
+Comparaisons sur la validation : 10, inchangé. Règle de l'entrée 19 appliquée telle qu'écrite ; le modèle n'a pas changé. Une seconde exécution redonne le même fichier (`docs/v0.1-prevision-ponctuelle/data/bilan-v0-1.json`).
+
+**Échantillon commun** : 25 607 demi-heures sur 25 674 avec cible. MAPE du modèle : 2,614 %.
+
+**Rapport à J-7 — indication sur la validation, pas le critère** : 0,433, intervalle à 95 % [0,375 ; 0,503], face aux seuils de 0,5 (réussite) et de 0,75 (échec). Ce chiffre est probablement optimiste : 10 comparaisons ont été faites sur cette période, la météo prévue est rejouée (cycle 49R1), et J-7 lui-même est étiqueté « optimiste ».
+
+**Références** (modèle − référence, en points, intervalle à 95 %) :
+
+| Référence | Catégorie | MAPE | Différence | Intervalle |
+|---|---|---|---|---|
+| Naïf J-7 | optimiste | 6,036 % | −3,422 | [−4,303 ; −2,594] |
+| Naïf J-2 | optimiste | 8,433 % | −5,819 | [−6,253 ; −5,381] |
+| Veille le matin, J-2 l'après-midi | optimiste | 6,746 % | −4,131 | [−4,485 ; −3,768] |
+| Moyenne des 4 mêmes jours | optimiste | 6,464 % | −3,850 | [−4,784 ; −2,968] |
+| Dernier même jour publié | réaliste | 18,757 % | −16,142 | [−19,013 ; −13,359] |
+| Même jour 52 semaines avant | réaliste | 6,343 % | −3,728 | [−4,597 ; −2,893] |
+| RTE J-1 brute | avantagée | 2,580 % | +0,034 | [−0,238 ; +0,309] |
+| RTE corrigée, retard réel | avantagée | 1,918 % | +0,696 | [+0,450 ; +0,959] |
+| RTE corrigée, même mois l'an dernier | avantagée | 1,720 % | +0,894 | [+0,679 ; +1,126] |
+| RTE corrigée, 4 semaines idéales | borne | 1,579 % | +1,035 | [+0,825 ; +1,265] |
+
+Le modèle est indiscernable de la prévision brute de RTE, publiée après la décision, et reste derrière les versions corrigées.
+
+**Météo parfaite — borne informative, météo parfaite, impossible en pratique** : 2,583 % avec ERA5 en entrée, contre 2,614 % avec la météo prévue, soit −0,032 point, intervalle [−0,167 ; +0,088]. L'erreur de la prévision météo à J-1 ne coûte presque rien ici : l'erreur vient surtout du modèle.
+
+**Découpages** (biais : prévision − consommation) :
+
+- biais global d'environ +210 MW ; par saison, de −200 MW (été) à +536 MW (hiver) ;
+- par température de l'indice ERA5 : +845 MW sous 0 °C (214 demi-heures), +764 MW de 0 à 5 °C, +673 MW de 5 à 10 °C, +455 MW de 10 à 15 °C, −177 MW au-dessus de 15 °C. C'est le signe et l'ordre de grandeur du risque de 720 MW du prémortem. La mesure de la météo parfaite montre pourtant que la source météo pèse peu : la cause n'est pas établie ;
+- par tranche de 3 h : la pire est 6 h-9 h (MAPE 3,336 %, +940 MW), puis 3 h-6 h (3,002 %) ; biais négatif de 12 h à 15 h (−455 MW) ;
+- par type de jour : 2,453 % en jour ouvré, 2,765 % le samedi, 3,137 % le dimanche ou un jour férié ; ponts 3,146 % (+897 MW), période de Noël 3,547 % (+1 508 MW) ;
+- par trimestre : de 2,246 % à 2,873 %, sauf 2024-T1 (4,455 %, 811 demi-heures).
+
+**Les 10 pires jours** : 16/03/2024 (17,7 %), 15/03/2024 (14,2 %), 02/01/2025 (9,6 %), 09/04/2024 (9,1 %), 15/09/2024 (8,9 %, froid marqué), 25/12/2024 (8,6 %, férié et période de Noël), 14/09/2024 (7,6 %, froid marqué), 06/10/2024 (7,5 %), 08/04/2024 (7,3 %), 03/01/2025 (7,2 %). Sans autre mention : cause non établie.
+
+**Importance des variables.** Par permutation, la demi-heure arrive en tête (+8,65 points), puis la température lissée sur 72 h (+6,45), le jour de la semaine (+3,90), la température lissée sur 24 h (+2,38) et le mois (+1,36). Par gain, la température lissée sur 72 h compte pour 53 %. Le calcul de secours n'a servi à aucune demi-heure de validation.
+
+**Observations hors règle**, constatées après le calcul et qui ne changent rien au modèle :
+
+- Les deux pires jours, les 15 et 16/03/2024, sont exactement les 96 demi-heures de validation où la température lissée sur 72 h manque (entrée 12). Le cache des calculs ECMWF commence trop tard pour couvrir leurs 72 heures. LightGBM envoie ces valeurs manquantes dans une branche qui surestime de 7 à 8 GW, alors que ce lissage est sa variable la plus forte. En production, le calcul de secours aurait pris le relais. C'est un artefact du début de la validation, qui gonfle la MAPE de validation (environ 0,06 point, par simple calcul sur les chiffres publiés) et le trimestre 2024-T1. La règle des constats ne prévoyait pas ce cas : la table des pires jours garde « cause non établie ».
+- Le niveau n'apporte que +0,14 point par permutation, alors que la grille de l'entrée 18 montrait 39,8 % d'écart entre LightGBM avec et sans niveau. Ce n'est pas une contradiction. La permutation mesure ce qu'une variable apporte à l'intérieur de la validation, où le niveau varie peu. Son rôle est de décaler toute la période par rapport à l'entraînement, ce que la permutation ne voit pas.
+
+**Points ouverts** ajoutés :
+
+- Faut-il interdire les valeurs d'entrée manquantes dans LightGBM (calcul de secours ou refus de prévoir), plutôt que de les laisser à une branche apprise sur d'autres cas ?
+- D'où vient le biais par temps froid (+0,67 à +0,85 GW sous 10 °C) ?
+
+Toujours ouvert depuis l'entrée 11 : pourquoi les années 2012-2016 dégradent la prévision de 2024-2025.
+
+Comparaisons sur la validation après cette entrée : 10. Mesures dans l'entraînement : 2.
