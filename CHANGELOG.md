@@ -4,6 +4,10 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 
 ## [Non publié]
 
+## [v0.1] — 2026-11-24
+
+Prévision ponctuelle choisie sur la validation, test fermé (ADR 0003). L'étude de faisabilité (v0.0) n'a pas reçu de tag propre : ses entrées sont incluses dans cette version.
+
 ### Ajouté
 - Table de données de la v0.1 à la demi-heure (ADR 0002) : cible consolidée ou définitive, calendrier (jours fériés par la bibliothèque `holidays`, lundi de Pentecôte, ponts, période de Noël), météo nationale passée à la demi-heure et vue à midi la veille (ERA5 à l'entraînement, calculs ECMWF de 00 UTC ensuite, y compris dans les lissages, avec calcul de secours dont chaque utilisation est enregistrée), niveau des 52 dernières semaines consolidées publiées. Cible du test masquée par défaut.
 - Journal des choix de la v0.1 : modèle LightGBM figé (réglages par défaut, graine fixée), règles écrites avant chaque calcul, compteur des comparaisons faites sur la validation.
