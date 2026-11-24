@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="322" viewBox="0 0 820 322" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" role="img" aria-label="MAPE de validation du modèle de la v0.1 et des références">
+<text x="16" y="24" font-size="15" font-weight="600" fill="#0b0b0b">Erreur moyenne en pourcentage (MAPE) sur la validation, plus bas = mieux</text>
+<text x="16" y="44" font-size="12" fill="#52514e">Jours livrés du 15/03/2024 au 31/08/2025, 25 607 demi-heures communes. « Avantagée » : publiée après midi la veille.</text>
+<text x="16" y="71.0" font-size="13" font-weight="400" fill="#0b0b0b">RTE J-1 corrigée (même mois l'an dernier) <tspan fill="#52514e" font-weight="400">· avantagée</tspan></text>
+<path d="M400,58 H485.4844710704714 Q489.4844710704714,58 489.4844710704714,62 V72 Q489.4844710704714,76 485.4844710704714,76 H400 Z" fill="#86857e"/>
+<text x="497.4844710704714" y="71.0" font-size="13" font-weight="400" fill="#0b0b0b">1,72 %</text>
+<text x="16" y="111.0" font-size="13" font-weight="400" fill="#0b0b0b">RTE J-1 corrigée (28 derniers jours publiés) <tspan fill="#52514e" font-weight="400">· avantagée</tspan></text>
+<path d="M400,98 H495.7855904146303 Q499.7855904146303,98 499.7855904146303,102 V112 Q499.7855904146303,116 495.7855904146303,116 H400 Z" fill="#86857e"/>
+<text x="507.7855904146303" y="111.0" font-size="13" font-weight="400" fill="#0b0b0b">1,92 %</text>
+<text x="16" y="151.0" font-size="13" font-weight="400" fill="#0b0b0b">RTE J-1 brute <tspan fill="#52514e" font-weight="400">· avantagée</tspan></text>
+<path d="M400,138 H530.226706605707 Q534.226706605707,138 534.226706605707,142 V152 Q534.226706605707,156 530.226706605707,156 H400 Z" fill="#86857e"/>
+<text x="542.226706605707" y="151.0" font-size="13" font-weight="400" fill="#0b0b0b">2,58 %</text>
+<text x="16" y="191.0" font-size="13" font-weight="600" fill="#0b0b0b">day-ahead-load, modèle de la v0.1 <tspan fill="#52514e" font-weight="400">· disponible à midi</tspan></text>
+<path d="M400,178 H531.9955856850071 Q535.9955856850071,178 535.9955856850071,182 V192 Q535.9955856850071,196 531.9955856850071,196 H400 Z" fill="#2a78d6"/>
+<text x="543.9955856850071" y="191.0" font-size="13" font-weight="600" fill="#0b0b0b">2,61 %</text>
+<text x="16" y="231.0" font-size="13" font-weight="400" fill="#0b0b0b">Même demi-heure 7 jours avant <tspan fill="#52514e" font-weight="400">· optimiste</tspan></text>
+<path d="M400,218 H710.0280624310263 Q714.0280624310263,218 714.0280624310263,222 V232 Q714.0280624310263,236 710.0280624310263,236 H400 Z" fill="#86857e"/>
+<text x="722.0280624310263" y="231.0" font-size="13" font-weight="400" fill="#0b0b0b">6,04 %</text>
+<text x="16" y="271.0" font-size="13" font-weight="400" fill="#0b0b0b">Même jour, 52 semaines avant <tspan fill="#52514e" font-weight="400">· réaliste</tspan></text>
+<path d="M400,258 H726.0 Q730.0,258 730.0,262 V272 Q730.0,276 726.0,276 H400 Z" fill="#86857e"/>
+<text x="738.0" y="271.0" font-size="13" font-weight="400" fill="#0b0b0b">6,34 %</text>
+<line x1="400" y1="52" x2="400" y2="282" stroke="#d6d5d0" stroke-width="1"/>
+<text x="16" y="312" font-size="11" fill="#52514e">Source : calculs du projet à partir d'éCO2mix (RTE, via ODRÉ). Erreurs agrégées seulement.</text>
+</svg>
