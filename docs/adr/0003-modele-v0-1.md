@@ -1,6 +1,6 @@
 # ADR 0003 : modèle de prévision ponctuelle de la v0.1
 
-- Statut : proposé le 24/11/2026, à accepter à la relecture du rapport de la v0.1
+- Statut : accepté le 24/11/2026, après relecture du rapport de la v0.1
 - Date : 24 novembre 2026
 - Version : v0.1
 
