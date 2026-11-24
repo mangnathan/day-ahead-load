@@ -482,3 +482,70 @@ Aucune fuite : chaque résidu est publié à midi la veille et vient d'un modèl
 **Cibles absentes.** Les quatre demi-heures de validation sans cible sont celles du 27/10/2024 étiquetées 2 h 00 et 2 h 30, qui existent chacune deux fois le jour du passage à l'heure d'hiver et restent sans cible par construction (ADR 0002).
 
 Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
+
+## 24. Décision d'achat de la v0.3 — règle écrite le 24/11/2026, avant le calcul
+
+Comparaisons sur la validation : 13. Mesures dans l'entraînement : 2.
+
+### Correction de l'ADR 0001 : le « régime d'écart unique » du 05/10/2024
+
+L'ADR 0001 prévoyait d'estimer q « uniquement sur la partie de la validation postérieure au passage au régime d'écart unique (05/10/2024) ». La source de cette date est le chapitre 3 des Règles de marché de RTE (« Dispositif de Responsable d'Équilibre », version V02.1 en vigueur au 4 juillet 2026, délibération CRE 2026-109 du 26 mai 2026), section 3.A :
+
+- la section décrit l'évolution des « processus de Reconstitution des Flux, à partir de la date du 5 octobre 2024 » : avant cette date, deux processus (Écarts et Réconciliation Temporelle) ; « A compter de la date du 5 octobre 2024 : un processus unique Ecarts » ;
+- « Profilage permet de fusionner les processus Ecarts et Réconciliation Temporelle en un processus unique Ecarts ».
+
+Ces citations viennent d'une extraction automatique du texte du PDF ; la phrase sur la situation d'avant le 5 octobre en est sortie abîmée et n'est donc donnée qu'en substance.
+
+Il ne s'agit ni d'un prix unique ni d'une position unique, mais de la fusion de deux traitements des données de comptage dans la reconstitution des flux. L'ADR 0001 a pris ce changement de traitement pour un changement du prix. **Les prix restent doubles** :
+
+- même chapitre, section 3.M.1 (« Règlement des Ecarts positifs ») : un prix s'applique aux écarts positifs, et dans le « cas contraire, le Prix de Règlement des Ecarts négatifs est alors appliqué » ;
+- page de RTE « Le prix de règlement des écarts de responsable d'équilibre » : « le PRE est calculé en fonction de la tendance d'équilibrage, du prix moyen pondéré des activations (PMP), de la valeur applicable du coefficient « k », et du signe de l'écart du responsable d'équilibre (positif ou négatif) » ; « Le PRE positif ne peut pas être supérieur au PRE négatif ».
+
+Sources non lisibles : le rapport de surveillance 2024 de la CRE et le rapport d'équilibrage 2024 de RTE (PDF illisibles par nos outils). L'ADR 0001 n'est pas réécrit ; la correction figurera dans l'ADR de la v0.3. Dès le jeton reçu, on vérifie dans les données d'ENTSO-E que les deux prix diffèrent, et à quelle fréquence.
+
+**Coefficient k.** La page de RTE décrit, depuis le 1er janvier 2023, un pilotage dynamique ex ante du coefficient k, avec des paramètres fixes : « keq » 0,045, « kmin » 0, « kmax » 0,200, palier de 5 M€, pente de 0,0015 par M€. Aucun changement de ces paramètres entre 2025 et 2026 n'apparaît dans les pages lues. La valeur de k, elle, varie d'un mois à l'autre par construction. C'est une limite : q, estimé sur 2025, suppose que le niveau des pénalités reste comparable en 2025-26. Les valeurs mensuelles de k publiées par RTE n'ont pas été lues.
+
+### Période d'estimation de q
+
+Du 01/01/2025 au 31/08/2025 : deux prix et pas de 15 minutes, les mêmes règles que sur tout le test. Limite : cette période ne contient ni septembre, ni l'automne, ni la fin de l'année. Sont publiés à titre d'information : q mois par mois, et q sur toute la validation (du 15/03/2024 au 31/08/2025, pas de 30 minutes avant 2025).
+
+### Formule de q (B), précision de l'ADR 0001
+
+La prévision ponctuelle est la procédure mensuelle de la v0.2. Pour chaque période de règlement k de la période d'estimation, l'écart de la prévision ponctuelle vaut consommation − prévision. La demi-heure est coupée en deux quarts d'heure, de même écart de puissance, chacun avec son propre prix.
+
+- Pénalité courte Cu : moyenne de (PRE négatif − P_ref) sur les périodes où la prévision ponctuelle nous laissait courts (consommation > prévision).
+- Pénalité longue Co : moyenne de (P_ref − PRE positif) sur les périodes où elle nous laissait longs (consommation < prévision).
+- q = Cu / (Cu + Co).
+- Si Cu ou Co n'est pas strictement positif, la règle du vendeur de journaux ne s'applique pas : on l'écrit, et l'achat reste la prévision ponctuelle.
+
+**L'achat au quantile q** est la prévision ponctuelle plus le quantile empirique de niveau q des résidus de la même demi-heure, avec la fenêtre et les règles de Q1 (entrée 21).
+
+Deux réserves, écrites d'avance :
+
+- B utilise le signe de l'écart de la prévision ponctuelle. Une fois qu'on achète à q, les signes changent un peu ;
+- la couverture de la v0.2 n'a été contrôlée qu'aux cinq niveaux de l'ADR 0001. La couverture empirique de q (part des demi-heures où la consommation est sous le quantile q) est publiée sur la période d'estimation.
+
+Sont publiés à titre d'information, sans choix possible et sans comparaison comptée :
+
+- la formule A de l'ADR 0001 (moyennes sur toutes les périodes) ;
+- la courbe du coût selon le quantile d'achat, de 0,05 à 0,95 par pas de 0,05, sur la période d'estimation. Elle montre si q tombe près du minimum. **La courbe n'est pas une option** : elle ne sert à rien choisir.
+
+### Coût
+
+Fonction de coût de l'ADR 0001. Pour chaque période k, l'écart vaut Δk = s × (consommation − achat), en MWh. Si Δk > 0 (court), le coût est Δk × (PRE négatif − P_ref). Si Δk < 0 (long), il vaut |Δk| × (P_ref − PRE positif). P_ref vaut 61,1 €/MWh. La sensibilité à 40 et à 100 €/MWh recalcule q et les coûts avec chaque P_ref. Les montants sont publiés pour s = 1 % et en euros par MWh consommé.
+
+**Comparaison, indication sur la validation** : coût d'un achat au quantile q contre coût d'un achat à la prévision ponctuelle, sur la période d'estimation, avec la différence appariée et un intervalle à 95 % par bootstrap par blocs de 7 jours (10 000 tirages, graine 20261117). Le critère de l'ADR 0001 se juge sur le test. Étiquette : **« q estimé et jugé sur la même période : indication optimiste »**.
+
+**Biais** : aucune correction en v0.3. Le coût est décomposé pour montrer la part due au biais. On publie le coût d'un achat au quantile q diminué du biais moyen de q0,5 sur la période d'estimation, à titre d'information. Étiquette : « borne informative, biais connu après coup, impossible en pratique ».
+
+**Compteur** : q est calculé par une formule fixée d'avance, sans choix entre options. Le compteur reste à 13.
+
+**Étiquettes** : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 et Q1 (13 comparaisons) » ; « q estimé et jugé sur la même période ».
+
+### Données des prix des écarts
+
+- ENTSO-E Transparency Platform, Imbalance Prices [17.1.G], zone France (code EIC 10YFR-RTE------C), du 15/03/2024 au 31/08/2026. Lire les prix du test ne l'ouvre pas : sa cible reste masquée. Licence CC BY 4.0, mention « ENTSO-E Transparency Platform ».
+- API : `https://web-api.tp.entsoe.eu/api`, type de document A85, dates en UTC, au plus un an par requête. La documentation distingue deux champs, `PositiveImbalancePrice` et `NegativeImbalancePrice`. La limite publiée est de 400 requêtes par minute par jeton, avec un code 429 en cas de dépassement.
+- Non vérifiés faute de lecture possible : le nom exact du paramètre de zone (documentation Postman illisible par nos outils) et le format de la réponse. Ils sont vérifiés par **un appel de contrôle** sur une seule journée avant tout téléchargement.
+- **Estimation écrite avant le premier appel** : 1 appel de contrôle, puis une requête par mois civil (30 mois, du 03/2024 au 08/2026), pour rester loin de la limite de 200 documents par réponse. Soit 31 appels. **Plafond local : 100 appels par jour**, au plus un appel toutes les 2 secondes. **Arrêt définitif au premier code 429.** Une coupure réseau ou une réponse 5xx donne lieu à une seule nouvelle tentative, comptée.
+- **Jeton** : lu dans `.env` uniquement, jamais affiché ni journalisé, jamais écrit dans un fichier du cache. Un test vérifie qu'il n'apparaît dans aucune sortie ni aucun fichier écrit.
