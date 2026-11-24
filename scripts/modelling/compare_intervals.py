@@ -23,6 +23,7 @@ import pandas as pd
 from day_ahead_load import assessment as ass
 from day_ahead_load import diagnostics, eco2mix
 from day_ahead_load import modelling as md
+from day_ahead_load import references as refs
 from day_ahead_load import table as tb
 from day_ahead_load import temperature_index as ti
 from day_ahead_load import uncertainty as unc
@@ -33,11 +34,13 @@ ECO2MIX = Path("data/raw/eco2mix/2026-11-14")
 WEATHER = Path("data/raw/meteo")
 WEIGHTS = Path("docs/v0.0-faisabilite/data/indice-temperature-poids.json")
 FAMILIES = Path("docs/v0.1-prevision-ponctuelle/data/comparaison-familles.json")
+BILAN = Path("docs/v0.1-prevision-ponctuelle/data/bilan-v0-1.json")
 SUMMARY = Path("docs/v0.2-incertitude/data/intervalles.json")
 FIRST_DAY = date(2012, 1, 1)
 PARIS = "Europe/Paris"
 EVALUATION_FIRST = date(2024, 9, 2)
 ADVANTAGE = (date(2024, 3, 15), date(2024, 6, 30))
+ARCHIVE_START = (date(2024, 3, 15), date(2024, 3, 16))
 WINTER = (date(2024, 12, 1), date(2025, 2, 28))
 FULL_WINDOW = (date(2025, 6, 1), date(2025, 8, 31))
 REFERENCE_HISTORY_FIRST = date(2023, 1, 1)
@@ -157,6 +160,12 @@ def main() -> None:
         name: unc.calibrate(monthly[rows.index], rows, residuals, rows, grouping, parent)
         for name, (grouping, parent) in CANDIDATES.items()
     }
+    # Information, sans effet sur la décision : Q1 sans les 96 demi-heures des 15 et 16/03/2024
+    # (lissage sur 72 h absent au début de l'archive) dans les fenêtres de résidus.
+    artefact = between(rows["jour"], ARCHIVE_START)
+    q1_clean = unc.calibrate(
+        monthly[rows.index], rows, residuals[~artefact], rows[~artefact], unc.group_q1
+    )
 
     # Référence J-7 : erreurs de J-7 sur les jours publiés, dès 2023.
     with_target = table[table[tb.TARGET].notna()]
@@ -268,6 +277,27 @@ def main() -> None:
         }
 
     everything = np.ones(len(rows), dtype=bool)
+
+    # Rapport à J-7 de la prévision ponctuelle officielle (procédure mensuelle), sur
+    # l'échantillon commun du bilan de la v0.1 ; A17 figé doit y retrouver son rapport.
+    values = refs.compute(refs.target_series(instants), refs.forecast_series(instants), rows_wall)
+    common = np.asarray(values.notna().all(axis=1))
+    j7_common = values["naif_j7"].to_numpy()[common]
+    common_days = list(rows["jour"].to_numpy()[common])
+    ratios = {}
+    for name, point in (("a17_fige", static_known), ("procedure_mensuelle", monthly_known)):
+        ratio, low, high = ass.ratio_interval(
+            truth_all[common], point[common], j7_common, common_days, tb.VALIDATION[0]
+        )
+        ratios[name] = {
+            "rapport": round(ratio, 3),
+            "intervalle_95": [round(low, 3), round(high, 3)],
+            "mape_pct": round(float(ass.ape(truth_all[common], point[common]).mean()), 3),
+        }
+    bilan = json.loads(BILAN.read_text(encoding="utf-8"))["rapport_au_naif_j7"]["rapport"]
+    if ratios["a17_fige"]["rapport"] != bilan:
+        raise RuntimeError("A17 figé ne retrouve pas son rapport à J-7 du bilan de la v0.1")
+
     summary = {
         "regle": "journal des choix, entrée 21",
         "etiquettes": LABELS,
@@ -293,8 +323,21 @@ def main() -> None:
                     between(rows["jour"], ADVANTAGE), ADVANTAGE[0]
                 ),
             },
+            "rapport_au_naif_j7": {
+                "etiquette": "indication sur la validation, pas le critère",
+                "demi_heures": int(common.sum()),
+                **ratios,
+            },
+            "biais_prevision_ponctuelle_evaluation_mw": round(
+                float((monthly_known[judged] - truth).mean()), 1
+            ),
         },
         "candidats_et_reference": results,
+        "q1_sans_15_16_03_2024_information": {
+            "etiquette": "information, sans effet sur la décision",
+            "demi_heures_retirees_des_fenetres": int(artefact.sum()),
+            **interval_metrics(truth, q1_clean.quantiles[judged]),
+        },
         "admissibles": order,
         "etapes": steps,
         "retenu": retained,

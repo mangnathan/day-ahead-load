@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from day_ahead_load import table as tb
 from day_ahead_load import uncertainty as unc
 
 
@@ -125,3 +126,13 @@ def test_j7_point_reads_the_same_wall_clock_time_a_week_before() -> None:
     target = pd.Series(np.arange(len(wall), dtype=float), index=wall)
     out = unc.j7_point(target, pd.DatetimeIndex([pd.Timestamp("2024-09-08 13:30")]))
     assert out.tolist() == [target[pd.Timestamp("2024-09-01 13:30")]]
+
+
+def test_no_test_day_reads_residuals_from_the_start_of_the_weather_archive() -> None:
+    # Les 15 et 16/03/2024 n'ont pas de lissage sur 72 h : ils ne doivent entrer dans aucune
+    # fenêtre de résidus du test (ADR 0004).
+    first, last = tb.TEST
+    days = [first + timedelta(days=k) for k in range((last - first).days + 1)]
+    earliest = min(unc.window(month)[0] for month in unc.decision_month(days).unique())
+    assert earliest == date(2024, 6, 1)
+    assert earliest > date(2024, 3, 16)

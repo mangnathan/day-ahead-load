@@ -175,7 +175,28 @@
           0.179
         ]
       }
-    }
+    },
+    "rapport_au_naif_j7": {
+      "etiquette": "indication sur la validation, pas le critère",
+      "demi_heures": 25607,
+      "a17_fige": {
+        "rapport": 0.433,
+        "intervalle_95": [
+          0.375,
+          0.503
+        ],
+        "mape_pct": 2.614
+      },
+      "procedure_mensuelle": {
+        "rapport": 0.441,
+        "intervalle_95": [
+          0.382,
+          0.512
+        ],
+        "mape_pct": 2.665
+      }
+    },
+    "biais_prevision_ponctuelle_evaluation_mw": 258.8
   },
   "candidats_et_reference": {
     "Q1": {
@@ -1125,6 +1146,23 @@
         "biais_mw": -19.0,
         "mape_pct": 6.357
       }
+    }
+  },
+  "q1_sans_15_16_03_2024_information": {
+    "etiquette": "information, sans effet sur la décision",
+    "demi_heures_retirees_des_fenetres": 96,
+    "demi_heures": 17464,
+    "couverture_80_pct": 76.45,
+    "couverture_95_pct": 93.58,
+    "largeur_80_mw": 3684.9,
+    "largeur_95_mw": 6345.3,
+    "pinball_moyen_mw": 289.02,
+    "pinball_par_niveau_mw": {
+      "0.025": 118.1,
+      "0.1": 310.77,
+      "0.5": 636.04,
+      "0.9": 282.09,
+      "0.975": 98.11
     }
   },
   "admissibles": [
