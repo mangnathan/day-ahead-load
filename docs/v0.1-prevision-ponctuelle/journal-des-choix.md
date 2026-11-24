@@ -222,3 +222,41 @@ Comparaisons sur la validation : 10, comme annoncé en entrée 12. Règle de l'e
 - Point ouvert de l'entrée 11 (pourquoi 2012-2016 dégradent la prévision) : le niveau pèse lourd dans la qualité du modèle, ce qui va dans le sens d'un problème de changement de niveau. La mesure ne tranche pas : A12 avait le niveau à partir de mars 2013. La question reste ouverte.
 
 Comparaisons sur la validation après cette entrée : 10. Mesures dans l'entraînement : 2.
+
+## 19. Bilan de la v0.1 — règle écrite le 24/11/2026, avant le calcul
+
+Comparaisons sur la validation : 10. Mesures dans l'entraînement : 2.
+
+**Règle de fond.** Le bilan mesure, il ne choisit rien. Aucune de ses mesures ne modifie le modèle retenu (A17, entrée 18). Une piste qu'il fait apparaître va dans les points ouverts, et toute modification future du modèle sera une comparaison comptée. Le compteur reste à 10.
+
+**Échantillon commun.** Jours livrés du 15/03/2024 au 31/08/2025. Ce sont les demi-heures où la cible, la prévision du modèle et les dix références de la v0.0 existent toutes. Les références sont celles du module `references` de la v0.0, recalculées sur cette période seule, sur leur grille en heure murale de Paris. RTE est alignée sur la moyenne f(t − 15), f(t), l'alignement principal de la v0.0. Les demi-heures du modèle y sont rattachées par leur heure de Paris. Toutes les mesures du bilan portent sur cet échantillon, sauf mention contraire. Biais : prévision − consommation, positif quand le modèle prévoit trop.
+
+**1. Position face aux références.**
+
+- MAPE du modèle et de chaque référence. Pour chaque référence, la différence appariée MAPE(modèle) − MAPE(référence), avec un intervalle à 95 % par bootstrap par blocs d'une semaine, avec les réglages de l'entrée 4 (10 000 tirages, graine 20261117).
+- Rapport MAPE(modèle) / MAPE(naïf J-7), avec un intervalle à 95 % : à chaque tirage des mêmes blocs, rapport des deux MAPE de l'échantillon tiré. Il est placé face aux seuils de l'ADR 0001 (0,5 pour la réussite, 0,75 pour l'échec) avec l'étiquette **« indication sur la validation, pas le critère »**. Ce chiffre est probablement optimiste, pour trois raisons : 10 comparaisons ont été faites sur cette période ; la météo prévue est rejouée (cycle 49R1) ; J-7 lui-même est étiqueté « optimiste ».
+- Les références RTE brute et corrigées sont étiquetées « avantagées » : elles sont publiées après la décision. Seules des erreurs agrégées sont publiées, jamais les courbes.
+
+**2. Part de l'erreur qui vient de la météo prévue.** A17 est entraîné à l'identique. Il prévoit ensuite la validation avec la météo observée (ERA5) en entrée, à la place des calculs ECMWF de 00 UTC, y compris dans les lissages. On publie sa MAPE et la différence appariée avec A17, avec son intervalle. Étiquette : **« borne informative, météo parfaite, impossible en pratique »**. L'écart entre les deux MAPE mesure ce que coûte l'erreur de prévision météo.
+
+**3. Où le modèle se trompe.** MAPE, biais en MW et biais en % :
+
+- par trimestre civil ;
+- par saison météorologique : hiver (décembre à février), printemps (mars à mai), été (juin à août), automne (septembre à novembre) ;
+- par tranche de température : < 0 °C, 0-5, 5-10, 10-15, > 15 °C. C'est le contrôle direct du risque de 720 MW du prémortem, qui pèse surtout par temps froid. La température est celle de l'indice national ERA5 à la demi-heure : les tranches décrivent le temps qu'il a fait, indépendamment de l'erreur de la prévision météo ;
+- par tranche de 3 h (heure de Paris), par type de jour (ouvré, samedi, dimanche ou férié), pour les ponts et pour la période de Noël.
+
+**4. Les 10 pires jours.** Ce sont les 10 jours livrés de plus forte MAPE journalière, publiés avec leur date, leur MAPE et leur biais. Une explication n'est écrite que si elle se vérifie dans nos données :
+
+- calendrier : férié, lundi de Pentecôte, pont, Noël, changement d'heure ;
+- froid ou chaleur marqués : température moyenne du jour (indice ERA5) à plus de 5 °C sous ou au-dessus de la moyenne de son mois civil sur l'entraînement 2017-2024 ;
+- erreur de la météo prévue : écart moyen du jour de plus de 2 °C entre la température vue à midi la veille et l'indice ERA5.
+
+Ce sont des constats, pas des causes démontrées. Sans aucun de ces constats : **« cause non établie »**.
+
+**5. Importance des variables.**
+
+- Gain de LightGBM sur l'entraînement, publié avec sa réserve : il favorise les variables qui offrent beaucoup de coupures possibles.
+- Importance par permutation sur la validation : hausse de la MAPE quand une variable est mélangée entre les demi-heures. On fait 5 permutations par variable, avec la graine 20261117, et on publie leur moyenne. Réserve : mélanger une variable fortement liée à d'autres, comme la température et ses lissages, sous-estime son importance, puisque les autres portent encore l'information.
+
+**6. Calcul de secours.** On rappelle son nombre d'utilisations sur la validation : 0 (ADR 0002).
