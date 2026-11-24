@@ -1,6 +1,6 @@
 # ADR 0004 : incertitude de la v0.2
 
-- Statut : proposé le 24/11/2026, à accepter à la relecture du rapport de la v0.2
+- Statut : accepté le 24/11/2026, après relecture du rapport de la v0.2
 - Date : 24 novembre 2026
 - Version : v0.2
 
