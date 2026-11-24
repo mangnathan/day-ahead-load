@@ -196,6 +196,108 @@
         "mape_pct": 2.665
       }
     },
+    "ecart_aux_references_echantillon_du_bilan": {
+      "naif_j7": {
+        "categorie": "optimiste",
+        "mape_reference_pct": 6.036,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": -3.372,
+        "intervalle_95_pts": [
+          -4.252,
+          -2.548
+        ]
+      },
+      "naif_j2": {
+        "categorie": "optimiste",
+        "mape_reference_pct": 8.433,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": -5.769,
+        "intervalle_95_pts": [
+          -6.212,
+          -5.332
+        ]
+      },
+      "naif_j1_matin_j2_apres_midi": {
+        "categorie": "optimiste",
+        "mape_reference_pct": 6.746,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": -4.081,
+        "intervalle_95_pts": [
+          -4.439,
+          -3.717
+        ]
+      },
+      "moyenne_4_semaines": {
+        "categorie": "optimiste",
+        "mape_reference_pct": 6.464,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": -3.799,
+        "intervalle_95_pts": [
+          -4.746,
+          -2.905
+        ]
+      },
+      "naif_hebdo_realiste": {
+        "categorie": "réaliste",
+        "mape_reference_pct": 18.757,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": -16.092,
+        "intervalle_95_pts": [
+          -18.97,
+          -13.293
+        ]
+      },
+      "naif_annee_precedente": {
+        "categorie": "réaliste",
+        "mape_reference_pct": 6.343,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": -3.678,
+        "intervalle_95_pts": [
+          -4.543,
+          -2.838
+        ]
+      },
+      "rte_j1_brut": {
+        "categorie": "avantagée",
+        "mape_reference_pct": 2.58,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": 0.084,
+        "intervalle_95_pts": [
+          -0.2,
+          0.37
+        ]
+      },
+      "rte_corrige_retard_reel": {
+        "categorie": "avantagée",
+        "mape_reference_pct": 1.918,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": 0.746,
+        "intervalle_95_pts": [
+          0.496,
+          1.014
+        ]
+      },
+      "rte_corrige_meme_mois_an_dernier": {
+        "categorie": "avantagée",
+        "mape_reference_pct": 1.72,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": 0.945,
+        "intervalle_95_pts": [
+          0.729,
+          1.178
+        ]
+      },
+      "rte_corrige_4_semaines_ideal": {
+        "categorie": "borne",
+        "mape_reference_pct": 1.579,
+        "mape_modele_pct": 2.665,
+        "difference_modele_moins_reference_pts": 1.085,
+        "intervalle_95_pts": [
+          0.875,
+          1.315
+        ]
+      }
+    },
     "biais_prevision_ponctuelle_evaluation_mw": 258.8
   },
   "candidats_et_reference": {

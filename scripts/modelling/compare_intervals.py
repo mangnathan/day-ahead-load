@@ -297,6 +297,24 @@ def main() -> None:
     bilan = json.loads(BILAN.read_text(encoding="utf-8"))["rapport_au_naif_j7"]["rapport"]
     if ratios["a17_fige"]["rapport"] != bilan:
         raise RuntimeError("A17 figé ne retrouve pas son rapport à J-7 du bilan de la v0.1")
+    # Écart de la prévision officielle à chaque référence de la v0.0, même échantillon.
+    category = {r.name: r.category for r in refs.REFERENCES}
+    versus_references = {}
+    for ref_name in values.columns:
+        gap = md.paired_gap(
+            pd.Series(truth_all[common]),
+            values[ref_name].to_numpy()[common],
+            monthly_known[common],
+            pd.Series(common_days),
+            tb.VALIDATION[0],
+        )
+        versus_references[ref_name] = {
+            "categorie": category[ref_name],
+            "mape_reference_pct": round(gap.simple_mape, 3),
+            "mape_modele_pct": round(gap.complex_mape, 3),
+            "difference_modele_moins_reference_pts": round(gap.difference, 3),
+            "intervalle_95_pts": [round(gap.low, 3), round(gap.high, 3)],
+        }
 
     summary = {
         "regle": "journal des choix, entrée 21",
@@ -328,6 +346,7 @@ def main() -> None:
                 "demi_heures": int(common.sum()),
                 **ratios,
             },
+            "ecart_aux_references_echantillon_du_bilan": versus_references,
             "biais_prevision_ponctuelle_evaluation_mw": round(
                 float((monthly_known[judged] - truth).mean()), 1
             ),
