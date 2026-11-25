@@ -38,6 +38,9 @@ jobs:
         with:
           ref: donnees/disponibilite-ecmwf
           path: donnees
+          # Le jeton d'écriture n'est pas gardé dans donnees/.git : l'étape de mesure, qui
+          # appelle des services externes, ne peut pas le lire. Seul « Enregistrer » le reçoit.
+          persist-credentials: false
 
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
@@ -53,6 +56,8 @@ jobs:
 
       - name: Enregistrer sur la branche de données
         working-directory: donnees
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git add -A
           if git diff --cached --quiet; then
@@ -62,4 +67,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Mesurer la disponibilité du calcul ECMWF du $(date -u +%F)"
-          git push origin HEAD:donnees/disponibilite-ecmwf
+          # Jeton passé à cette seule commande, jamais écrit dans la configuration de Git.
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::$AUTH"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $AUTH" \
+            push origin HEAD:donnees/disponibilite-ecmwf
