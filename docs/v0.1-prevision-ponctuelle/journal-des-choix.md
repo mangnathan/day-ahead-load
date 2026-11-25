@@ -482,3 +482,160 @@ Aucune fuite : chaque résidu est publié à midi la veille et vient d'un modèl
 **Cibles absentes.** Les quatre demi-heures de validation sans cible sont celles du 27/10/2024 étiquetées 2 h 00 et 2 h 30, qui existent chacune deux fois le jour du passage à l'heure d'hiver et restent sans cible par construction (ADR 0002).
 
 Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
+
+## 24. Décision d'achat de la v0.3 — règle écrite le 24/11/2026, avant le calcul
+
+Comparaisons sur la validation : 13. Mesures dans l'entraînement : 2.
+
+### Correction de l'ADR 0001 : le « régime d'écart unique » du 05/10/2024
+
+L'ADR 0001 prévoyait d'estimer q « uniquement sur la partie de la validation postérieure au passage au régime d'écart unique (05/10/2024) ». La source de cette date est le chapitre 3 des Règles de marché de RTE (« Dispositif de Responsable d'Équilibre », version V02.1 en vigueur au 4 juillet 2026, délibération CRE 2026-109 du 26 mai 2026), section 3.A :
+
+- la section décrit l'évolution des « processus de Reconstitution des Flux, à partir de la date du 5 octobre 2024 » : avant cette date, deux processus (Écarts et Réconciliation Temporelle) ; « A compter de la date du 5 octobre 2024 : un processus unique Ecarts » ;
+- « Profilage permet de fusionner les processus Ecarts et Réconciliation Temporelle en un processus unique Ecarts ».
+
+Ces citations viennent d'une extraction automatique du texte du PDF ; la phrase sur la situation d'avant le 5 octobre en est sortie abîmée et n'est donc donnée qu'en substance.
+
+Il ne s'agit ni d'un prix unique ni d'une position unique, mais de la fusion de deux traitements des données de comptage dans la reconstitution des flux. L'ADR 0001 a pris ce changement de traitement pour un changement du prix. **Les prix restent doubles** :
+
+- même chapitre, section 3.M.1 (« Règlement des Ecarts positifs ») : un prix s'applique aux écarts positifs, et dans le « cas contraire, le Prix de Règlement des Ecarts négatifs est alors appliqué » ;
+- page de RTE « Le prix de règlement des écarts de responsable d'équilibre » : « le PRE est calculé en fonction de la tendance d'équilibrage, du prix moyen pondéré des activations (PMP), de la valeur applicable du coefficient « k », et du signe de l'écart du responsable d'équilibre (positif ou négatif) » ; « Le PRE positif ne peut pas être supérieur au PRE négatif ».
+
+Sources non lisibles : le rapport de surveillance 2024 de la CRE et le rapport d'équilibrage 2024 de RTE (PDF illisibles par nos outils). L'ADR 0001 n'est pas réécrit ; la correction figurera dans l'ADR de la v0.3. Dès le jeton reçu, on vérifie dans les données d'ENTSO-E que les deux prix diffèrent, et à quelle fréquence.
+
+**Coefficient k.** La page de RTE décrit, depuis le 1er janvier 2023, un pilotage dynamique ex ante du coefficient k, avec des paramètres fixes : « keq » 0,045, « kmin » 0, « kmax » 0,200, palier de 5 M€, pente de 0,0015 par M€. Aucun changement de ces paramètres entre 2025 et 2026 n'apparaît dans les pages lues. La valeur de k, elle, varie d'un mois à l'autre par construction. C'est une limite : q, estimé sur 2025, suppose que le niveau des pénalités reste comparable en 2025-26. Les valeurs mensuelles de k publiées par RTE n'ont pas été lues.
+
+### Période d'estimation de q
+
+Du 01/01/2025 au 31/08/2025 : deux prix et pas de 15 minutes, les mêmes règles que sur tout le test. Limite : cette période ne contient ni septembre, ni l'automne, ni la fin de l'année. Sont publiés à titre d'information : q mois par mois, et q sur toute la validation (du 15/03/2024 au 31/08/2025, pas de 30 minutes avant 2025).
+
+### Formule de q (B), précision de l'ADR 0001
+
+La prévision ponctuelle est la procédure mensuelle de la v0.2. Pour chaque période de règlement k de la période d'estimation, l'écart de la prévision ponctuelle vaut consommation − prévision. La demi-heure est coupée en deux quarts d'heure, de même écart de puissance, chacun avec son propre prix.
+
+- Pénalité courte Cu : moyenne de (PRE négatif − P_ref) sur les périodes où la prévision ponctuelle nous laissait courts (consommation > prévision).
+- Pénalité longue Co : moyenne de (P_ref − PRE positif) sur les périodes où elle nous laissait longs (consommation < prévision).
+- q = Cu / (Cu + Co).
+- Si Cu ou Co n'est pas strictement positif, la règle du vendeur de journaux ne s'applique pas : on l'écrit, et l'achat reste la prévision ponctuelle.
+
+**L'achat au quantile q** est la prévision ponctuelle plus le quantile empirique de niveau q des résidus de la même demi-heure, avec la fenêtre et les règles de Q1 (entrée 21).
+
+Deux réserves, écrites d'avance :
+
+- B utilise le signe de l'écart de la prévision ponctuelle. Une fois qu'on achète à q, les signes changent un peu ;
+- la couverture de la v0.2 n'a été contrôlée qu'aux cinq niveaux de l'ADR 0001. La couverture empirique de q (part des demi-heures où la consommation est sous le quantile q) est publiée sur la période d'estimation.
+
+Sont publiés à titre d'information, sans choix possible et sans comparaison comptée :
+
+- la formule A de l'ADR 0001 (moyennes sur toutes les périodes) ;
+- la courbe du coût selon le quantile d'achat, de 0,05 à 0,95 par pas de 0,05, sur la période d'estimation. Elle montre si q tombe près du minimum. **La courbe n'est pas une option** : elle ne sert à rien choisir.
+
+### Coût
+
+Fonction de coût de l'ADR 0001. Pour chaque période k, l'écart vaut Δk = s × (consommation − achat), en MWh. Si Δk > 0 (court), le coût est Δk × (PRE négatif − P_ref). Si Δk < 0 (long), il vaut |Δk| × (P_ref − PRE positif). P_ref vaut 61,1 €/MWh. La sensibilité à 40 et à 100 €/MWh recalcule q et les coûts avec chaque P_ref. Les montants sont publiés pour s = 1 % et en euros par MWh consommé.
+
+**Comparaison, indication sur la validation** : coût d'un achat au quantile q contre coût d'un achat à la prévision ponctuelle, sur la période d'estimation, avec la différence appariée et un intervalle à 95 % par bootstrap par blocs de 7 jours (10 000 tirages, graine 20261117). Le critère de l'ADR 0001 se juge sur le test. Étiquette : **« q estimé et jugé sur la même période : indication optimiste »**.
+
+**Biais** : aucune correction en v0.3. Le coût est décomposé pour montrer la part due au biais. On publie le coût d'un achat au quantile q diminué du biais moyen de q0,5 sur la période d'estimation, à titre d'information. Étiquette : « borne informative, biais connu après coup, impossible en pratique ».
+
+**Compteur** : q est calculé par une formule fixée d'avance, sans choix entre options. Le compteur reste à 13.
+
+**Étiquettes** : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 et Q1 (13 comparaisons) » ; « q estimé et jugé sur la même période ».
+
+### Données des prix des écarts
+
+- ENTSO-E Transparency Platform, Imbalance Prices [17.1.G], zone France (code EIC 10YFR-RTE------C), du 15/03/2024 au 31/08/2026. Lire les prix du test ne l'ouvre pas : sa cible reste masquée. Licence CC BY 4.0, mention « ENTSO-E Transparency Platform ».
+- API : `https://web-api.tp.entsoe.eu/api`, type de document A85, dates en UTC, au plus un an par requête. La documentation distingue deux champs, `PositiveImbalancePrice` et `NegativeImbalancePrice`. La limite publiée est de 400 requêtes par minute par jeton, avec un code 429 en cas de dépassement.
+- Non vérifiés faute de lecture possible : le nom exact du paramètre de zone (documentation Postman illisible par nos outils) et le format de la réponse. Ils sont vérifiés par **un appel de contrôle** sur une seule journée avant tout téléchargement.
+- **Estimation écrite avant le premier appel** : 1 appel de contrôle, puis une requête par mois civil (30 mois, du 03/2024 au 08/2026), pour rester loin de la limite de 200 documents par réponse. Soit 31 appels. **Plafond local : 100 appels par jour**, au plus un appel toutes les 2 secondes. **Arrêt définitif au premier code 429.** Une coupure réseau ou une réponse 5xx donne lieu à une seule nouvelle tentative, comptée.
+- **Jeton** : lu dans `.env` uniquement, jamais affiché ni journalisé, jamais écrit dans un fichier du cache. Un test vérifie qu'il n'apparaît dans aucune sortie ni aucun fichier écrit.
+
+## 25. Prix des écarts téléchargés et périodes sans prix — 25/11/2026, avant le calcul
+
+Comparaisons sur la validation : 13. Mesures dans l'entraînement : 2.
+
+### Constats de la vérification des données
+
+- **Téléchargement** : 31 appels dans la journée du 25/11/2026, sur un plafond local de 100, sans aucun refus de quota. Un appel de contrôle sur le 15/01/2025, puis 30 requêtes mensuelles de mars 2024 à août 2026. L'appel de contrôle a confirmé le nom du paramètre de zone (`controlArea_Domain`) et le format de la réponse (archive zip contenant un document XML).
+- **Deux prix par période** : ENTSO-E publie deux séries, l'une pour les écarts excédentaires (« Excess balance »), l'autre pour les écarts déficitaires (« Insufficient balance »). La première est le prix payé au fournisseur long (PRE positif), la seconde le prix payé par le fournisseur court (PRE négatif).
+- **Le prix payé au fournisseur long n'est jamais supérieur au prix payé par le fournisseur court**, sur les 73 043 périodes téléchargées. Cela confirme la règle de RTE et la correspondance entre les deux séries et les deux prix.
+- **Les deux prix diffèrent dans plus de 99,7 % des périodes** : ils sont égaux dans 0,2 % des périodes de la validation et de la période d'estimation de q, et dans 0,3 % de celles du test. Écart médian entre les deux prix : 6,42 €/MWh sur la validation, 6,32 €/MWh sur la période d'estimation, 9,18 €/MWh sur le test.
+- **Le règlement au quart d'heure commence le 01/01/2025, heure de Paris.** ENTSO-E publie déjà au pas de 15 minutes le 31/12/2024 en temps universel, mais avec deux quarts d'heure égaux dans chaque demi-heure jusqu'à minuit, heure de Paris : ce sont des prix à la demi-heure, recopiés.
+- **Périodes sans prix** (dates en heure de Paris) : 23 les 13 et 14/03/2024, avant la validation ; 37 demi-heures les 18, 21, 24, 25/03/2024 et le 14/04/2024 ; 1 quart d'heure le 21/05/2025, dans la période d'estimation ; aucune sur le test.
+
+### Périodes sans prix : une exclusion appariée
+
+- Une période sans prix est retirée à la fois du calcul de q, du coût de l'achat au quantile et du coût de l'achat à la prévision ponctuelle. Les deux stratégies sont toujours comparées sur exactement les mêmes périodes.
+- Sont publiés, pour la période d'estimation de q, la validation et le test : le nombre de périodes exclues et leurs dates.
+- La même règle vaut pour le test, écrite dès maintenant, même s'il est complet aujourd'hui.
+
+### Le 31/12/2024
+
+Ce jour relève encore du règlement à la demi-heure. Il est traité comme les jours d'avant : une seule période de 30 minutes par demi-heure, au prix recopié. Le code vérifie que les deux quarts d'heure de chaque demi-heure de ce jour ont le même prix, et un test automatique vérifie que ce jour n'est pas compté deux fois et que son coût est égal à celui d'un calcul à la demi-heure.
+
+### Rattachement d'une demi-heure aux périodes de règlement
+
+Avec la convention retenue en entrée 3, la demi-heure étiquetée t couvre l'intervalle (t − 15 min, t + 15 min]. Suivant l'ADR 0001 (« chaque demi-heure se coupe en deux quarts d'heure de même puissance moyenne »), elle se coupe en deux quarts d'heure qui commencent à t − 15 min et à t. Chacun porte le même écart de puissance, soit un quart d'heure d'énergie, et chacun est réglé au prix de la période de règlement qui le contient : un quart d'heure en 2025 et après, une demi-heure avant. Au pas de 30 minutes, une demi-heure de consommation se répartit ainsi pour moitié sur deux périodes de règlement voisines. Pour la formule B, chaque quart d'heure prend le signe de l'écart de la prévision ponctuelle de sa demi-heure.
+
+## 26. Résultats de la décision d'achat de la v0.3 — 25/11/2026
+
+Comparaisons sur la validation : 13, inchangé. Règles des entrées 24 et 25 appliquées telles qu'écrites ; aucune règle ne change et rien n'est corrigé en v0.3. Résultats : `docs/v0.3-decision/data/decision-achat.json`. Deux exécutions donnent le même fichier, d'empreinte sha256 `7f796dcbdcbc34863b26bc0d2ea5bc77402f4c567ee717da3d61748eda848873`.
+
+Étiquettes : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 et Q1 (13 comparaisons) » ; « q estimé et jugé sur la même période : indication optimiste ».
+
+**Période d'estimation** : du 01/01 au 31/08/2025, 11 662 demi-heures, soit 23 323 quarts d'heure jugés. Pour une part de marché de 1 %, l'énergie consommée est de 2 925 111 MWh.
+
+### Résultat avec le prix de référence de 61,1 €/MWh
+
+| | Valeur |
+|---|---|
+| Pénalité quand on est court (Cu) | 10,97 €/MWh, sur 9 774 quarts d'heure |
+| Pénalité quand on est long (Co) | 12,80 €/MWh, sur 13 549 quarts d'heure |
+| q | 0,4616 |
+| Coût de l'achat à la prévision ponctuelle | 1 015 766 €, soit 0,3473 € par MWh consommé |
+| Coût de l'achat au quantile q | 1 015 166 €, soit 0,3471 € par MWh consommé |
+| Différence (quantile − prévision) | −599 € ; intervalle à 95 % de −123 888 € à +136 687 € |
+| Différence par MWh consommé | −0,0002 € ; intervalle de −0,0424 € à +0,0467 € |
+
+L'intervalle vient du bootstrap par blocs d'une semaine de la règle : la moyenne de la différence par quart d'heure et ses bornes, multipliées par le nombre de quarts d'heure jugés. Il couvre un gain ou une perte d'environ 13 % du coût : l'achat au quantile ne se distingue pas de l'achat à la prévision ponctuelle.
+
+**Sensibilité au prix de référence.** Avec 40 €/MWh, la pénalité quand on est long devient négative (−8,30 €/MWh). Avec 100 €/MWh, c'est la pénalité quand on est court qui l'est (−27,93 €/MWh). Dans les deux cas, la règle ne s'applique pas, et l'achat reste la prévision ponctuelle, comme l'entrée 24 le prévoyait.
+
+### Conclusion
+
+Avec un prix de référence fixe, la règle du vendeur de journaux ne peut pas être jugée de façon fiable. Le signe des pénalités dépend de cette hypothèse, puisque 61,1 €/MWh tombe entre les moyennes des deux prix d'écart (54,2 et 64,1). Le coût réel d'un écart se mesure face au prix du marché de la veille de la même période, qui n'est pas disponible sous licence ouverte.
+
+**Prédiction écrite pour le test** : le critère de décision a de fortes chances d'être indiscernable, ou d'échouer, pour les raisons ci-dessus.
+
+### Le biais
+
+Q1 recentre déjà la prévision sur la médiane des résidus passés, et il reste pourtant +311 MW de biais moyen sur q0,5. L'erreur médiane de q0,5 est de +324 MW : le biais ne vient pas de quelques valeurs extrêmes. La prévision ponctuelle a elle-même un biais moyen de +298 MW.
+
+| Mois | Prévision ponctuelle | q0,5 | Recentrage par Q1 |
+|---|---|---|---|
+| Janvier 2025 | +364 MW | +472 MW | +108 MW |
+| Février | +831 MW | +903 MW | +72 MW |
+| Mars | +1 017 MW | +1 074 MW | +57 MW |
+| Avril | +381 MW | +436 MW | +55 MW |
+| Mai | +352 MW | +347 MW | −5 MW |
+| Juin | +794 MW | +770 MW | −24 MW |
+| Juillet | −1 140 MW | −1 217 MW | −77 MW |
+| Août | −141 MW | −221 MW | −80 MW |
+
+Le biais dérive : il va de +1 017 MW en mars à −1 140 MW en juillet. Le recentrage de Q1, entre −80 et +108 MW, ne suit pas cette dérive, probablement à cause du retard de sa fenêtre (3 à 4 mois) et de la variation du biais selon les saisons. Une correction constante ne suffirait donc pas.
+
+Borne calculée avec le biais de la période elle-même, impossible en pratique : l'achat au quantile q diminué du biais moyen de q0,5 coûterait 974 284 €, soit 0,3331 € par MWh consommé.
+
+### Pour information
+
+- **Formule A** (moyennes sur toutes les périodes) : Cu = 2,99 €/MWh, Co = 6,92 €/MWh, q = 0,30.
+- **Courbe du coût selon le quantile d'achat, qui n'est pas une option** : le coût est le plus bas entre les quantiles 0,30 et 0,40 (de 999 375 € à 1 003 535 €), et remonte nettement au-dessus de 0,5 (1 037 865 € à 0,5, 1 618 711 € à 0,9). q = 0,46 en est proche.
+- **Couverture empirique de q** : 54,69 % des demi-heures ont une consommation sous le quantile q, pour une cible de 46,16 %, à cause du biais.
+- **q mois par mois** : non défini en janvier, février, mai, juillet et août (Cu ou Co non positif) ; 0,78 en mars, 0,001 en avril, 0,57 en juin.
+- **q sur toute la validation** (du 15/03/2024 au 31/08/2025) : 0,29.
+
+### Périodes sans prix
+
+Quarts d'heure exclus des deux stratégies à la fois : 1 sur 23 324 pendant la période d'estimation (21/05/2025) ; 75 sur 51 356 pendant la validation (les 18, 21, 22, 24, 25 et 26/03/2024, le 14/04/2024 et le 21/05/2025) ; aucun sur le test. Les dates des 22 et 26/03/2024 apparaissent ici et non dans l'entrée 25, parce qu'un quart d'heure est rattaché ici au jour livré de sa demi-heure.
+
+Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.

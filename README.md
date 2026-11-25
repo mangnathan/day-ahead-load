@@ -4,7 +4,7 @@
 
 **Prévoir la consommation électrique française du lendemain, demi-heure par demi-heure, avec les seules données disponibles au moment où un fournisseur doit acheter.**
 
-État : la prévision ponctuelle (v0.1) et son incertitude (v0.2) sont terminées et mesurées sur la période de validation. La v0.3, qui traduit la prévision en décision d'achat, est la prochaine étape. La période de test reste fermée jusqu'à la v1.0.
+État : la prévision ponctuelle (v0.1), son incertitude (v0.2) et la décision d'achat (v0.3) sont terminées et mesurées sur la période de validation. La v0.4, qui automatise la chaîne quotidienne, est la prochaine étape. La période de test reste fermée jusqu'à la v1.0.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/mape-validation-sombre.svg">
@@ -17,7 +17,7 @@ Un fournisseur d'électricité achète la veille, avant midi, l'énergie que ses
 
 RTE, le gestionnaire du réseau, publie sa propre prévision du lendemain. Elle est très bonne, mais elle arrive après midi, trop tard pour cette décision, et sans fourchette d'incertitude.
 
-Le projet se met à la place d'un fournisseur dont les clients consomment comme la France entière, à une échelle près. Il construit la prévision que ce fournisseur pourrait réellement avoir à midi, la mesure honnêtement, puis la traduira en quantité à acheter et en coût.
+Le projet se met à la place d'un fournisseur dont les clients consomment comme la France entière, à une échelle près. Il construit la prévision que ce fournisseur pourrait réellement avoir à midi, la mesure honnêtement, puis la traduit en quantité à acheter et en coût.
 
 ## Résultats
 
@@ -40,7 +40,9 @@ Mesurés sur la période de validation, du 15/03/2024 au 31/08/2025, avec la mé
 
 **La fourchette** : intervalles à 80 % et 95 % calibrés sur l'année de validation (77,5 % et 94,2 %), trop étroits en hiver (65,8 % et 88,2 %). Mesurée du 02/09/2024 au 31/08/2025, premiers jours qui disposent de 90 jours d'erreurs publiées.
 
-Ces chiffres sont probablement optimistes : treize modèles ont été comparés sur cette même période, la météo prévue de la validation est en partie rejouée par ECMWF, et le naïf à 7 jours lit des données qu'un fournisseur n'aurait pas encore. Les critères de réussite, fixés avant toute modélisation, se jugent sur la période de test, ouverte une seule fois en v1.0. Le détail est dans les rapports de la [v0.1](docs/pdf/day-ahead-load_v0.1_Rapport-prevision-ponctuelle.pdf) et de la [v0.2](docs/pdf/day-ahead-load_v0.2_Rapport-incertitude.pdf) (PDF).
+**La décision d'achat** : avec un prix de référence fixe, acheter au quantile du vendeur de journaux ne se distingue pas d'un achat à la prévision centrale sur la validation ; la décision est très sensible à ce prix (voir le rapport).
+
+Ces chiffres sont probablement optimistes : treize modèles ont été comparés sur cette même période, la météo prévue de la validation est en partie rejouée par ECMWF, et le naïf à 7 jours lit des données qu'un fournisseur n'aurait pas encore. Les critères de réussite, fixés avant toute modélisation, se jugent sur la période de test, ouverte une seule fois en v1.0. Le détail est dans les rapports de la [v0.1](docs/pdf/day-ahead-load_v0.1_Rapport-prevision-ponctuelle.pdf), de la [v0.2](docs/pdf/day-ahead-load_v0.2_Rapport-incertitude.pdf) et de la [v0.3](docs/pdf/day-ahead-load_v0.3_Rapport-decision.pdf) (PDF).
 
 ## Comment ça marche
 
@@ -58,6 +60,7 @@ flowchart LR
 3. **Rien de postérieur à midi la veille.** Un test remplace par une valeur absurde toute donnée publiée après l'heure de décision, et vérifie que la prévision ne change pas. Quand un calcul météo manque, le précédent prend le relais, et chaque cas est enregistré.
 4. **Le modèle.** LightGBM aux réglages par défaut, avec une graine fixée, entraîné depuis 2017. Il est réentraîné au début de chaque mois sur les seuls jours déjà publiés en consolidé : le modèle du mois M apprend jusqu'à la fin du mois M − 4, et un test refuse toute ligne plus récente.
 5. **La fourchette.** Chaque quantile ajoute à la prévision le quantile des erreurs passées de la même demi-heure, publiées avant midi la veille, sur 12 mois au plus. Les intervalles à 80 % et à 95 % vont des quantiles 0,1 à 0,9 et 0,025 à 0,975.
+6. **La décision d'achat.** Le niveau d'achat suit la règle du vendeur de journaux : il compare ce que coûte un MWh manquant et un MWh en trop, au vu des prix des écarts de RTE publiés par ENTSO-E et d'un prix de référence fixe. Chaque écart est ensuite chiffré au prix de sa période de règlement.
 
 ## Méthode
 
@@ -83,8 +86,8 @@ flowchart LR
 | v0.0 | Étude de faisabilité : besoin, données, références, critères | [Rapport (PDF)](docs/pdf/day-ahead-load_v0.0_Rapport-de-faisabilite.pdf) |
 | v0.1 | Prévision ponctuelle choisie et mesurée sur la validation | [Rapport (PDF)](docs/pdf/day-ahead-load_v0.1_Rapport-prevision-ponctuelle.pdf) |
 | v0.2 | Incertitude : réentraînement mensuel, intervalles à 80 % et 95 % | [Rapport (PDF)](docs/pdf/day-ahead-load_v0.2_Rapport-incertitude.pdf) |
-| v0.3 | Décision d'achat et coût des écarts | prochaine étape |
-| v0.4 | Chaîne quotidienne automatisée | prévu |
+| v0.3 | Décision d'achat et coût des écarts, avec les prix des écarts d'ENTSO-E | [Rapport (PDF)](docs/pdf/day-ahead-load_v0.3_Rapport-decision.pdf) |
+| v0.4 | Chaîne quotidienne automatisée | prochaine étape |
 | v0.5 | Déploiement sur AWS, offre gratuite | prévu |
 | v1.0 | Ouverture unique du test et bilan | prévu |
 
@@ -139,11 +142,19 @@ uv run python scripts/modelling/assess_v0_1.py
 # v0.2 : réentraînement mensuel, quantiles et intervalles
 uv run python scripts/modelling/compare_intervals.py
 
+# v0.3 : prix des écarts d'ENTSO-E (jeton ENTSOE_TOKEN dans .env, voir .env.example),
+# 31 appels, plafond local de 100 par jour, puis quantile d'achat et coûts
+uv run python scripts/decision/download_imbalance_prices.py estimation
+uv run python scripts/decision/download_imbalance_prices.py controle
+uv run python scripts/decision/download_imbalance_prices.py telecharger
+uv run python scripts/decision/compute_purchase.py
+
 # Figure de ce README, puis rapports
 uv run python scripts/docs/readme_figure.py
 cd docs/v0.0-faisabilite && tectonic -X compile v0.0-rapport-de-faisabilite.tex
 cd ../v0.1-prevision-ponctuelle && tectonic -X compile v0.1-rapport-prevision-ponctuelle.tex
 cd ../v0.2-incertitude && tectonic -X compile v0.2-rapport-incertitude.tex
+cd ../v0.3-decision && tectonic -X compile v0.3-rapport-decision.tex
 ```
 
 En dehors des téléchargements, chaque script ne lit que le cache local. Les comparaisons relancées redonnent des fichiers de résultats identiques.
@@ -157,6 +168,7 @@ src/day_ahead_load/              code : téléchargements, table, météo, calen
                                  références, mesures du bilan, quantiles
 scripts/feasibility/             étude de faisabilité (v0.0)
 scripts/modelling/               table, comparaisons et bilan de la v0.1, intervalles de la v0.2
+scripts/decision/                prix des écarts et décision d'achat de la v0.3
 scripts/monitoring/              mesure quotidienne de l'heure de publication des calculs météo
 scripts/docs/                    figure du README
 tests/                           tests unitaires sur des données fabriquées, sans réseau
@@ -164,6 +176,7 @@ docs/adr/                        notes de décision
 docs/v0.0-faisabilite/           rapport LaTeX et chiffres de la v0.0
 docs/v0.1-prevision-ponctuelle/  journal des choix (v0.1 et suivantes), rapport LaTeX et chiffres de la v0.1
 docs/v0.2-incertitude/           rapport LaTeX et chiffres de la v0.2
+docs/v0.3-decision/              rapport LaTeX et chiffres de la v0.3
 docs/pdf/                        rapports compilés
 .github/workflows/               CI et mesure quotidienne
 ```
@@ -175,12 +188,13 @@ Le projet n'utilise que des données publiques :
 - **éCO2mix** (RTE) : consommation nationale et prévision J-1 de RTE, via la plateforme ODRÉ, sous [Licence Ouverte 2.0](https://www.etalab.gouv.fr/licence-ouverte-open-licence/).
 - **Open-Meteo** : réanalyse ERA5 (Copernicus) et calculs du modèle IFS d'ECMWF, sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 - **INSEE** : aires d'attraction des villes 2020, pour le choix des 12 points météo, sous Licence Ouverte 2.0.
+- **ENTSO-E Transparency Platform** : prix des écarts de la France (Imbalance Prices), sous licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
-Le dépôt ne contient aucune série de consommation ni aucune courbe de RTE, seulement des chiffres agrégés calculés à partir de ces données. Ce projet est indépendant : il n'est ni soutenu ni validé par RTE, ECMWF ou Open-Meteo.
+Le dépôt ne contient aucune série de consommation ni aucune courbe de RTE, seulement des chiffres agrégés calculés à partir de ces données. Ce projet est indépendant : il n'est ni soutenu ni validé par RTE, ECMWF, Open-Meteo ou ENTSO-E.
 
 ## English summary
 
-day-ahead-load forecasts French national electricity consumption for the next day, for each half-hour, using only the data a supplier actually has at noon the day before, when it must buy. Version 0.1 selects a LightGBM model on a validation period (March 2024 to August 2025); version 0.2 retrains it every month on published data only, which gives 2.67 % MAPE, less than half the error of naive forecasts and on par with the grid operator's own raw day-ahead forecast, published after the decision time. Version 0.2 also adds 80 % and 95 % intervals from the model's past errors: they cover 77.5 % and 94.2 % of half-hours over the validation year, but are too narrow in winter (65.8 % and 88.2 %). Every modelling choice follows a rule committed before the computation, gains must clear a block-bootstrap noise test, and the test year stays closed until version 1.0. Next: the purchase decision and its cost (v0.3).
+day-ahead-load forecasts French national electricity consumption for the next day, for each half-hour, using only the data a supplier actually has at noon the day before, when it must buy. Version 0.1 selects a LightGBM model on a validation period (March 2024 to August 2025); version 0.2 retrains it every month on published data only, which gives 2.67 % MAPE, less than half the error of naive forecasts and on par with the grid operator's own raw day-ahead forecast, published after the decision time. Version 0.2 also adds 80 % and 95 % intervals from the model's past errors: they cover 77.5 % and 94.2 % of half-hours over the validation year, but are too narrow in winter (65.8 % and 88.2 %). Every modelling choice follows a rule committed before the computation, gains must clear a block-bootstrap noise test, and the test year stays closed until version 1.0. Version 0.3 prices the forecast errors with the French imbalance prices published by ENTSO-E: with a fixed reference price, buying at the newsvendor quantile cannot be told apart from buying the central forecast, and the decision is very sensitive to that price. Next: the daily automated pipeline (v0.4).
 
 ## Auteur et licence
 

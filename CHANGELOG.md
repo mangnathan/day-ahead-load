@@ -4,6 +4,17 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 
 ## [Non publié]
 
+## [v0.3] — 2026-11-25
+
+Décision d'achat mesurée sur la validation, test fermé (ADR 0005).
+
+### Ajouté
+- Décision d'achat de la v0.3 : prix des écarts d'ENTSO-E téléchargés (31 appels, aucun refus), quantile du vendeur de journaux selon le sens de l'écart (q = 0,46 sur janvier-août 2025), coût de chaque écart au prix de sa période de règlement. Avec un prix de référence fixe, acheter au quantile ne se distingue pas d'un achat à la prévision centrale ; la décision est très sensible à ce prix. ADR 0005 et rapport de la v0.3.
+- Client des prix des écarts d'ENTSO-E (17.1.G, France) pour la v0.3 : 31 appels estimés avant tout appel, plafond local de 100 par jour, arrêt définitif au premier refus de quota, appel de contrôle avant le téléchargement, jeton lu dans `.env` et jamais écrit ni affiché (test dédié). `.env.example` documente la clé.
+
+### Corrigé
+- L'ADR 0001 avait pris le « processus unique Ecarts » de RTE du 05/10/2024, qui fusionne deux traitements des données de comptage, pour un passage à un prix d'écart unique. Les prix des écarts restent doubles ; la correction est écrite dans l'ADR 0005, sans réécrire l'ADR 0001.
+
 ## [v0.2] — 2026-11-24
 
 Incertitude autour de la prévision, mesurée sur la validation, test fermé (ADR 0004).
