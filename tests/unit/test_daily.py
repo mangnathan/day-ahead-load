@@ -84,6 +84,9 @@ def test_end_to_end_forecast_for_a_given_day(model_text: str) -> None:
     assert np.allclose(out["achat_q"], out["prevision"] - 50.0)
     content = daily.core(DAY, out, inputs, {"modele_sha256": "x"})
     assert content["calculs_meteo_utilises"]["temperature_2m"][-1] == "2026-11-25T00:00Z"
+    # Le lissage sur 72 h lit aussi les premières heures des calculs des jours précédents.
+    assert content["calculs_meteo_utilises"]["temperature_2m"][0] == "2026-11-22T00:00Z"
+    assert content["calculs_meteo_utilises"]["cloud_cover"] == ["2026-11-25T00:00Z"]
     assert len(daily.content_sha256(content)) == 64
     assert daily.content_sha256(content) == daily.content_sha256(dict(content))
 

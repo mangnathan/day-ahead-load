@@ -106,16 +106,22 @@ def features(inputs: Inputs) -> tuple[pd.DataFrame, pd.DataFrame]:
 
 
 def weather_runs_used(inputs: Inputs) -> dict[str, list[str]]:
-    """Pour chaque variable, les calculs de 00 UTC qui ont fourni les heures du jour livré."""
+    """Pour chaque variable, les calculs de 00 UTC qui ont fourni ses heures.
+
+    La température couvre aussi les heures de ses lissages (jusqu'à 72 h avant la première
+    demi-heure) ; les autres variables, les seules heures du jour livré.
+    """
     hourly = wf.seen_at_decision(inputs.runs, wf.own_day_hours(inputs.runs), inputs.day)
     rows = tb.half_hour_grid(inputs.day, inputs.day)
     ends = pd.DatetimeIndex(rows.index)
     hours = pd.DatetimeIndex(hourly.runs.index)
-    keep = np.asarray(
-        (hours >= ends.min() - timedelta(hours=1)) & (hours <= ends.max() + timedelta(hours=1))
-    )
-    used = hourly.runs[keep]
-    return {name: sorted({f"{d}T00:00Z" for d in used[name].dropna()}) for name in wf.VARIABLES}
+    last = ends.max() + timedelta(hours=1)
+    out = {}
+    for name in wf.VARIABLES:
+        back = max(wf.SMOOTHING_HOURS) + 1 if name == wf.TEMPERATURE else 1
+        keep = np.asarray((hours >= ends.min() - timedelta(hours=back)) & (hours <= last))
+        out[name] = sorted({f"{d}T00:00Z" for d in hourly.runs.loc[keep, name].dropna()})
+    return out
 
 
 @dataclass(frozen=True)
