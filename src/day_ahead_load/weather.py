@@ -255,14 +255,14 @@ class Response:
 Fetcher = Callable[[str], Response]
 
 
-def urllib_fetch(url: str) -> Response:
+def urllib_fetch(url: str, timeout: float = TIMEOUT_S) -> Response:
     parsed = urlparse(url)
     if parsed.scheme != "https" or parsed.hostname not in ALLOWED_HOSTS:
         raise ValueError(f"adresse refusée : {url}")
     request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})  # noqa: S310
     try:
         # Schéma et hôte vérifiés ci-dessus : https vers Open-Meteo ou geo.api.gouv.fr.
-        with urllib.request.urlopen(request, timeout=TIMEOUT_S) as response:  # noqa: S310
+        with urllib.request.urlopen(request, timeout=timeout) as response:  # noqa: S310
             return Response(response.status, dict(response.headers.items()), response.read())
     except urllib.error.HTTPError as error:
         return Response(error.code, dict(error.headers.items()), error.read())
@@ -289,10 +289,12 @@ class Downloader:
         fetch: Fetcher = urllib_fetch,
         sleep: Callable[[float], None] = time.sleep,
         clock: Callable[[], float] = time.monotonic,
+        retry_wait: float = RETRY_WAIT_S,
     ) -> None:
         self.root = root
         self.budget = budget
         self.fetch = fetch
+        self.retry_wait = retry_wait
         self.sleep = sleep
         self.clock = clock
         self._last_call: float | None = None
@@ -329,7 +331,7 @@ class Downloader:
         try:
             response = self._attempt(url)
         except TransientFailureError as first:
-            self.sleep(RETRY_WAIT_S)
+            self.sleep(self.retry_wait)
             try:
                 response = self._attempt(url)
             except TransientFailureError as second:

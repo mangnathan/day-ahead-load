@@ -92,7 +92,8 @@ jobs:
           git push origin HEAD:donnees/previsions
 
       - name: Signaler la panne
-        if: failure()
+        # Une annulation (délai dépassé) est une panne comme une autre.
+        if: failure() || cancelled()
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

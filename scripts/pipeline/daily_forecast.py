@@ -26,6 +26,7 @@ import json
 import os
 import sys
 import tempfile
+import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Any
@@ -43,6 +44,12 @@ ARTEFACTS = Path("artefacts/v0.4")
 CONTROL = Path("docs/v0.0-faisabilite/data/meteo-controle.json")
 WEIGHTS = Path("docs/v0.0-faisabilite/data/indice-temperature-poids.json")
 DAILY_CAP = 100
+# Délais courts pour tenir midi : les machines de GitHub ont des coupures intermittentes vers
+# l'API d'Open-Meteo (constaté en v0.0 et le 25/11/2026). Au-delà du budget de temps, la chaîne
+# cesse de télécharger et écrit une absence motivée plutôt que d'être tuée sans trace.
+FETCH_TIMEOUT_S = 20.0
+RETRY_WAIT_S = 30.0
+TIME_BUDGET_S = 600.0
 MIN_SERVED_HOURS = 48  # un calcul servi a au moins 48 heures de température
 
 
@@ -59,8 +66,15 @@ def elevations() -> dict[str, float]:
     return {entry["commune"]: float(entry["altitude_m"]) for entry in summary["points"]}
 
 
-def fetch_run(run_day: date, downloader: w.Downloader) -> pd.DataFrame:
-    """Indice national horaire du calcul de 00 UTC de `run_day`, aux 12 points."""
+class TimeBudgetExceededError(RuntimeError):
+    """Le budget de temps des téléchargements est épuisé."""
+
+
+def fetch_run(run_day: date, downloader: w.Downloader, deadline: float) -> pd.DataFrame:
+    """Indice national horaire du calcul de 00 UTC de `run_day`, aux 12 points.
+
+    S'arrête avant un nouvel appel si l'heure limite `deadline` (horloge monotone) est passée.
+    """
     source = w.SOURCES["ecmwf_00utc"]
     heights = elevations()
     weights = ti.normalize(
@@ -84,6 +98,8 @@ def fetch_run(run_day: date, downloader: w.Downloader) -> pd.DataFrame:
         request = w.Request(
             "ecmwf_00utc", point, run_day, run_day, w.checked_url(source.url, params)
         )
+        if time.monotonic() > deadline:
+            raise TimeBudgetExceededError(f"budget de temps épuisé pendant le calcul du {run_day}")
         record = downloader.get(request)
         by_point[point] = w.hourly_frame(record["reponse"]).astype(float)
     return wf.national(by_point, weights)
@@ -99,9 +115,7 @@ def deposit_time(run_day: date) -> datetime | None:
 
 
 def _sleep(seconds: float) -> None:
-    import time
-
-    time.sleep(seconds)
+    time.sleep(min(seconds, RETRY_WAIT_S))
 
 
 def load_runs(folder: Path, days: list[date]) -> dict[date, pd.DataFrame]:
@@ -157,14 +171,25 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory() as tmp:
         budget = w.Budget(Path(tmp) / "journal.json", Path(tmp) / "ARRET.json", cap=DAILY_CAP)
-        downloader = w.Downloader(Path(tmp) / "cache", budget)
+        downloader = w.Downloader(
+            Path(tmp) / "cache",
+            budget,
+            fetch=lambda url: w.urllib_fetch(url, timeout=FETCH_TIMEOUT_S),
+            retry_wait=RETRY_WAIT_S,
+        )
+        deadline = time.monotonic() + TIME_BUDGET_S
         meteo = root / "meteo"
         secours = False
         # Calcul de la veille : seulement s'il est déposé depuis 2 h et servi par l'API.
         if not (meteo / f"run-{run_day}.csv").exists():
             deposit = deposit_time(run_day)
             ready = deposit is not None and daily.run_ready(now, deposit)
-            frame = fetch_run(run_day, downloader) if ready else None
+            frame = None
+            if ready:
+                try:
+                    frame = fetch_run(run_day, downloader, deadline)
+                except (TimeBudgetExceededError, w.NetworkInterruptedError) as error:
+                    print(f"calcul du {run_day} non téléchargé : {error}")
             served = (
                 frame is not None and int(frame["temperature_2m"].notna().sum()) >= MIN_SERVED_HOURS
             )
@@ -180,12 +205,18 @@ def main() -> int:
                 secours = True
                 print(f"calcul de 00 UTC du {run_day} indisponible : calcul de secours")
         # Calculs plus anciens, publiés depuis longtemps : complétés s'ils manquent.
+        # Une coupure ou le budget de temps épuisé arrête les téléchargements : il manquera
+        # alors une entrée, et la chaîne écrira une absence motivée.
         for k in range(2, daily.RUN_DAYS_BACK + 1):
             older = day - timedelta(days=k)
-            if not (meteo / f"run-{older}.csv").exists():
-                daily.write_once(
-                    meteo / f"run-{older}.csv", daily.run_to_csv(fetch_run(older, downloader))
-                )
+            if (meteo / f"run-{older}.csv").exists():
+                continue
+            try:
+                frame = fetch_run(older, downloader, deadline)
+            except (TimeBudgetExceededError, w.NetworkInterruptedError) as error:
+                print(f"calcul du {older} non téléchargé : {error}")
+                break
+            daily.write_once(meteo / f"run-{older}.csv", daily.run_to_csv(frame))
         print(f"{downloader.calls} appels à Open-Meteo")
 
     days = [day - timedelta(days=k) for k in range(daily.RUN_DAYS_BACK, 0, -1)]

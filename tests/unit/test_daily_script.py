@@ -52,7 +52,7 @@ def script(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[ModuleType,
         for s in range(48)
     }
 
-    def fake_fetch(run_day: date, downloader: object) -> pd.DataFrame:
+    def fake_fetch(run_day: date, downloader: object, deadline: float) -> pd.DataFrame:
         fetched.append(run_day)
         return national_run(run_day)
 
@@ -118,3 +118,27 @@ def test_a_missing_level_gives_an_absence_and_a_failure(
     absence = json.loads((root / "absences" / f"{DAY}.json").read_text(encoding="utf-8"))
     assert "niveau" in absence["cause"]
     assert not (root / "previsions" / f"{DAY}.json").exists()
+
+
+def test_an_exhausted_time_budget_gives_an_absence_not_a_hang(
+    script: tuple[ModuleType, Path, list[date]], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    module, root, _ = script
+
+    def slow_fetch(run_day: date, downloader: object, deadline: float) -> pd.DataFrame:
+        if run_day < DAY - timedelta(days=1):
+            raise module.TimeBudgetExceededError("budget de temps épuisé")
+        return national_run(run_day)
+
+    monkeypatch.setattr(module, "fetch_run", slow_fetch)
+    monkeypatch.setattr(module, "deposit_time", lambda d: NOW - timedelta(hours=3))
+    assert run(module, root, "premier", monkeypatch) == 1
+    absence = json.loads((root / "absences" / f"{DAY}.json").read_text(encoding="utf-8"))
+    assert "temperature_lissee_72h" in absence["cause"]
+    assert (root / "meteo" / f"run-{DAY - timedelta(days=1)}.csv").exists()
+
+
+def test_the_daily_script_uses_short_delays() -> None:
+    module = load_script()
+    assert module.FETCH_TIMEOUT_S <= 20 and module.RETRY_WAIT_S <= 30
+    assert module.TIME_BUDGET_S <= 600
