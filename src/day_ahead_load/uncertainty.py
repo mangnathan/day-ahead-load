@@ -15,6 +15,8 @@ from datetime import date, timedelta
 import numpy as np
 import pandas as pd
 
+from day_ahead_load import guard
+
 LEVELS = (0.025, 0.1, 0.5, 0.9, 0.975)
 INTERVALS = {"80": (0.1, 0.9), "95": (0.025, 0.975)}
 WINDOW_MONTHS = 12
@@ -92,6 +94,7 @@ def calibrate(
     `jour` et les colonnes dont dépend le groupement. Avec `fallback`, un groupe qui compte
     moins de 100 résidus à la date de calibration prend les résidus de son groupe de repli.
     """
+    guard.refuse_test_days(residual_rows.loc[residuals.notna(), "jour"])
     res_day = pd.to_datetime(residual_rows["jour"]).to_numpy()
     res_value = residuals.to_numpy(dtype=float)
     res_group = grouping(residual_rows)

@@ -1,0 +1,37 @@
+{
+  "regle": "journal des choix, entrée 27",
+  "cree_le": "2026-11-25T11:25:19+00:00",
+  "commit": "af67caeea863ba634ada4d7109fe892dfc8e227b",
+  "modele": {
+    "fichier": "modele.txt",
+    "sha256": "89e4d840d374768a25b8a4f38bbf6b19ce0312ea4b8e20e31a49171d5d64662d",
+    "configuration_sha256": "89536f7563a5f72b25960ccbe274db10a37dfa56d49cd590e00a8b72035a9c4f",
+    "entrainement": [
+      "2017-01-01",
+      "2025-08-31"
+    ],
+    "lignes": 151886,
+    "meteo_entrainement": "ERA5"
+  },
+  "fourchette": {
+    "fichier": "ecarts-fourchette.json",
+    "sha256": "e04f8e7b7ba3ead1842ebfe92f8abc11418ce1ee556706936eac80e4cffd8470",
+    "residus": [
+      "2024-09-01",
+      "2025-08-31"
+    ],
+    "niveaux": [
+      "0.025",
+      "0.1",
+      "0.5",
+      "0.9",
+      "0.975",
+      "0.4616"
+    ],
+    "limite": "résidus de modèles plus anciens, hors échantillon : la fourchette décrit un modèle un peu moins bien informé que celui qui tourne"
+  },
+  "quantile_d_achat": {
+    "q": 0.4616,
+    "etiquette": "règle de la v0.3, non validée"
+  }
+}

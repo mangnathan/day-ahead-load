@@ -4,6 +4,12 @@ Les évolutions notables du projet sont notées ici, selon le format [Keep a Cha
 
 ## [Non publié]
 
+### Ajouté
+- Chaîne quotidienne de la v0.4 : un workflow prévoit chaque jour, avant midi heure de Paris la veille, les demi-heures du lendemain (prévision centrale, cinq quantiles, volume au quantile q étiqueté « règle de la v0.3, non validée ») et les écrit sur la branche `donnees/previsions`, avec l'identifiant de l'exécution, les heures enregistrées par GitHub, le statut « à l'heure » ou « en retard » et l'empreinte sha256 du contenu. Deux départs par jour, calcul de secours, une seule prévision par jour livré, absence motivée si une entrée manque, un seul ticket d'alerte à la fois.
+- Artefacts figés à la fin de la validation (modèle entraîné jusqu'au 31/08/2025, fourchette tirée des 12 derniers mois de résidus de la validation), avec leurs empreintes et le commit qui les a fabriqués ; refabriqués à l'identique octet par octet.
+- Garde du test : aucune erreur sur la période de test ne peut être calculée avant la v1.0 ; un test vérifie qu'empoisonner les consommations du test ne change ni le modèle figé, ni la fourchette, ni q, et que le niveau des 52 semaines est le seul chemin d'une consommation du test.
+- Niveau mensuel des 52 semaines, publié comme une moyenne, recalculé les 2, 9, 16 et 23 du mois sans jamais réécrire une valeur publiée ni rattraper une décision passée.
+
 ## [v0.3] — 2026-11-25
 
 Décision d'achat mesurée sur la validation, test fermé (ADR 0005).

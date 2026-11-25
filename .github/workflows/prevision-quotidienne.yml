@@ -1,0 +1,119 @@
+# Prévoit chaque jour la consommation du lendemain, avant midi heure de Paris la veille
+# (journal des choix, entrée 27). Deux départs : le premier s'arrête proprement si le calcul
+# ECMWF de 00 UTC n'est pas encore disponible (dépôt sur la copie AWS d'Open-Meteo + 2 h), le
+# second réessaie et applique le calcul de secours. Une seule prévision par jour livré, jamais
+# écrasée. La prévision est écrite sur la branche donnees/previsions, avec l'identifiant de
+# l'exécution, les heures enregistrées par GitHub et l'empreinte sha256 de son contenu.
+# Séparé de la CI : la CI et les tests ne font aucun appel réseau.
+name: Prévision quotidienne
+
+on:
+  schedule:
+    # 95 calculs mesurés : disponibles (dépôt + 2 h) entre 7 h 52 et 9 h 09 UTC. Midi à Paris
+    # tombe à 10 h UTC en été et 11 h UTC en hiver. GitHub peut retarder un départ.
+    - cron: "20 8 * * *"
+    - cron: "15 9 * * *"
+  workflow_dispatch:
+    inputs:
+      depart:
+        description: "Départ simulé"
+        type: choice
+        options: [second, premier]
+        default: second
+
+permissions:
+  contents: write
+  issues: write
+  actions: read
+
+concurrency:
+  group: prevision-quotidienne
+  cancel-in-progress: false
+
+env:
+  LABEL: panne-chaine-quotidienne
+
+jobs:
+  prevision:
+    name: Prévision du lendemain
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: donnees/previsions
+          path: donnees
+
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.13.1"
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Installer le paquet sans les outils de développement
+        run: uv sync --locked --no-dev
+
+      - name: Prévoir
+        id: prevoir
+        env:
+          DEPART: ${{ github.event_name == 'workflow_dispatch' && inputs.depart || (github.event.schedule == '20 8 * * *' && 'premier' || 'second') }}
+        run: uv run --no-sync python scripts/pipeline/daily_forecast.py --donnees donnees --depart "$DEPART"
+
+      - name: Horodater par GitHub
+        if: steps.prevoir.outputs.fichier != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FICHIER: ${{ steps.prevoir.outputs.fichier }}
+        run: |
+          RUN="repos/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          DEPART_EXECUTION=$(gh api "$RUN" --jq .run_started_at)
+          FIN=$(gh api "$RUN/attempts/${{ github.run_attempt }}/jobs" \
+            --jq '.jobs[] | select(.name == "Prévision du lendemain") | .steps[] | select(.name == "Prévoir") | .completed_at')
+          uv run --no-sync python scripts/pipeline/stamp_forecast.py \
+            --fichier "$FICHIER" --depart-execution "$DEPART_EXECUTION" --fin-prevision "$FIN"
+
+      - name: Enregistrer sur la branche de données
+        if: always()
+        working-directory: donnees
+        run: |
+          cp ../docs/v0.4-chaine/README-donnees.md README.md
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Rien de nouveau."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Prévision quotidienne, exécution ${{ github.run_id }}"
+          git push origin HEAD:donnees/previsions
+
+      - name: Signaler la panne
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh label create "$LABEL" --color B60205 --description "Panne de la chaîne quotidienne" --force
+          MESSAGE="Échec de l'exécution ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} ($(date -u +%FT%TZ))."
+          NUMERO=$(gh issue list --label "$LABEL" --state open --json number --jq '.[0].number')
+          if [ -n "$NUMERO" ]; then
+            gh issue comment "$NUMERO" --body "$MESSAGE"
+          else
+            gh issue create --title "Panne de la chaîne quotidienne" --label "$LABEL" --body "$MESSAGE"
+          fi
+
+      - name: Signaler le retour à la normale
+        if: success() && steps.prevoir.outputs.fichier != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          NUMERO=$(gh issue list --label "$LABEL" --state open --json number --jq '.[0].number')
+          if [ -n "$NUMERO" ]; then
+            gh issue comment "$NUMERO" --body "Retour à la normale : prévision du ${{ steps.prevoir.outputs.jour }} écrite par l'exécution ${{ github.run_id }}."
+            gh issue close "$NUMERO"
+          fi

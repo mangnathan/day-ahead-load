@@ -12,6 +12,7 @@ from datetime import date
 import numpy as np
 import pandas as pd
 
+from day_ahead_load import guard
 from day_ahead_load import modelling as md
 
 SEASONS = {
@@ -40,6 +41,7 @@ def ape(truth: np.ndarray, forecast: np.ndarray) -> np.ndarray:
 
 def blocks(days: Sequence[date], first_day: date) -> np.ndarray:
     """Numéro du bloc de 7 jours livrés consécutifs à partir de `first_day`."""
+    guard.refuse_test_days(days)
     offsets = (pd.to_datetime(pd.Series(days)) - pd.Timestamp(first_day)).dt.days.to_numpy()
     if (offsets < 0).any():
         raise ValueError("jour antérieur au premier bloc")

@@ -1,0 +1,91 @@
+# Calcule chaque mois le niveau des 52 semaines des décisions du mois (journal des choix,
+# entrées 27 et 28) : télécharge l'export éCO2mix d'ODRÉ (deux fichiers) et ne publie que des
+# moyennes, jamais la série, sur la branche donnees/previsions. Séparé de la CI.
+name: Niveau mensuel
+
+on:
+  schedule:
+    # Le 2 de chaque mois, le consolidé du mois M − 3 est tenu pour publié (règle M+3). ODRÉ
+    # publiant parfois plus tard, le calcul est relancé les 9, 16 et 23 : seuls les niveaux vides
+    # des décisions encore à venir sont alors remplis.
+    - cron: "0 6 2,9,16,23 * *"
+  workflow_dispatch:
+    inputs:
+      mois:
+        description: "Mois de décision (AAAA-MM), vide pour le mois en cours"
+        type: string
+        default: ""
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: prevision-quotidienne
+  cancel-in-progress: false
+
+env:
+  LABEL: panne-chaine-quotidienne
+
+jobs:
+  niveau:
+    name: Niveau des 52 semaines
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: donnees/previsions
+          path: donnees
+
+      - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
+        with:
+          version: "0.13.1"
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Installer le paquet sans les outils de développement
+        run: uv sync --locked --no-dev
+
+      - name: Calculer le niveau
+        env:
+          MOIS: ${{ inputs.mois }}
+        run: |
+          if [ -n "$MOIS" ]; then
+            uv run --no-sync python scripts/pipeline/monthly_level.py --donnees donnees --mois "$MOIS"
+          else
+            uv run --no-sync python scripts/pipeline/monthly_level.py --donnees donnees
+          fi
+
+      - name: Enregistrer sur la branche de données
+        working-directory: donnees
+        run: |
+          cp ../docs/v0.4-chaine/README-donnees.md README.md
+          git add -A
+          if git diff --cached --quiet; then
+            echo "Rien de nouveau."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Niveau mensuel, exécution ${{ github.run_id }}"
+          git push origin HEAD:donnees/previsions
+
+      - name: Signaler la panne
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh label create "$LABEL" --color B60205 --description "Panne de la chaîne quotidienne" --force
+          MESSAGE="Échec du niveau mensuel : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} ($(date -u +%FT%TZ))."
+          NUMERO=$(gh issue list --label "$LABEL" --state open --json number --jq '.[0].number')
+          if [ -n "$NUMERO" ]; then
+            gh issue comment "$NUMERO" --body "$MESSAGE"
+          else
+            gh issue create --title "Panne de la chaîne quotidienne" --label "$LABEL" --body "$MESSAGE"
+          fi
