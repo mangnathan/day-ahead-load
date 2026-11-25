@@ -1,0 +1,126 @@
+\documentclass[11pt,a4paper]{article}
+
+\newcommand{\rapporttitre}{Décision d'achat}
+\newcommand{\rapportversion}{v0.3}
+\input{../latex/preambule}
+\usepackage{needspace}
+\usepackage{amsmath}
+\usepackage{etoolbox}
+% Laisse un peu plus d'espace entre les mots plutôt que de déborder.
+\setlength{\emergencystretch}{3em}
+% Un titre de section ne reste jamais seul en bas de page.
+\pretocmd{\section}{\needspace{10\baselineskip}}{}{}
+
+\begin{document}
+
+\pagedegarde{Acheter au quantile du vendeur de journaux : ce que permet de juger un prix de référence fixe}{25 novembre 2026}{Version 0.3, test fermé}
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+
+\section*{Synthèse}
+\addcontentsline{toc}{section}{Synthèse}
+
+Un fournisseur achète la veille l'énergie du lendemain. S'il achète trop ou trop peu, l'écart est réglé au prix des écarts de RTE, qui n'est pas le même selon qu'il est court ou long. La v0.3 cherche à quel niveau de la fourchette de la v0.2 il vaut mieux acheter, et ce que coûtent les écarts.
+
+\begin{itemize}
+  \item Les prix des écarts de mars 2024 à août 2026 ont été téléchargés depuis la plateforme de transparence d'ENTSO-E. Ils sont bien doubles : un prix pour le fournisseur long, un autre pour le fournisseur court, différents dans plus de 99,7~\% des périodes.
+  \item Sur la période d'estimation (janvier à août 2025), la règle du vendeur de journaux donne $q = 0{,}46$. Acheter à ce quantile coûte 599~€ de moins qu'acheter la prévision centrale, sur un coût d'environ un million d'euros pour une part de marché de 1~\%, avec un intervalle à 95~\% de $-124\,000$ à $+137\,000$~€.
+  \item Avec un prix de référence de 40 ou de 100~€/MWh au lieu de 61,1, la règle ne s'applique plus.
+\end{itemize}
+
+\aretenir{Avec un prix de référence fixe, la règle du vendeur de journaux ne peut pas être jugée de façon fiable. Le signe des pénalités dépend de cette hypothèse, puisque 61,1~€/MWh tombe entre les moyennes des deux prix d'écart (54,2 et 64,1). Le coût réel d'un écart se mesure face au prix du marché de la veille de la même période, qui n'est pas disponible sous licence ouverte.}
+
+\section{Le cadre}
+
+Le cadrage (ADR 0001) mesure le coût d'un écart face à un achat parfait, période de règlement par période de règlement. Si le fournisseur est court, il paie le manque au prix des écarts du sens court, au lieu du prix de référence $P_{\text{ref}}$ ; s'il est long, il revend le surplus au prix des écarts du sens long. $P_{\text{ref}}$ est une hypothèse fixe : 61,1~€/MWh, prix moyen du marché de la veille en 2025 publié par la CRE, avec une sensibilité à 40 et 100~€/MWh. Les montants sont donnés pour une part de marché de 1~\% et en euros par MWh consommé, et restent indicatifs.
+
+La règle du vendeur de journaux fixe le niveau d'achat : $q = C_u / (C_u + C_o)$, où $C_u$ est la pénalité d'un MWh manquant et $C_o$ celle d'un MWh en trop. Le critère de réussite, jugé sur le test, demande qu'acheter au quantile $q$ coûte moins cher qu'acheter la prévision centrale.
+
+\section{Une correction du cadrage}
+
+Le cadrage prévoyait d'estimer $q$ après le « passage au régime d'écart unique » du 5 octobre 2024. Les Règles de marché de RTE (chapitre 3, version en vigueur au 4 juillet 2026) montrent que ce changement porte sur autre chose : la fusion de deux traitements des données de comptage en « un processus unique Ecarts ». Les prix, eux, restent doubles. La page de RTE sur le prix de règlement des écarts le dit (« Le PRE positif ne peut pas être supérieur au PRE négatif »), et les données le confirment : sur 73\,043 périodes, le prix payé au fournisseur long n'est jamais supérieur à celui payé par le fournisseur court, et les deux sont différents dans plus de 99,7~\% des cas.
+
+\section{Les données et la règle}
+
+Les prix viennent de la plateforme de transparence d'ENTSO-E (Imbalance Prices, France), sous licence CC BY 4.0, en 31 appels et sans aucun refus de quota. Le jeton d'accès n'est jamais écrit : un test le vérifie dans tous les fichiers et toutes les sorties du programme. Le règlement se fait à la demi-heure jusqu'à fin 2024, puis au quart d'heure à partir du 1er janvier 2025.
+
+Chaque demi-heure de consommation se coupe en deux quarts d'heure, réglés chacun au prix de sa période. Les pénalités sont estimées du 1er janvier au 31 août 2025, avec les règles du test :
+
+\begin{itemize}
+  \item $C_u$ est la moyenne de (prix payé par le court $-$ $P_{\text{ref}}$) sur les quarts d'heure où la prévision centrale laissait le fournisseur court ;
+  \item $C_o$ est la moyenne de ($P_{\text{ref}}$ $-$ prix payé au long) sur ceux où elle le laissait long.
+\end{itemize}
+
+Le cadrage prévoyait des moyennes sur toutes les périodes. Mais la consommation du fournisseur suit la consommation nationale : quand il est court, le système l'est souvent aussi, et le prix des écarts monte. Les moyennes ont donc été prises selon le sens de l'écart, une précision écrite avant le calcul. Si une pénalité n'est pas positive, la règle ne s'applique pas, et on achète la prévision centrale.
+
+\section{Résultat}
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yr}
+\toprule
+\textbf{Période d'estimation, du 01/01 au 31/08/2025, part de marché de 1~\%} & \textbf{Valeur} \\
+\midrule
+Pénalité d'un MWh manquant ($C_u$) & 10,97~€/MWh \\
+Pénalité d'un MWh en trop ($C_o$) & 12,80~€/MWh \\
+Quantile d'achat $q$ & 0,46 \\
+Coût de l'achat à la prévision centrale & 1\,015\,766~€ (0,347~€/MWh consommé) \\
+Coût de l'achat au quantile $q$ & 1\,015\,166~€ (0,347~€/MWh consommé) \\
+Différence & $-599$~€, intervalle $[-123\,888 ; +136\,687]$~€ \\
+\bottomrule
+\end{tabularx}
+\caption{Intervalle à 95~\% par bootstrap par blocs d'une semaine. 23\,323 quarts d'heure jugés ; un seul exclu faute de prix.}
+\end{table}
+
+L'intervalle couvre un gain ou une perte d'environ 13~\% du coût : les deux achats ne se distinguent pas. Ce résultat est en plus optimiste, puisque $q$ est estimé et jugé sur la même période.
+
+\textbf{La sensibilité au prix de référence est le point décisif.} Avec 40~€/MWh, revendre un surplus rapporte en moyenne plus qu'il n'a coûté : la pénalité d'un MWh en trop devient négative ($-8{,}30$~€/MWh). Avec 100~€/MWh, c'est la pénalité d'un MWh manquant qui l'est ($-27{,}93$~€/MWh). La règle ne s'applique alors plus. Or 61,1~€/MWh tombe justement entre les moyennes des deux prix des écarts sur la période, 54,2 et 64,1~€/MWh. Le signe de la décision dépend donc de cette hypothèse.
+
+\textbf{Pour information}, sans choix possible : la formule du cadrage (moyennes sur toutes les périodes) donne $q = 0{,}30$ ; la courbe du coût selon le quantile d'achat, qui n'est pas une option, est la plus basse entre 0,30 et 0,40 et remonte nettement au-dessus de 0,5 ; $q$ calculé mois par mois n'est pas défini cinq mois sur huit et vaut 0,78 en mars, 0,001 en avril et 0,57 en juin.
+
+\section{Le biais de la prévision}
+
+La fourchette de la v0.2 recentre déjà la prévision sur l'erreur médiane des mois passés. Il reste pourtant, sur la période d'estimation, une médiane qui prévoit trop de 311~MW en moyenne (erreur médiane de 324~MW). Le quantile $q$ couvre donc 54,7~\% des demi-heures au lieu de 46,2~\%.
+
+\begin{table}[H]
+\small
+\begin{tabularx}{\linewidth}{Yrrr}
+\toprule
+\textbf{Mois de 2025} & \textbf{Prévision centrale} & \textbf{Médiane prévue} & \textbf{Recentrage} \\
+\midrule
+Janvier & $+364$~MW & $+472$~MW & $+108$~MW \\
+Février & $+831$~MW & $+903$~MW & $+72$~MW \\
+Mars & $+1\,017$~MW & $+1\,074$~MW & $+57$~MW \\
+Avril & $+381$~MW & $+436$~MW & $+55$~MW \\
+Mai & $+352$~MW & $+347$~MW & $-5$~MW \\
+Juin & $+794$~MW & $+770$~MW & $-24$~MW \\
+Juillet & $-1\,140$~MW & $-1\,217$~MW & $-77$~MW \\
+Août & $-141$~MW & $-221$~MW & $-80$~MW \\
+\bottomrule
+\end{tabularx}
+\caption{Biais moyen (prévision moins consommation). Le recentrage est la différence entre la médiane prévue et la prévision centrale.}
+\end{table}
+
+Le biais dérive avec les saisons, de $+1\,017$~MW en mars à $-1\,140$~MW en juillet, et le recentrage ne le suit pas : sa fenêtre a 3 à 4 mois de retard et contient des mois d'une autre saison. Une correction constante ne suffirait pas.
+
+\section{Une prédiction pour le test}
+
+\textbf{Le critère de décision a de fortes chances d'être indiscernable, ou d'échouer, pour les raisons ci-dessus.} Cette prédiction est écrite avant d'ouvrir le test. Le critère ne change pas, et $q$ est figé à 0,4616 avec un prix de référence de 61,1~€/MWh.
+
+\section{Limites et points ouverts}
+
+\begin{itemize}
+  \item \textbf{Le prix de référence} : chercher une source du prix du marché de la veille sous licence ouverte ; sinon, garder la limite.
+  \item \textbf{Le biais} : une correction qui tienne compte de son retard et des saisons serait une nouvelle comparaison, à décider plus tard.
+  \item \textbf{$q$ instable} d'un mois à l'autre, et non défini cinq mois sur huit.
+  \item La période d'estimation ne contient ni septembre ni la fin de l'année. Le coefficient $k$ du prix des écarts varie chaque mois par construction.
+  \item La validation a déjà servi à 13 comparaisons, et la météo prévue y est en partie rejouée.
+\end{itemize}
+
+\section{Suite}
+
+La v0.4 automatise la chaîne quotidienne : téléchargements, prévision et fourchette disponibles chaque jour avant midi. Le détail de chaque choix est dans le journal des choix et dans l'ADR 0005 ; les chiffres viennent de \nolinkurl{scripts/decision}, dont les sorties sont dans \nolinkurl{docs/v0.3-decision/data}.
+
+\end{document}
