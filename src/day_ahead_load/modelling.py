@@ -16,6 +16,7 @@ import lightgbm as lgb
 import numpy as np
 import pandas as pd
 
+from day_ahead_load import guard
 from day_ahead_load import table as tb
 
 SEED = 20261117
@@ -168,6 +169,7 @@ def paired_loss_gap(
 ) -> PairedGap:
     """Même test pour toute perte par demi-heure (erreur en %, pinball…) : les champs de
     PairedGap portent alors la perte moyenne de chaque option, dans son unité."""
+    guard.refuse_test_days(days)
     offsets = (pd.to_datetime(days) - pd.Timestamp(first_day)).days
     blocks = np.asarray(offsets, dtype=int) // BLOCK_DAYS
     if blocks.min() < 0:
