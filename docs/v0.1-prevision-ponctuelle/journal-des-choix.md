@@ -549,3 +549,30 @@ Fonction de coût de l'ADR 0001. Pour chaque période k, l'écart vaut Δk = s �
 - Non vérifiés faute de lecture possible : le nom exact du paramètre de zone (documentation Postman illisible par nos outils) et le format de la réponse. Ils sont vérifiés par **un appel de contrôle** sur une seule journée avant tout téléchargement.
 - **Estimation écrite avant le premier appel** : 1 appel de contrôle, puis une requête par mois civil (30 mois, du 03/2024 au 08/2026), pour rester loin de la limite de 200 documents par réponse. Soit 31 appels. **Plafond local : 100 appels par jour**, au plus un appel toutes les 2 secondes. **Arrêt définitif au premier code 429.** Une coupure réseau ou une réponse 5xx donne lieu à une seule nouvelle tentative, comptée.
 - **Jeton** : lu dans `.env` uniquement, jamais affiché ni journalisé, jamais écrit dans un fichier du cache. Un test vérifie qu'il n'apparaît dans aucune sortie ni aucun fichier écrit.
+
+## 25. Prix des écarts téléchargés et périodes sans prix — 25/11/2026, avant le calcul
+
+Comparaisons sur la validation : 13. Mesures dans l'entraînement : 2.
+
+### Constats de la vérification des données
+
+- **Téléchargement** : 31 appels dans la journée du 25/11/2026, sur un plafond local de 100, sans aucun refus de quota. Un appel de contrôle sur le 15/01/2025, puis 30 requêtes mensuelles de mars 2024 à août 2026. L'appel de contrôle a confirmé le nom du paramètre de zone (`controlArea_Domain`) et le format de la réponse (archive zip contenant un document XML).
+- **Deux prix par période** : ENTSO-E publie deux séries, l'une pour les écarts excédentaires (« Excess balance »), l'autre pour les écarts déficitaires (« Insufficient balance »). La première est le prix payé au fournisseur long (PRE positif), la seconde le prix payé par le fournisseur court (PRE négatif).
+- **Le prix payé au fournisseur long n'est jamais supérieur au prix payé par le fournisseur court**, sur les 73 043 périodes téléchargées. Cela confirme la règle de RTE et la correspondance entre les deux séries et les deux prix.
+- **Les deux prix diffèrent dans plus de 99,7 % des périodes** : ils sont égaux dans 0,2 % des périodes de la validation et de la période d'estimation de q, et dans 0,3 % de celles du test. Écart médian entre les deux prix : 6,42 €/MWh sur la validation, 6,32 €/MWh sur la période d'estimation, 9,18 €/MWh sur le test.
+- **Le règlement au quart d'heure commence le 01/01/2025, heure de Paris.** ENTSO-E publie déjà au pas de 15 minutes le 31/12/2024 en temps universel, mais avec deux quarts d'heure égaux dans chaque demi-heure jusqu'à minuit, heure de Paris : ce sont des prix à la demi-heure, recopiés.
+- **Périodes sans prix** (dates en heure de Paris) : 23 les 13 et 14/03/2024, avant la validation ; 37 demi-heures les 18, 21, 24, 25/03/2024 et le 14/04/2024 ; 1 quart d'heure le 21/05/2025, dans la période d'estimation ; aucune sur le test.
+
+### Périodes sans prix : une exclusion appariée
+
+- Une période sans prix est retirée à la fois du calcul de q, du coût de l'achat au quantile et du coût de l'achat à la prévision ponctuelle. Les deux stratégies sont toujours comparées sur exactement les mêmes périodes.
+- Sont publiés, pour la période d'estimation de q, la validation et le test : le nombre de périodes exclues et leurs dates.
+- La même règle vaut pour le test, écrite dès maintenant, même s'il est complet aujourd'hui.
+
+### Le 31/12/2024
+
+Ce jour relève encore du règlement à la demi-heure. Il est traité comme les jours d'avant : une seule période de 30 minutes par demi-heure, au prix recopié. Le code vérifie que les deux quarts d'heure de chaque demi-heure de ce jour ont le même prix, et un test automatique vérifie que ce jour n'est pas compté deux fois et que son coût est égal à celui d'un calcul à la demi-heure.
+
+### Rattachement d'une demi-heure aux périodes de règlement
+
+Avec la convention retenue en entrée 3, la demi-heure étiquetée t couvre l'intervalle (t − 15 min, t + 15 min]. Suivant l'ADR 0001 (« chaque demi-heure se coupe en deux quarts d'heure de même puissance moyenne »), elle se coupe en deux quarts d'heure qui commencent à t − 15 min et à t. Chacun porte le même écart de puissance, soit un quart d'heure d'énergie, et chacun est réglé au prix de la période de règlement qui le contient : un quart d'heure en 2025 et après, une demi-heure avant. Au pas de 30 minutes, une demi-heure de consommation se répartit ainsi pour moitié sur deux périodes de règlement voisines. Pour la formule B, chaque quart d'heure prend le signe de l'écart de la prévision ponctuelle de sa demi-heure.
