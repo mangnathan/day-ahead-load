@@ -7,6 +7,7 @@ from datetime import UTC, date, datetime
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
+import pandas as pd
 import pytest
 
 from day_ahead_load import entsoe
@@ -146,3 +147,58 @@ def test_structure_describes_xml_and_zip_answers_without_their_values() -> None:
     out = entsoe.structure(buffer.getvalue())
     assert out["format"] == "zip" and out["fichiers"] == ["a.xml"]
     assert "61.1" not in str(out)
+
+
+NS = "urn:iec62325.351:tc57wg16:451-6:balancingdocument:4:4"
+
+
+def document(series: list[tuple[str, str, list[tuple[int, float]]]], start: str, end: str) -> bytes:
+    """Balancing_MarketDocument fabriqué : (catégorie, résolution, [(position, prix)])."""
+    parts = [f'<?xml version="1.0" encoding="UTF-8"?><Balancing_MarketDocument xmlns="{NS}">']
+    for i, (category, resolution, points) in enumerate(series, start=1):
+        pts = "".join(
+            f"<Point><position>{p}</position><imbalance_Price.amount>{v}</imbalance_Price.amount>"
+            f"<imbalance_Price.category>{category}</imbalance_Price.category></Point>"
+            for p, v in points
+        )
+        parts.append(
+            f"<TimeSeries><mRID>{i}</mRID><curveType>A03</curveType><Period><timeInterval>"
+            f"<start>{start}</start><end>{end}</end></timeInterval>"
+            f"<resolution>{resolution}</resolution>{pts}</Period></TimeSeries>"
+        )
+    parts.append("</Balancing_MarketDocument>")
+    return "".join(parts).encode()
+
+
+def test_parse_prices_fills_the_gaps_of_a03_curves_with_the_last_value() -> None:
+    body = document(
+        [("A04", "PT15M", [(1, 10.0), (3, 30.0)]), ("A05", "PT15M", [(1, 11.0), (2, 22.0)])],
+        "2025-01-15T00:00Z",
+        "2025-01-15T01:00Z",
+    )
+    out = entsoe.parse_prices(body)
+    assert out["pre_positif"].tolist() == [10.0, 10.0, 30.0, 30.0]
+    assert out["pre_negatif"].tolist() == [11.0, 22.0, 22.0, 22.0]
+    assert out.index[0] == pd.Timestamp("2025-01-15T00:00Z")
+    assert out["pas"].tolist() == [15, 15, 15, 15]
+
+
+def test_parse_prices_reads_zip_answers_and_thirty_minute_periods() -> None:
+    xml = document(
+        [("A04", "PT30M", [(1, 5.0)]), ("A05", "PT30M", [(1, 6.0)])],
+        "2024-06-01T00:00Z",
+        "2024-06-01T01:00Z",
+    )
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr("prix.xml", xml)
+    out = entsoe.parse_prices(buffer.getvalue())
+    assert len(out) == 2 and set(out["pas"]) == {30}
+
+
+def test_parse_prices_refuses_entities_and_unknown_categories() -> None:
+    with pytest.raises(ValueError, match="DOCTYPE"):
+        entsoe.parse_prices(b'<!DOCTYPE x [<!ENTITY a "b">]><x/>')
+    bad = document([("A06", "PT15M", [(1, 1.0)])], "2025-01-15T00:00Z", "2025-01-15T00:15Z")
+    with pytest.raises(ValueError, match="catégories"):
+        entsoe.parse_prices(bad)

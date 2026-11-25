@@ -30,6 +30,7 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from io import BytesIO
 from pathlib import Path
+from xml.etree import ElementTree
 
 import pandas as pd
 
@@ -40,8 +41,16 @@ ALLOWED_HOSTS = frozenset({"web-api.tp.entsoe.eu"})
 TOKEN_KEY = "ENTSOE_TOKEN"  # noqa: S105 (nom de la clé dans .env, pas un secret)
 DOCUMENT_TYPE = "A85"  # Imbalance prices
 FRANCE = "10YFR-RTE------C"
-# Nom non vérifié dans la documentation lisible (Postman) : confirmé par l'appel de contrôle.
+# Absent de la documentation lisible (Postman) ; confirmé par l'appel de contrôle du 25/11/2026
+# (réponse 200, archive zip d'un Balancing_MarketDocument).
 DOMAIN_PARAMETER = "controlArea_Domain"
+# Catégories d'ENTSO-E : A04 « Excess balance » (écart positif, fournisseur long), A05
+# « Insufficient balance » (écart négatif, fournisseur court). Correspondance déduite des noms et
+# de la règle de RTE « Le PRE positif ne peut pas être supérieur au PRE négatif », vérifiée sur
+# toutes les données téléchargées.
+CATEGORIES = {"A04": "pre_positif", "A05": "pre_negatif"}
+NAMESPACE = "{urn:iec62325.351:tc57wg16:451-6:balancingdocument:4:4}"
+STEPS = {"PT15M": pd.Timedelta(minutes=15), "PT30M": pd.Timedelta(minutes=30)}
 FIRST_MONTH = "2024-03"
 LAST_MONTH = "2026-08"
 CONTROL_DAY = date(2025, 1, 15)
@@ -250,3 +259,74 @@ def structure(body: bytes) -> dict[str, object]:
     text = body.decode("utf-8", "replace")
     tags = sorted(set(re.findall(r"<([A-Za-z_][\w.:-]*)", text)))
     return {"format": "xml" if text.lstrip().startswith("<") else "autre", "balises": tags}
+
+
+def _xml_documents(body: bytes) -> list[bytes]:
+    if body[:2] == b"PK":
+        with zipfile.ZipFile(BytesIO(body)) as archive:
+            return [archive.read(name) for name in archive.namelist()]
+    return [body]
+
+
+def parse_prices(body: bytes) -> pd.DataFrame:
+    """Prix des écarts par période de règlement, indexés par le début de la période en UTC.
+
+    Colonnes : pre_positif (A04), pre_negatif (A05), pas (en minutes). Le type de courbe A03
+    n'écrit un point que lorsque la valeur change : chaque point vaut jusqu'à la position
+    suivante, et le dernier jusqu'à la fin de la période.
+    """
+    frames = []
+    for document in _xml_documents(body):
+        # Réponse de l'API d'ENTSO-E ; une déclaration d'entité est refusée avant l'analyse.
+        if b"<!DOCTYPE" in document or b"<!ENTITY" in document:
+            raise ValueError("document XML refusé : déclaration DOCTYPE ou ENTITY")
+        root = ElementTree.fromstring(document)  # noqa: S314
+        for series in root.iter(f"{NAMESPACE}TimeSeries"):
+            for period in series.iter(f"{NAMESPACE}Period"):
+                frames.append(_period_frame(period))
+    if not frames:
+        return pd.DataFrame(columns=["pre_positif", "pre_negatif", "pas"])
+    long = pd.concat(frames)
+    if long.duplicated(["debut", "colonne"]).any():
+        raise ValueError("deux prix pour la même période et la même catégorie")
+    wide = long.pivot(index="debut", columns="colonne", values="prix").sort_index()
+    steps = long.drop_duplicates("debut").set_index("debut")["pas"].sort_index()
+    wide["pas"] = steps.reindex(wide.index)
+    return wide
+
+
+def _period_frame(period: ElementTree.Element) -> pd.DataFrame:
+    def text(path: str) -> str:
+        node = period.find(path)
+        if node is None or node.text is None:
+            raise ValueError(f"élément absent : {path}")
+        return node.text
+
+    start = pd.Timestamp(text(f"{NAMESPACE}timeInterval/{NAMESPACE}start"))
+    end = pd.Timestamp(text(f"{NAMESPACE}timeInterval/{NAMESPACE}end"))
+    step = STEPS[text(f"{NAMESPACE}resolution")]
+    count = int((end - start) / step)
+    points: dict[int, tuple[float, str]] = {}
+    for point in period.iter(f"{NAMESPACE}Point"):
+        position = int(point.findtext(f"{NAMESPACE}position", ""))
+        amount = float(point.findtext(f"{NAMESPACE}imbalance_Price.amount", "nan"))
+        category = point.findtext(f"{NAMESPACE}imbalance_Price.category", "")
+        points[position] = (amount, category)
+    if not points or 1 not in points:
+        raise ValueError(f"période sans premier point : {start}")
+    categories = {c for _, c in points.values()}
+    if len(categories) != 1 or not categories <= CATEGORIES.keys():
+        raise ValueError(f"catégories inattendues : {sorted(categories)}")
+    values, current = [], points[1][0]
+    for position in range(1, count + 1):
+        if position in points:
+            current = points[position][0]
+        values.append(current)
+    return pd.DataFrame(
+        {
+            "debut": pd.date_range(start, periods=count, freq=step),
+            "colonne": CATEGORIES[categories.pop()],
+            "prix": values,
+            "pas": int(step.total_seconds() // 60),
+        }
+    )
