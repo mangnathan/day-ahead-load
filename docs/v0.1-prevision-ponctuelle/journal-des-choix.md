@@ -576,3 +576,66 @@ Ce jour relève encore du règlement à la demi-heure. Il est traité comme les 
 ### Rattachement d'une demi-heure aux périodes de règlement
 
 Avec la convention retenue en entrée 3, la demi-heure étiquetée t couvre l'intervalle (t − 15 min, t + 15 min]. Suivant l'ADR 0001 (« chaque demi-heure se coupe en deux quarts d'heure de même puissance moyenne »), elle se coupe en deux quarts d'heure qui commencent à t − 15 min et à t. Chacun porte le même écart de puissance, soit un quart d'heure d'énergie, et chacun est réglé au prix de la période de règlement qui le contient : un quart d'heure en 2025 et après, une demi-heure avant. Au pas de 30 minutes, une demi-heure de consommation se répartit ainsi pour moitié sur deux périodes de règlement voisines. Pour la formule B, chaque quart d'heure prend le signe de l'écart de la prévision ponctuelle de sa demi-heure.
+
+## 26. Résultats de la décision d'achat de la v0.3 — 25/11/2026
+
+Comparaisons sur la validation : 13, inchangé. Règles des entrées 24 et 25 appliquées telles qu'écrites ; aucune règle ne change et rien n'est corrigé en v0.3. Résultats : `docs/v0.3-decision/data/decision-achat.json`. Deux exécutions donnent le même fichier, d'empreinte sha256 `7f796dcbdcbc34863b26bc0d2ea5bc77402f4c567ee717da3d61748eda848873`.
+
+Étiquettes : « météo prévue en partie rejouée » ; « période de validation déjà utilisée pour choisir A17 et Q1 (13 comparaisons) » ; « q estimé et jugé sur la même période : indication optimiste ».
+
+**Période d'estimation** : du 01/01 au 31/08/2025, 11 662 demi-heures, soit 23 323 quarts d'heure jugés. Pour une part de marché de 1 %, l'énergie consommée est de 2 925 111 MWh.
+
+### Résultat avec le prix de référence de 61,1 €/MWh
+
+| | Valeur |
+|---|---|
+| Pénalité quand on est court (Cu) | 10,97 €/MWh, sur 9 774 quarts d'heure |
+| Pénalité quand on est long (Co) | 12,80 €/MWh, sur 13 549 quarts d'heure |
+| q | 0,4616 |
+| Coût de l'achat à la prévision ponctuelle | 1 015 766 €, soit 0,3473 € par MWh consommé |
+| Coût de l'achat au quantile q | 1 015 166 €, soit 0,3471 € par MWh consommé |
+| Différence (quantile − prévision) | −599 € ; intervalle à 95 % de −123 888 € à +136 687 € |
+| Différence par MWh consommé | −0,0002 € ; intervalle de −0,0424 € à +0,0467 € |
+
+L'intervalle vient du bootstrap par blocs d'une semaine de la règle : la moyenne de la différence par quart d'heure et ses bornes, multipliées par le nombre de quarts d'heure jugés. Il couvre un gain ou une perte d'environ 13 % du coût : l'achat au quantile ne se distingue pas de l'achat à la prévision ponctuelle.
+
+**Sensibilité au prix de référence.** Avec 40 €/MWh, la pénalité quand on est long devient négative (−8,30 €/MWh). Avec 100 €/MWh, c'est la pénalité quand on est court qui l'est (−27,93 €/MWh). Dans les deux cas, la règle ne s'applique pas, et l'achat reste la prévision ponctuelle, comme l'entrée 24 le prévoyait.
+
+### Conclusion
+
+Avec un prix de référence fixe, la règle du vendeur de journaux ne peut pas être jugée de façon fiable. Le signe des pénalités dépend de cette hypothèse, puisque 61,1 €/MWh tombe entre les moyennes des deux prix d'écart (54,2 et 64,1). Le coût réel d'un écart se mesure face au prix du marché de la veille de la même période, qui n'est pas disponible sous licence ouverte.
+
+**Prédiction écrite pour le test** : le critère de décision a de fortes chances d'être indiscernable, ou d'échouer, pour les raisons ci-dessus.
+
+### Le biais
+
+Q1 recentre déjà la prévision sur la médiane des résidus passés, et il reste pourtant +311 MW de biais moyen sur q0,5. L'erreur médiane de q0,5 est de +324 MW : le biais ne vient pas de quelques valeurs extrêmes. La prévision ponctuelle a elle-même un biais moyen de +298 MW.
+
+| Mois | Prévision ponctuelle | q0,5 | Recentrage par Q1 |
+|---|---|---|---|
+| Janvier 2025 | +364 MW | +472 MW | +108 MW |
+| Février | +831 MW | +903 MW | +72 MW |
+| Mars | +1 017 MW | +1 074 MW | +57 MW |
+| Avril | +381 MW | +436 MW | +55 MW |
+| Mai | +352 MW | +347 MW | −5 MW |
+| Juin | +794 MW | +770 MW | −24 MW |
+| Juillet | −1 140 MW | −1 217 MW | −77 MW |
+| Août | −141 MW | −221 MW | −80 MW |
+
+Le biais dérive : il va de +1 017 MW en mars à −1 140 MW en juillet. Le recentrage de Q1, entre −80 et +108 MW, ne suit pas cette dérive, probablement à cause du retard de sa fenêtre (3 à 4 mois) et de la variation du biais selon les saisons. Une correction constante ne suffirait donc pas.
+
+Borne calculée avec le biais de la période elle-même, impossible en pratique : l'achat au quantile q diminué du biais moyen de q0,5 coûterait 974 284 €, soit 0,3331 € par MWh consommé.
+
+### Pour information
+
+- **Formule A** (moyennes sur toutes les périodes) : Cu = 2,99 €/MWh, Co = 6,92 €/MWh, q = 0,30.
+- **Courbe du coût selon le quantile d'achat, qui n'est pas une option** : le coût est le plus bas entre les quantiles 0,30 et 0,40 (de 999 375 € à 1 003 535 €), et remonte nettement au-dessus de 0,5 (1 037 865 € à 0,5, 1 618 711 € à 0,9). q = 0,46 en est proche.
+- **Couverture empirique de q** : 54,69 % des demi-heures ont une consommation sous le quantile q, pour une cible de 46,16 %, à cause du biais.
+- **q mois par mois** : non défini en janvier, février, mai, juillet et août (Cu ou Co non positif) ; 0,78 en mars, 0,001 en avril, 0,57 en juin.
+- **q sur toute la validation** (du 15/03/2024 au 31/08/2025) : 0,29.
+
+### Périodes sans prix
+
+Quarts d'heure exclus des deux stratégies à la fois : 1 sur 23 324 pendant la période d'estimation (21/05/2025) ; 75 sur 51 356 pendant la validation (les 18, 21, 22, 24, 25 et 26/03/2024, le 14/04/2024 et le 21/05/2025) ; aucun sur le test. Les dates des 22 et 26/03/2024 apparaissent ici et non dans l'entrée 25, parce qu'un quart d'heure est rattaché ici au jour livré de sa demi-heure.
+
+Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
