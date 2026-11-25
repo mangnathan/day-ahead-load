@@ -1,0 +1,43 @@
+{
+ "mois_de_decision": "2026-12",
+ "source": "éCO2mix (RTE, via ODRÉ), Licence Ouverte 2.0",
+ "telecharge_le": "2026-11-25T12:00:18+00:00",
+ "fichiers_sha256": {
+  "eco2mix-national-cons-def": "864f8942b0224e414c9cd244a793e1f0150dfc8f363f723da92577b03563f647",
+  "eco2mix-national-tr": "05a48771014de1fc4e988c49e250f62293cccfd72b3e6322405f406c1787f6c0"
+ },
+ "regle": "moyenne des 52 dernières semaines de consolidé publié à midi la veille (M+3)",
+ "niveaux": {
+  "2026-12-02": null,
+  "2026-12-03": null,
+  "2026-12-04": null,
+  "2026-12-05": null,
+  "2026-12-06": null,
+  "2026-12-07": null,
+  "2026-12-08": null,
+  "2026-12-09": null,
+  "2026-12-10": null,
+  "2026-12-11": null,
+  "2026-12-12": null,
+  "2026-12-13": null,
+  "2026-12-14": null,
+  "2026-12-15": null,
+  "2026-12-16": null,
+  "2026-12-17": null,
+  "2026-12-18": null,
+  "2026-12-19": null,
+  "2026-12-20": null,
+  "2026-12-21": null,
+  "2026-12-22": null,
+  "2026-12-23": null,
+  "2026-12-24": null,
+  "2026-12-25": null,
+  "2026-12-26": null,
+  "2026-12-27": null,
+  "2026-12-28": null,
+  "2026-12-29": null,
+  "2026-12-30": null,
+  "2026-12-31": null,
+  "2027-01-01": null
+ }
+}
