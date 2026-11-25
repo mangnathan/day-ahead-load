@@ -8,6 +8,8 @@ Télécharge l'export éCO2mix d'ODRÉ (deux fichiers), puis calcule, pour chaqu
 la décision (la veille, à midi) tombe dans le mois, le niveau des 52 dernières semaines de
 consolidé publié à cette heure (règle M+3). Seuls ces niveaux, des moyennes, sont publiés,
 jamais la série. Un niveau incomplet est écrit vide : la chaîne n'émet alors pas de prévision.
+Relancé plusieurs fois par mois, il ne remplit que les niveaux vides des décisions encore à
+venir, et ne change jamais une valeur publiée.
 """
 
 from __future__ import annotations
@@ -21,7 +23,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from day_ahead_load import diagnostics, eco2mix
+from day_ahead_load import daily, diagnostics, eco2mix
 from day_ahead_load import table as tb
 
 
@@ -59,6 +61,9 @@ def main() -> None:
         },
     }
     path = args.donnees / "niveau" / f"{args.mois}.json"
+    if path.exists():
+        previous = json.loads(path.read_text(encoding="utf-8"))["niveaux"]
+        body["niveaux"] = daily.merge_levels(previous, body["niveaux"], datetime.now(UTC))
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(body, indent=1, ensure_ascii=False) + "\n", encoding="utf-8", newline="\n"

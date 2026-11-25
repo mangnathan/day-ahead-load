@@ -138,3 +138,18 @@ def test_the_level_is_the_only_path_from_test_period_consumption() -> None:
     pd.testing.assert_frame_equal(a[others], b[others])
     assert set(wf.VARIABLES) <= set(others)
     assert frozen.PURCHASE_Q == 0.4616
+
+
+def test_levels_are_filled_only_for_decisions_still_to_come() -> None:
+    now = datetime(2026, 12, 9, 6, 0, tzinfo=UTC)
+    existing = {"2026-12-05": None, "2026-12-08": 51_000.0, "2026-12-15": None}
+    computed = {
+        "2026-12-05": 52_000.0,
+        "2026-12-08": 99_999.0,
+        "2026-12-15": 52_500.0,
+        "2026-12-20": 52_600.0,
+    }
+    out = daily.merge_levels(existing, computed, now)
+    assert out["2026-12-05"] is None  # décision passée : jamais rattrapée
+    assert out["2026-12-08"] == 51_000.0  # valeur publiée : inchangée
+    assert out["2026-12-15"] == 52_500.0 and out["2026-12-20"] == 52_600.0

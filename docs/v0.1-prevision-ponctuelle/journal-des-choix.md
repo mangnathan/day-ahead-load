@@ -700,3 +700,14 @@ Un seul ticket GitHub ouvert à la fois. Une nouvelle panne ajoute un commentair
 - le test de non-ouverture et le garde décrits plus haut ;
 - un test d'idempotence : une seconde exécution le même jour n'écrase rien ;
 - aucun appel réseau dans la CI.
+
+## 28. Précision sur le niveau mensuel — 25/11/2026, avant toute exécution
+
+Comparaisons sur la validation : 13, inchangé.
+
+La règle M+3 suppose le consolidé du mois M publié le 1er du mois M+3. Or le 14/11/2026, l'export d'ODRÉ s'arrêtait encore au 31/08/2026. Si un mois n'est pas publié à temps, le niveau des 52 semaines reste vide, et la chaîne n'émet pas de prévision (entrée 27). Pour ne pas perdre un mois entier, le niveau est recalculé les 2, 9, 16 et 23 de chaque mois, avec deux limites :
+
+- une valeur déjà publiée ne change jamais ;
+- un niveau vide n'est rempli que si la décision de son jour livré (midi la veille) est encore à venir. Un jour passé sans niveau reste sans prévision : il n'est jamais rattrapé après coup.
+
+Un test vérifie ces deux limites.

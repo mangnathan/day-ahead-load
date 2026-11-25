@@ -200,3 +200,23 @@ def write_once(path: Path, text: str) -> bool:
 
 def now_utc() -> datetime:
     return datetime.now(UTC)
+
+
+def merge_levels(
+    existing: dict[str, float | None], computed: dict[str, float | None], now: datetime
+) -> dict[str, float | None]:
+    """Complète les niveaux d'un mois sans jamais réécrire le passé.
+
+    Une valeur déjà publiée ne change pas. Un niveau vide n'est rempli que si la décision de
+    son jour livré (midi la veille) est encore à venir : un jour passé sans niveau reste sans
+    prévision, jamais rattrapé après coup.
+    """
+    merged = dict(existing)
+    for day, value in computed.items():
+        if merged.get(day) is not None:
+            continue
+        if deadline(date.fromisoformat(day)) > pd.Timestamp(now):
+            merged[day] = value
+        else:
+            merged.setdefault(day, None)
+    return dict(sorted(merged.items()))
