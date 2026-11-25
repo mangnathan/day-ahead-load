@@ -639,3 +639,64 @@ Borne calculée avec le biais de la période elle-même, impossible en pratique 
 Quarts d'heure exclus des deux stratégies à la fois : 1 sur 23 324 pendant la période d'estimation (21/05/2025) ; 75 sur 51 356 pendant la validation (les 18, 21, 22, 24, 25 et 26/03/2024, le 14/04/2024 et le 21/05/2025) ; aucun sur le test. Les dates des 22 et 26/03/2024 apparaissent ici et non dans l'entrée 25, parce qu'un quart d'heure est rattaché ici au jour livré de sa demi-heure.
 
 Comparaisons sur la validation après cette entrée : 13. Mesures dans l'entraînement : 2.
+
+## 27. Chaîne quotidienne de la v0.4 — règle écrite le 25/11/2026, avant le code
+
+Comparaisons sur la validation : 13, inchangé ; la v0.4 n'en ajoute aucune. Mesures dans l'entraînement : 2.
+
+### Ne pas ouvrir le test avant la v1.0
+
+**Règle : aucune erreur sur la période de test (du 01/09/2025 au 31/08/2026) n'est calculée, affichée ou utilisée avant la v1.0.** La chaîne tourne donc avec un modèle, une fourchette et un quantile d'achat figés, qui ne lisent aucune consommation du test :
+
+- **Modèle figé** : un nouveau modèle, de même configuration qu'A17 (entrée 1 : LightGBM par défaut, 100 itérations, graine 20261117, 14 variables), entraîné sur tous les jours livrés du 01/01/2017 au 31/08/2025, avec la météo ERA5. Ce n'est pas une comparaison : la configuration est figée, seule la fin de l'entraînement change, et elle s'arrête à la fin de la validation.
+- **Fourchette figée** : pour chaque demi-heure de la journée, les quantiles 0,025, 0,1, 0,5, 0,9 et 0,975 des résidus de la procédure mensuelle (v0.2) sur les jours livrés du 01/09/2024 au 31/08/2025, soit les 12 derniers mois de la validation, avec la météo prévue. Limite : ces résidus viennent de modèles plus anciens, hors échantillon. La fourchette décrit donc un modèle un peu moins bien informé que celui qui tourne.
+- **Quantile d'achat figé** : q = 0,4616 (ADR 0005), avec l'étiquette **« règle de la v0.3, non validée »** dans chaque fichier de prévision et dans la documentation de la branche de données. Le volume au quantile q est la prévision plus le quantile de niveau q des mêmes résidus.
+- **Traçabilité** : l'empreinte sha256 du fichier du modèle, l'empreinte de la configuration et le commit de création sont enregistrés avec les artefacts figés.
+- **Le niveau des 52 semaines** reste calculé normalement, comme une entrée : à midi la veille, il lit le consolidé publié, qui contient des mois du test. C'est le seul chemin par lequel une consommation du test entre dans la chaîne, et elle n'y est jamais comparée à une prévision.
+
+**Test de non-ouverture** : en empoisonnant les consommations de la période de test, le fichier du modèle figé, les écarts de la fourchette et q restent identiques octet par octet. Seule la variable de niveau peut changer, et le test vérifie qu'elle est le seul chemin. **Garde** : les fonctions qui calculent une erreur ou une comparaison appariée lèvent une erreur si on leur passe un jour de la période de test, tant que le test n'est pas ouvert. Un test le vérifie.
+
+**Erreurs du test prospectif** : elles portent sur les jours livrés à partir du 01/09/2026, après la période de test. Elles ne seront calculées qu'à la publication de leur consolidé (règle M+3), et ne touchent jamais la période de test.
+
+### La chaîne
+
+- **Jour prévu** : le lendemain D, ses 48 demi-heures (46 ou 50 les jours de changement d'heure). Décision : midi, heure de Paris, la veille.
+- **Deux départs planifiés**, sur GitHub Actions, à **8 h 20 et 9 h 15 UTC**. Sur 95 calculs mesurés en v0.0, le calcul de 00 UTC est disponible, dépôt sur la copie AWS plus 2 h de marge, entre 7 h 52 et 9 h 09 UTC. En été, midi à Paris est à 10 h UTC.
+  - Chaque départ vérifie d'abord que le calcul de 00 UTC de la veille est disponible : dépôt sur la copie AWS d'Open-Meteo plus 2 h, et calcul effectivement servi par l'API. Sinon, le premier départ s'arrête proprement, sans erreur, et le second réessaie.
+  - Si le second départ ne trouve toujours pas ce calcul, la règle du calcul de secours de l'ADR 0002 s'applique : chaque heure est prise dans le calcul antérieur le plus récent qui la couvre. Ce secours est enregistré comme tel.
+- **Une seule prévision par jour livré** : si un fichier de prévision existe déjà pour D, la chaîne n'écrit rien. La première prévision faite l'emporte, et une seconde ne l'écrase jamais.
+- **Pas de prévision si une entrée manque** après le calcul de secours : la chaîne enregistre l'absence et sa cause, sans prévision. En production, aucune valeur manquante n'est laissée au modèle.
+- **Contenu d'un fichier de prévision** : pour chaque demi-heure, la prévision centrale, les cinq quantiles et le volume au quantile q. S'y ajoutent l'heure exacte (date et heure UTC) du calcul météo utilisé pour chaque variable, avec la mention d'un éventuel calcul de secours ; le niveau des 52 semaines utilisé ; les empreintes du modèle et de la configuration ; et les étiquettes.
+
+### La preuve qu'une prévision précède la consommation
+
+L'horodatage de Git ne prouve rien : les dates d'auteur et de commit se règlent à la main. La preuve vient de GitHub :
+
+- chaque fichier de prévision enregistre **l'identifiant de l'exécution du workflow** et **son heure de départ**, telles que GitHub les fournit ;
+- il enregistre aussi **l'empreinte sha256 de son contenu de prévision**, qui est aussi écrite dans le journal de l'exécution ;
+- **le statut « à l'heure » ou « en retard »** se juge sur l'heure, enregistrée par GitHub, de la fin de l'étape qui produit la prévision, lue par l'API de GitHub dans l'étape suivante. Une prévision terminée après midi, heure de Paris, la veille, est « en retard ». La part de prévisions à l'heure est publiée.
+
+**Limite** : la preuve dépend de la conservation des journaux d'exécution par GitHub, qui est limitée dans le temps. Le dépôt garde donc la prévision, son empreinte et l'identifiant de l'exécution.
+
+### Données et appels
+
+- **Open-Meteo** : le calcul ECMWF de 00 UTC aux 12 points, soit 12 appels par jour, et une lecture de l'heure de dépôt sur la copie AWS. Le dépôt ne garde que l'indice national horaire de chaque calcul, sous licence CC BY 4.0, avec la mention de la source.
+- **éCO2mix** (ODRÉ) : un téléchargement par mois, deux fichiers, pour calculer le niveau des 52 semaines des décisions du mois. Seul ce niveau, une moyenne, est publié, jamais la série.
+- **ENTSO-E** : reporté à la v0.5.
+- Plafonds et arrêts au premier refus de quota : ceux des clients existants.
+
+### La branche de données `donnees/previsions`
+
+Un court README donne les sources et leurs licences (éCO2mix sous Licence Ouverte 2.0, Open-Meteo sous CC BY 4.0), le format des fichiers et l'étiquette **« prévisions produites par ce projet, pas des données RTE »**.
+
+### Alerte
+
+Un seul ticket GitHub ouvert à la fois. Une nouvelle panne ajoute un commentaire au ticket existant, et le retour à la normale ajoute un commentaire puis ferme le ticket.
+
+### Garde-fous testés, sans réseau
+
+- un test de bout en bout qui fait tourner la chaîne à une date donnée, avec de faux clients ;
+- un test de fuite : tout ce qui est publié après midi la veille est empoisonné, et la prévision ne change pas ;
+- le test de non-ouverture et le garde décrits plus haut ;
+- un test d'idempotence : une seconde exécution le même jour n'écrase rien ;
+- aucun appel réseau dans la CI.
