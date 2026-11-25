@@ -41,6 +41,9 @@ jobs:
         with:
           ref: donnees/previsions
           path: donnees
+          # Le jeton d'écriture n'est pas gardé dans donnees/.git : l'étape de calcul, qui
+          # télécharge des données externes, ne peut pas le lire. Seul « Enregistrer » le reçoit.
+          persist-credentials: false
 
       - uses: astral-sh/setup-uv@1c37ad07a6a961277cf70c0d37d6f313000f5884 # v10.3.0
         with:
@@ -63,6 +66,8 @@ jobs:
 
       - name: Enregistrer sur la branche de données
         working-directory: donnees
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           cp ../docs/v0.4-chaine/README-donnees.md README.md
           git add -A
@@ -73,7 +78,11 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Niveau mensuel, exécution ${{ github.run_id }}"
-          git push origin HEAD:donnees/previsions
+          # Jeton passé à cette seule commande, jamais écrit dans la configuration de Git.
+          AUTH=$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)
+          echo "::add-mask::$AUTH"
+          git -c http.https://github.com/.extraheader="AUTHORIZATION: basic $AUTH" \
+            push origin HEAD:donnees/previsions
 
       - name: Signaler la panne
         if: failure() || cancelled()
