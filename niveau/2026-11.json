@@ -1,10 +1,10 @@
 {
  "mois_de_decision": "2026-11",
  "source": "éCO2mix (RTE, via ODRÉ), Licence Ouverte 2.0",
- "telecharge_le": "2026-11-25T11:58:27+00:00",
+ "telecharge_le": "2026-11-25T17:35:44+00:00",
  "fichiers_sha256": {
   "eco2mix-national-cons-def": "864f8942b0224e414c9cd244a793e1f0150dfc8f363f723da92577b03563f647",
-  "eco2mix-national-tr": "585969020e6c1940e1cbf3435c6921c61666f8970e9c049bdf6136cc19cd2cca"
+  "eco2mix-national-tr": "3eb6019e8041e796c626f1a4e589f29ebc51b952dca1abd090afb6e7c0f74c78"
  },
  "regle": "moyenne des 52 dernières semaines de consolidé publié à midi la veille (M+3)",
  "niveaux": {
