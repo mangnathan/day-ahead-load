@@ -173,6 +173,19 @@ def main() -> None:
             round(gap.low, 4),
             round(gap.high, 4),
         ]
+        # Même bootstrap par blocs d'une semaine, rapporté à la différence totale : la moyenne
+        # par quart d'heure et ses bornes, multipliées par le nombre de quarts d'heure jugés.
+        n = len(q_cost)
+        record["difference_totale_ic95_eur"] = [
+            round(gap.difference * n, 0),
+            round(gap.low * n, 0),
+            round(gap.high * n, 0),
+        ]
+        record["difference_ic95_eur_par_mwh_consomme"] = [
+            round(gap.difference * n / consumed, 4),
+            round(gap.low * n / consumed, 4),
+            round(gap.high * n / consumed, 4),
+        ]
         record["quantile_moins_cher"] = bool(gap.high < 0)
         return record
 
@@ -197,12 +210,26 @@ def main() -> None:
         info["couverture_empirique_de_q_pct"] = round(
             float((est["consommation"].to_numpy() <= achat).mean() * 100), 2
         )
-        bias = float((q_table["0.5"].to_numpy() - est["consommation"].to_numpy()).mean())
+        median_error = q_table["0.5"].to_numpy() - est["consommation"].to_numpy()
+        point_error = est["prevision"].to_numpy() - est["consommation"].to_numpy()
+        bias = float(median_error.mean())
         quarters_shift = quarters.copy()
         quarters_shift["corrige"] = quarters[f"q{q_main}"] - bias
+        months = pd.to_datetime(est["jour"]).dt.to_period("M").astype(str).to_numpy()
         info["biais"] = {
-            "etiquette": "borne informative, biais connu après coup, impossible en pratique",
+            "etiquette": (
+                "borne calculée avec le biais de la période elle-même, impossible en pratique"
+            ),
             "biais_moyen_de_q05_mw": round(bias, 1),
+            "erreur_mediane_de_q05_mw": round(float(np.median(median_error)), 1),
+            "biais_moyen_de_la_prevision_ponctuelle_mw": round(float(point_error.mean()), 1),
+            "par_mois_mw": {
+                m: {
+                    "q05": round(float(median_error[months == m].mean()), 1),
+                    "prevision_ponctuelle": round(float(point_error[months == m].mean()), 1),
+                }
+                for m in sorted(set(months))
+            },
             "achat_au_quantile_q_moins_le_biais": strategy_record(
                 costs_for(quarters_shift, "corrige", REFERENCE), consumed
             ),

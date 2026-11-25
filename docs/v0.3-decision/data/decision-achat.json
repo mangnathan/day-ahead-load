@@ -1,0 +1,248 @@
+{
+  "regle": "journal des choix, entrées 24 et 25",
+  "etiquettes": [
+    "météo prévue en partie rejouée",
+    "période de validation déjà utilisée pour choisir A17 et Q1 (13 comparaisons)",
+    "q estimé et jugé sur la même période : indication optimiste"
+  ],
+  "source_des_prix": "ENTSO-E Transparency Platform, Imbalance Prices [17.1.G], France, CC BY 4.0",
+  "part_de_marche": 0.01,
+  "periode_d_estimation": {
+    "premier_jour": "2025-01-01",
+    "dernier_jour": "2025-08-31",
+    "demi_heures": 11662,
+    "quarts_d_heure_juges": 23323,
+    "energie_consommee_mwh_pour_s_1pct": 2925111.0
+  },
+  "periodes_sans_prix": {
+    "estimation": {
+      "quarts_d_heure": 1,
+      "sur": 23324,
+      "jours": [
+        "2025-05-21"
+      ]
+    },
+    "validation": {
+      "quarts_d_heure": 75,
+      "sur": 51356,
+      "jours": [
+        "2024-03-18",
+        "2024-03-21",
+        "2024-03-22",
+        "2024-03-24",
+        "2024-03-25",
+        "2024-03-26",
+        "2024-04-14",
+        "2025-05-21"
+      ]
+    },
+    "test": {
+      "quarts_d_heure": 0,
+      "sur": 35040,
+      "jours": []
+    }
+  },
+  "resultats": {
+    "61.1": {
+      "prix_de_reference_eur_mwh": 61.1,
+      "penalite_courte_cu": 10.97,
+      "penalite_longue_co": 12.797,
+      "quarts_d_heure_courts": 9774,
+      "quarts_d_heure_longs": 13549,
+      "q": 0.4616,
+      "achat_prevision_ponctuelle": {
+        "cout_total_eur_pour_s_1pct": 1015766.0,
+        "cout_eur_par_mwh_consomme": 0.3473
+      },
+      "achat_au_quantile_q": {
+        "cout_total_eur_pour_s_1pct": 1015166.0,
+        "cout_eur_par_mwh_consomme": 0.3471
+      },
+      "difference_quantile_moins_prevision_eur": -599.0,
+      "difference_par_quart_d_heure_ic95_eur": [
+        -0.0257,
+        -5.3118,
+        5.8606
+      ],
+      "difference_totale_ic95_eur": [
+        -599.0,
+        -123888.0,
+        136687.0
+      ],
+      "difference_ic95_eur_par_mwh_consomme": [
+        -0.0002,
+        -0.0424,
+        0.0467
+      ],
+      "quantile_moins_cher": false
+    },
+    "40.0": {
+      "prix_de_reference_eur_mwh": 40.0,
+      "penalite_courte_cu": 32.07,
+      "penalite_longue_co": -8.303,
+      "quarts_d_heure_courts": 9774,
+      "quarts_d_heure_longs": 13549,
+      "q": null,
+      "achat_prevision_ponctuelle": {
+        "cout_total_eur_pour_s_1pct": 648599.0,
+        "cout_eur_par_mwh_consomme": 0.2217
+      },
+      "regle": "Cu ou Co non positif : achat à la prévision ponctuelle"
+    },
+    "100.0": {
+      "prix_de_reference_eur_mwh": 100.0,
+      "penalite_courte_cu": -27.93,
+      "penalite_longue_co": 51.697,
+      "quarts_d_heure_courts": 9774,
+      "quarts_d_heure_longs": 13549,
+      "q": null,
+      "achat_prevision_ponctuelle": {
+        "cout_total_eur_pour_s_1pct": 1692675.0,
+        "cout_eur_par_mwh_consomme": 0.5787
+      },
+      "regle": "Cu ou Co non positif : achat à la prévision ponctuelle"
+    }
+  },
+  "information": {
+    "formule_a": {
+      "penalite_courte": 2.993,
+      "penalite_longue": 6.922,
+      "q": 0.3019
+    },
+    "courbe_du_cout_n_est_pas_une_option": {
+      "0.05": {
+        "cout_total_eur_pour_s_1pct": 1209153.0,
+        "cout_eur_par_mwh_consomme": 0.4134
+      },
+      "0.1": {
+        "cout_total_eur_pour_s_1pct": 1155397.0,
+        "cout_eur_par_mwh_consomme": 0.395
+      },
+      "0.15": {
+        "cout_total_eur_pour_s_1pct": 1078253.0,
+        "cout_eur_par_mwh_consomme": 0.3686
+      },
+      "0.2": {
+        "cout_total_eur_pour_s_1pct": 1046681.0,
+        "cout_eur_par_mwh_consomme": 0.3578
+      },
+      "0.25": {
+        "cout_total_eur_pour_s_1pct": 1018028.0,
+        "cout_eur_par_mwh_consomme": 0.348
+      },
+      "0.3": {
+        "cout_total_eur_pour_s_1pct": 1000951.0,
+        "cout_eur_par_mwh_consomme": 0.3422
+      },
+      "0.35": {
+        "cout_total_eur_pour_s_1pct": 1003535.0,
+        "cout_eur_par_mwh_consomme": 0.3431
+      },
+      "0.4": {
+        "cout_total_eur_pour_s_1pct": 999375.0,
+        "cout_eur_par_mwh_consomme": 0.3417
+      },
+      "0.45": {
+        "cout_total_eur_pour_s_1pct": 1008070.0,
+        "cout_eur_par_mwh_consomme": 0.3446
+      },
+      "0.5": {
+        "cout_total_eur_pour_s_1pct": 1037865.0,
+        "cout_eur_par_mwh_consomme": 0.3548
+      },
+      "0.55": {
+        "cout_total_eur_pour_s_1pct": 1068117.0,
+        "cout_eur_par_mwh_consomme": 0.3652
+      },
+      "0.6": {
+        "cout_total_eur_pour_s_1pct": 1122916.0,
+        "cout_eur_par_mwh_consomme": 0.3839
+      },
+      "0.65": {
+        "cout_total_eur_pour_s_1pct": 1176295.0,
+        "cout_eur_par_mwh_consomme": 0.4021
+      },
+      "0.7": {
+        "cout_total_eur_pour_s_1pct": 1254148.0,
+        "cout_eur_par_mwh_consomme": 0.4288
+      },
+      "0.75": {
+        "cout_total_eur_pour_s_1pct": 1328195.0,
+        "cout_eur_par_mwh_consomme": 0.4541
+      },
+      "0.8": {
+        "cout_total_eur_pour_s_1pct": 1390720.0,
+        "cout_eur_par_mwh_consomme": 0.4754
+      },
+      "0.85": {
+        "cout_total_eur_pour_s_1pct": 1477281.0,
+        "cout_eur_par_mwh_consomme": 0.505
+      },
+      "0.9": {
+        "cout_total_eur_pour_s_1pct": 1618711.0,
+        "cout_eur_par_mwh_consomme": 0.5534
+      },
+      "0.95": {
+        "cout_total_eur_pour_s_1pct": 1778505.0,
+        "cout_eur_par_mwh_consomme": 0.608
+      }
+    },
+    "couverture_empirique_de_q_pct": 54.69,
+    "biais": {
+      "etiquette": "borne calculée avec le biais de la période elle-même, impossible en pratique",
+      "biais_moyen_de_q05_mw": 310.9,
+      "erreur_mediane_de_q05_mw": 323.8,
+      "biais_moyen_de_la_prevision_ponctuelle_mw": 298.4,
+      "par_mois_mw": {
+        "2025-01": {
+          "q05": 471.9,
+          "prevision_ponctuelle": 363.5
+        },
+        "2025-02": {
+          "q05": 903.2,
+          "prevision_ponctuelle": 831.1
+        },
+        "2025-03": {
+          "q05": 1073.7,
+          "prevision_ponctuelle": 1016.7
+        },
+        "2025-04": {
+          "q05": 436.2,
+          "prevision_ponctuelle": 381.4
+        },
+        "2025-05": {
+          "q05": 346.8,
+          "prevision_ponctuelle": 352.3
+        },
+        "2025-06": {
+          "q05": 770.1,
+          "prevision_ponctuelle": 794.4
+        },
+        "2025-07": {
+          "q05": -1216.6,
+          "prevision_ponctuelle": -1139.7
+        },
+        "2025-08": {
+          "q05": -220.8,
+          "prevision_ponctuelle": -141.1
+        }
+      },
+      "achat_au_quantile_q_moins_le_biais": {
+        "cout_total_eur_pour_s_1pct": 974284.0,
+        "cout_eur_par_mwh_consomme": 0.3331
+      }
+    },
+    "q_par_mois": {
+      "2025-01": null,
+      "2025-02": null,
+      "2025-03": 0.7764,
+      "2025-04": 0.0011,
+      "2025-05": null,
+      "2025-06": 0.5726,
+      "2025-07": null,
+      "2025-08": null
+    },
+    "q_toute_la_validation": 0.2851
+  },
+  "comparaisons_sur_la_validation": 13
+}
