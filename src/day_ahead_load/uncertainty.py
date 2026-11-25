@@ -84,6 +84,7 @@ def calibrate(
     residual_rows: pd.DataFrame,
     grouping: Callable[[pd.DataFrame], np.ndarray],
     fallback: Callable[[pd.DataFrame], np.ndarray] | None = None,
+    levels: Sequence[float] = LEVELS,
 ) -> Calibrated:
     """Quantiles de `point` aux lignes `target_rows`, à partir des résidus passés.
 
@@ -99,7 +100,7 @@ def calibrate(
     tgt_parent = fallback(target_rows) if fallback else None
     months = decision_month(list(target_rows["jour"]))
 
-    out = np.full((len(target_rows), len(LEVELS)), np.nan)
+    out = np.full((len(target_rows), len(levels)), np.nan)
     judged = np.zeros(len(target_rows), dtype=bool)
     counts = np.zeros(len(target_rows), dtype=int)
     fallbacks: list[dict[str, object]] = []
@@ -115,8 +116,12 @@ def calibrate(
             continue
         judged[rows] = True
         values = res_value[in_window]
-        own = _group_quantiles(values, res_group[in_window])
-        parent = _group_quantiles(values, res_parent[in_window]) if res_parent is not None else {}
+        own = _group_quantiles(values, res_group[in_window], levels)
+        parent = (
+            _group_quantiles(values, res_parent[in_window], levels)
+            if res_parent is not None
+            else {}
+        )
         sizes = pd.Series(res_group[in_window]).value_counts()
         for i in np.flatnonzero(rows):
             g = int(tgt_group[i])
@@ -128,7 +133,7 @@ def calibrate(
     quantiles = pd.DataFrame(
         point.to_numpy(dtype=float)[:, None] + out,
         index=target_rows.index,
-        columns=[str(level) for level in LEVELS],
+        columns=[str(level) for level in levels],
     )
     return Calibrated(
         quantiles,
@@ -138,8 +143,10 @@ def calibrate(
     )
 
 
-def _group_quantiles(values: np.ndarray, groups: np.ndarray) -> dict[int, np.ndarray]:
-    return {int(g): np.quantile(values[groups == g], LEVELS) for g in np.unique(groups)}
+def _group_quantiles(
+    values: np.ndarray, groups: np.ndarray, levels: Sequence[float] = LEVELS
+) -> dict[int, np.ndarray]:
+    return {int(g): np.quantile(values[groups == g], levels) for g in np.unique(groups)}
 
 
 def j7_point(target_by_wall: pd.Series, wall: pd.DatetimeIndex) -> np.ndarray:
