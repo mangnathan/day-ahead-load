@@ -1,6 +1,6 @@
 # ADR 0005 : décision d'achat de la v0.3
 
-- Statut : proposé le 25/11/2026, à accepter à la relecture du rapport de la v0.3
+- Statut : accepté le 25/11/2026, après relecture du rapport de la v0.3
 - Date : 25 novembre 2026
 - Version : v0.3
 
