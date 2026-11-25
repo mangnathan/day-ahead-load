@@ -144,3 +144,13 @@ def build(
     if not open_test:
         table.loc[table["periode"] == "test", TARGET] = np.nan
     return Built(table, fallbacks)
+
+
+def with_observed_weather(table: pd.DataFrame, archive: pd.DataFrame) -> pd.DataFrame:
+    """Copie de la table où les lignes de validation portent la météo ERA5, comme les lignes
+    d'entraînement : c'est la table d'apprentissage de la procédure mensuelle et du modèle figé."""
+    validation = table[table["periode"] == "validation"]
+    observed = wf.half_hour_features(pd.DatetimeIndex(validation.index), archive)
+    out = table.copy()
+    out.loc[validation.index, list(observed.columns)] = observed.to_numpy()
+    return out

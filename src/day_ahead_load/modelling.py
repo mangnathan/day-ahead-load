@@ -362,3 +362,27 @@ def fit_monthly(rows: pd.DataFrame, month: date) -> MonthlyModel:
         raise ValueError(f"ligne d'entraînement du {last}, après la fin de M − 4 ({cutoff})")
     booster = fit(design(rows), rows[tb.TARGET])
     return MonthlyModel(month, last, len(rows), config_sha256(), booster)
+
+
+def monthly_forecasts(
+    train_table: pd.DataFrame,
+    predicted: pd.DataFrame,
+    first: str = "2024-03",
+    last: str = "2025-08",
+) -> tuple[pd.Series, list[MonthlyModel]]:
+    """Procédure mensuelle (v0.2) : chaque mois de `predicted` est prévu par son modèle.
+
+    `train_table` porte la météo ERA5 sur toutes les lignes d'entraînement ; `predicted` porte
+    la météo vue à midi la veille.
+    """
+    forecast = pd.Series(np.nan, index=predicted.index)
+    models = []
+    month_of = pd.to_datetime(predicted["jour"]).dt.to_period("M")
+    for period in pd.period_range(first, last, freq="M"):
+        month = period.start_time.date()
+        model = fit_monthly(monthly_training_rows(train_table, month), month)
+        part = predicted[np.asarray(month_of == period)]
+        if len(part):
+            forecast[part.index] = np.asarray(model.booster.predict(design(part)), dtype=float)
+        models.append(model)
+    return forecast, models
